@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" type="text/css" th:href="@{css/styles.css}" />
+    <style>
+        .container-greet {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 300px;
+            background-color: #63C7BE;
+        }
+
+        .image-container {
+            height: 100%;
+            width: 100%;
+        }
+
+        .image-container img {
+            height: 100% !important;
+            object-fit: cover;
+            object-position: top left;
+            float:right;
+        }
+
+        .message-container {
+            height: 100%;
+            width: calc(50% - 5px);
+            padding-left: 25px;
+            padding-top: 20px;
+            min-width: 200px;
+        }
+
+        .greet{
+            font-size: 2.2em;
+            color: #FFFFFF;
+        }
+        .person{
+            font-size: 2em;
+            font-weight: bold;
+            color: #1F73B7;
+        }
+
+        .logo img{
+            width: 200px;
+        }
+
+        .container-body-message{
+            padding: 20px;
+            font-size: 1.2em;
+        }
+        .notification{
+            text-align: center;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <section th:replace="~{mail/email-header.html}"></section>
+
+    <section>
+        <div class="container-greet">
+            <div class="message-container">
+                <div class="logo">
+                    <img th:src="|cid:${imageLogo}|" />
+                </div>
+                <br>
+                <span class="greet"><b><span>Hola,</span></b></span><br>
+                <span class="person">
+                    <span th:text="${nombre}"></span><br>
+                    <span th:text="${apellidos}"></span>
+                </span>
+            </div>
+            <div class="image-container">
+                <img th:src="|cid:${imageGreet}|" />
+            </div>
+        </div>
+        <div class="container-body-message">
+            <p class="notification">Desde el sistema de Registro y Asignación de puntajes nos permitimos informarte que
+                su solicitud ha sido registrada con éxito<br>A continuación se especifica el resumen de la solicitud.</p>
+            <span><b><span>Información: </span> </b></span>
+            <br>
+            <ul>
+                <li>Nombre: <b><span th:text="${nombreSolicitud}"></span></b><br></li>
+                <li>Tipo: <b><span th:text="${tipoSolicitud}"></span></b></li>
+            </ul>
+            <br>
+            <span>Puede ingresar directamente al aplicativo a través del siguiente enlace:
+                <span th:text="${T(co.edu.unipamplona.ciadti.rap.services.util.constant.StaticResource).PATH_HOME_PAGE_LOGIN.getUrl()}"></span>
+            </span>
+        </div>
+    </section>
+
+    <section th:replace="~{mail/email-footer.html}"></section>
+
+</body>
+</html>
