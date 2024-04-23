@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.Date;
 
-
 @JacksonCIADTI
 @Data
 @Builder
@@ -71,6 +70,10 @@ public class PersonaEntity implements Serializable {
     @JsonManagedReference
     @OneToOne (mappedBy = "persona", fetch = FetchType.EAGER)
     private FotoPersonaEntity fotoPersona;
+
+    @OneToOne
+    @JoinColumn(name = "gene_id", insertable = false, updatable = false)
+    private GeneroEntity genero;
 
     @Transient
     private String srcFoto;

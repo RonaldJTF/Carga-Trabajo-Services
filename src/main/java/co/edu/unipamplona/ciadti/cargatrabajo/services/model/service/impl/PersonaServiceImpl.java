@@ -57,8 +57,9 @@ public class PersonaServiceImpl implements PersonaService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Iterable<PersonaEntity> save(Collection<PersonaEntity> entities) {
-        return null;
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
     @Override
@@ -83,14 +84,14 @@ public class PersonaServiceImpl implements PersonaService {
     @Override
     @Transactional(readOnly = true)
     public PersonaEntity findByIdUsuario(Long idUsuario) {
-        return null; //personaDAO.findByIdUsuario(idUsuario);
+        return personaDAO.findByIdUsuario(idUsuario);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PersonaEntity> findAllPeopleWithUserByFilter(String filter, String active) {
-        /*return active != null && !active.isEmpty()
+        return active != null && !active.isEmpty()
             ? personaDAO.findAllPeopleWithUserByFilterAndActive(filter, active)
-            : personaDAO.findAllPeopleWithUserByFilter(filter);*/
-        return null;
+            : personaDAO.findAllPeopleWithUserByFilter(filter);
     }
 }

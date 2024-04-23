@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.UsuarioDAO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioEntity;
@@ -25,18 +26,49 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Iterable<UsuarioEntity> findAll() {
-        return null;
+        return usuarioDAO.findAll();
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public UsuarioEntity save(UsuarioEntity entity) {
-        return null;
+        if (entity.getId() != null){
+            entity.onUpdate();
+            usuarioDAO.update(
+                entity.getIdPersona(), 
+                entity.getUsername(), 
+                entity.getPassword(), 
+                entity.getActivo(), 
+                entity.getFechaCambio(), 
+                entity.getRegistradoPor(), 
+                entity.getId());
+            return entity;
+        }
+        return usuarioDAO.save(entity);
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public Iterable<UsuarioEntity> save(Collection<UsuarioEntity> entities) {
-        return null;
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteByProcedure(Long id, UsuarioEntity entity) {
+       Integer rows = usuarioDAO.deleteByProcedure(id, entity.getRegistradorDTO().getJsonAsString());
+       if (1 != rows) {
+           throw new RuntimeException( "Se han afectado " + rows + " filas." );
+       }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Iterable<UsuarioEntity> findAllFilteredBy(UsuarioEntity filter) {
+        SpecificationCiadti<UsuarioEntity> specification = new SpecificationCiadti<UsuarioEntity>(filter);
+        return usuarioDAO.findAll(specification);
     }
 
     @Override
