@@ -13,12 +13,12 @@ import java.util.List;
 
 public interface PersonaDAO extends JpaRepository<PersonaEntity, Long>, JpaSpecificationExecutor<PersonaEntity> {
 
-    /*@Query( "select p from PersonaEntity p " +
+    @Query( "select p from PersonaEntity p " +
             "inner join UsuarioEntity u on (p.id = u.idPersona) " +
             "where u.id =:idUsuario")
-    PersonaEntity findByIdUsuario(@Param("idUsuario") Long idUsuario);*/
+    PersonaEntity findByIdUsuario(@Param("idUsuario") Long idUsuario);
 
-    /*@Query( "SELECT p FROM PersonaEntity p " +
+    @Query( "SELECT p FROM PersonaEntity p " +
             "INNER JOIN UsuarioEntity u ON (p.id = u.idPersona)" +
             "WHERE LOWER(p.primerNombre || ' ' || p.segundoNombre || ' ' || p.primerApellido || ' ' || p.segundoApellido) " + 
             "LIKE LOWER(CONCAT('%', :filter, '%')) OR LOWER(p.documento) LIKE LOWER(CONCAT('%', :filter, '%') )")
@@ -32,7 +32,7 @@ public interface PersonaDAO extends JpaRepository<PersonaEntity, Long>, JpaSpeci
             "   LIKE LOWER(CONCAT('%', :filter, '%')) " +
             "   OR LOWER(p.documento) LIKE LOWER(CONCAT('%', :filter, '%')) " +
             ")")
-    List<PersonaEntity> findAllPeopleWithUserByFilterAndActive(@Param("filter") String filter, @Param("active") String active);*/
+    List<PersonaEntity> findAllPeopleWithUserByFilterAndActive(@Param("filter") String filter, @Param("active") String active);
 
     @Modifying
     @Query(value = "update PersonaEntity p set p.idTipoDocumento = :idTipoDocumento, p.idGenero = :idGenero, p.primerNombre = :primerNombre, " +
@@ -52,7 +52,7 @@ public interface PersonaDAO extends JpaRepository<PersonaEntity, Long>, JpaSpeci
                @Param("registradoPor") String registradoPor,
                @Param("id") Long id);
 
-    @Query(value = "select FORTALECIMIENTO.pr_fortalecimiento_d_persona(?1, ?2)", nativeQuery = true)
+    @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_PERSONA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
 
 }

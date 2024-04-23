@@ -3,10 +3,11 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.springframework.data.annotation.Transient;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.jackson.JacksonCIADTI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
@@ -22,7 +23,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,36 +34,48 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "FOTOPERSONA", schema="FORTALECIMIENTO")
-public class FotoPersonaEntity implements Serializable{
+@Table(name = "ACTIVIDAD", schema = "FORTALECIMIENTO")
+public class ActividadEntity implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "fope_id", nullable = false)
+    @Column(name = "acti_id", nullable = false)
     private Long id;
 
-    @Column(name = "pers_id", nullable = false)
-    private Long idPersona;
+    @Column(name = "nive_id", nullable = false)
+    private Long idNivel;
 
-    @JsonIgnore
-    @Column(name = "fope_archivo", nullable = false)
-    private byte[] archivo;
+    @Column(name="estr_id", nullable = false)
+    private Long idEstructura;
 
-    @Column(name = "fope_mimetype", nullable = false, length = 100)
-    private String mimetype;
+    @Column(name = "acti_frecuencia", nullable = false)
+    private Double frecuencia;
 
+    @Column(name = "acti_tiempomaximo", nullable = false)
+    private Double tiempoMaximo;
+
+    @Column(name = "acti_tiempominimo", nullable = false)
+    private Double tiempoMinimo;
+
+    @Column(name = "acti_tiempopromedio")
+    private Double tiempoPromedio;
+    
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "fope_fechacambio", nullable = false)
+    @Column(name = "acti_fechacambio", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCambio;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "fope_registradopor")
+    @Column(name = "estr_registradopor", nullable =  false, length = 250)
     private String registradoPor;
 
     @JsonBackReference
     @OneToOne
-    @JoinColumn(name = "pers_id", insertable=false, updatable=false)
-    private PersonaEntity persona;
+    @JoinColumn(name="estr_id", insertable = false, updatable = false)
+    private EstructuraEntity estructura;
+
+    @OneToOne
+    @JoinColumn(name = "nive_id", insertable = false, updatable = false)
+    private NivelEntity nivel;
 
     @JsonIgnore
     @Transient
@@ -81,5 +93,4 @@ public class FotoPersonaEntity implements Serializable{
         this.fechaCambio = new Date();
         this.registradoPor = registradorDTO.getJsonAsString();
     }
-
 }

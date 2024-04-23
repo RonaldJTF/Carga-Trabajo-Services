@@ -1,7 +1,6 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service;
 
 import java.util.Collection;
-
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 
 public interface CommonService<T> {
@@ -9,4 +8,6 @@ public interface CommonService<T> {
     Iterable<T> findAll();
     T save (T entity);
     Iterable<T> save(Collection<T> entities);
+    void deleteByProcedure(Long id, T entity);
+    Iterable<T> findAllFilteredBy(T filter);
 }
