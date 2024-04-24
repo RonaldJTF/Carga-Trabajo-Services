@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.config.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,22 +9,26 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.UsuarioDAO;
 
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    private final UsuarioService usuarioService;
-    private final CipherService cipherService;
+    private final UsuarioDAO usuarioDAO;
+
+    @Autowired
+    private CipherService cipherService;
 
     @Bean
     public UserDetailsService userDetailsService (){
-        return usuarioService::findByUsername;
+        return username -> usuarioDAO.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
     }
 
     @Bean

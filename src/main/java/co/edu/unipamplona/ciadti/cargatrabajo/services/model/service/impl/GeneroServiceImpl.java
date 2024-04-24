@@ -54,8 +54,8 @@ public class GeneroServiceImpl implements GeneroService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void deleteByProcedure(Long id, GeneroEntity entity) {
-        Integer rows = generoDAO.deleteByProcedure(id, entity.getRegistradorDTO().getJsonAsString());
+    public void deleteByProcedure(Long id, String register) {
+        Integer rows = generoDAO.deleteByProcedure(id, register);
         if (1 != rows) {
             throw new RuntimeException( "Se han afectado " + rows + " filas." );
         }

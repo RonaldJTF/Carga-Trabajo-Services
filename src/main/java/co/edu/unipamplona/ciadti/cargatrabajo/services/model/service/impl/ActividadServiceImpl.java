@@ -58,8 +58,8 @@ public class ActividadServiceImpl implements ActividadService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void deleteByProcedure(Long id, ActividadEntity entity) {
-        Integer rows = actividadDAO.deleteByProcedure(id, entity.getRegistradorDTO().getJsonAsString());
+    public void deleteByProcedure(Long id, String register) {
+        Integer rows = actividadDAO.deleteByProcedure(id, register);
         if (1 != rows) {
             throw new RuntimeException( "Se han afectado " + rows + " filas." );
         }

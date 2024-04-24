@@ -64,8 +64,8 @@ public class PersonaServiceImpl implements PersonaService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void deleteByProcedure(Long id, PersonaEntity personaEntity) {
-        Integer rows = personaDAO.deleteByProcedure(id, personaEntity.getRegistradorDTO().getJsonAsString());
+    public void deleteByProcedure(Long id, String register) {
+        Integer rows = personaDAO.deleteByProcedure(id, register);
         if (1 != rows) {
             throw new RuntimeException( "Se han afectado " + rows + " filas." );
         }

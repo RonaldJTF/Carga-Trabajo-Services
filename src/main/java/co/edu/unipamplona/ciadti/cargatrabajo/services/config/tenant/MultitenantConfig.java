@@ -46,7 +46,6 @@ public class MultitenantConfig {
         for (File propertyFile : files) {
             Properties tenantProperties = new Properties();
             DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-
             try {
                 tenantProperties.load(new FileInputStream(propertyFile));
                 String tenantId = env.getProperty(tenantProperties.getProperty("name"));

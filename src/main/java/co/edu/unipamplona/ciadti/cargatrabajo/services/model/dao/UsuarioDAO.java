@@ -16,8 +16,8 @@ public interface UsuarioDAO extends JpaRepository<UsuarioEntity, Long>, JpaSpeci
     Optional<UsuarioEntity> findByUsername (String username);
 
     @Modifying
-    @Query(value = "update UsuarioEntity u set u.idPersona =:idPersona, u.username =:username, u.password = :password, " + 
-                    "u.activo=: activo, u.fechaCambio = :fechaCambio, u.registradoPor = :registradoPor where u.id=:id ")
+    @Query(value = "update UsuarioEntity u set u.idPersona = :idPersona, u.username = :username, u.password = :password, " + 
+                    "u.activo = :activo, u.fechaCambio = :fechaCambio, u.registradoPor = :registradoPor where u.id = :id ")
     int update(@Param("idPersona") Long idPersona,
                @Param("username") String username,
                @Param("password") String password,

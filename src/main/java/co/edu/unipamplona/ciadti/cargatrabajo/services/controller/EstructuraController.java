@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/structure")
 public class EstructuraController {
     private final EstructuraService estructuraService;
-    private final TipologiaService tipologiaService;
     private final ConfigurationMediator configurationMediator;
     private final ParameterConverter parameterConverter;
     

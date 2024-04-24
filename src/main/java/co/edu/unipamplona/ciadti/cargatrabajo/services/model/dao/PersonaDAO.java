@@ -19,17 +19,16 @@ public interface PersonaDAO extends JpaRepository<PersonaEntity, Long>, JpaSpeci
     PersonaEntity findByIdUsuario(@Param("idUsuario") Long idUsuario);
 
     @Query( "SELECT p FROM PersonaEntity p " +
-            "INNER JOIN UsuarioEntity u ON (p.id = u.idPersona)" +
+            "INNER JOIN UsuarioEntity u ON (p.id = u.idPersona) " +
             "WHERE LOWER(p.primerNombre || ' ' || p.segundoNombre || ' ' || p.primerApellido || ' ' || p.segundoApellido) " + 
             "LIKE LOWER(CONCAT('%', :filter, '%')) OR LOWER(p.documento) LIKE LOWER(CONCAT('%', :filter, '%') )")
     List<PersonaEntity> findAllPeopleWithUserByFilter(@Param("filter") String filter);
 
     @Query( "SELECT p FROM PersonaEntity p " +
-            "INNER JOIN UsuarioEntity u ON (p.id = u.idPersona)" +
+            "INNER JOIN UsuarioEntity u ON (p.id = u.idPersona) " +
             "WHERE u.activo = :active " +
             "AND (" +
-            "   LOWER((p.primerNombre || ' ' || p.segundoNombre || ' ' || p.primerApellido || ' ' || p.segundoApellido) " +
-            "   LIKE LOWER(CONCAT('%', :filter, '%')) " +
+            "   LOWER (p.primerNombre || ' ' || p.segundoNombre || ' ' || p.primerApellido || ' ' || p.segundoApellido) LIKE LOWER(CONCAT('%', :filter, '%')) " +
             "   OR LOWER(p.documento) LIKE LOWER(CONCAT('%', :filter, '%')) " +
             ")")
     List<PersonaEntity> findAllPeopleWithUserByFilterAndActive(@Param("filter") String filter, @Param("active") String active);

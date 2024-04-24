@@ -71,6 +71,10 @@ public class PersonaEntity implements Serializable {
     @OneToOne (mappedBy = "persona", fetch = FetchType.EAGER)
     private FotoPersonaEntity fotoPersona;
 
+    @JsonManagedReference
+    @OneToOne(mappedBy = "persona")
+    private UsuarioEntity usuario;
+
     @OneToOne
     @JoinColumn(name = "gene_id", insertable = false, updatable = false)
     private GeneroEntity genero;

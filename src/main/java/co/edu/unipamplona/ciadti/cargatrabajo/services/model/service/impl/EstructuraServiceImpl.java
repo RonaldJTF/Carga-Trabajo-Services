@@ -65,8 +65,8 @@ public class EstructuraServiceImpl implements EstructuraService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void deleteByProcedure(Long id, EstructuraEntity entity) {
-        Integer rows = estructuraDAO.deleteByProcedure(id, entity.getRegistradorDTO().getJsonAsString());
+    public void deleteByProcedure(Long id, String register) {
+        Integer rows = estructuraDAO.deleteByProcedure(id, register);
         if (1 != rows) {
             throw new RuntimeException( "Se han afectado " + rows + " filas." );
         }
@@ -77,8 +77,8 @@ public class EstructuraServiceImpl implements EstructuraService{
     public Iterable<EstructuraEntity> findAllFilteredBy(EstructuraEntity filter) {
         Specification<EstructuraEntity> specification = new SpecificationCiadti<>(filter);
         List<EstructuraEntity> results = estructuraDAO.findAll(specification);
-        results = this.filter(results);
-        this.orderStructures(results);
+        //results = this.filter(results);
+        //this.orderStructures(results);
         return results;
     }
 

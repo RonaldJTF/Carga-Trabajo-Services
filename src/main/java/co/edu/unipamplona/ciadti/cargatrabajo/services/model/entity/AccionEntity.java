@@ -50,12 +50,12 @@ public class AccionEntity implements Serializable{
     private String path;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "tipo_fechacambio", nullable = false)
+    @Column(name = "acci_fechacambio", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCambio;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "tipo_registradopor", nullable = false, length = 250)
+    @Column(name = "acci_registradopor", nullable = false, length = 250)
     private String registradoPor;
 
     @JsonIgnore

@@ -24,4 +24,6 @@ public interface FotoPersonaDAO extends JpaRepository<FotoPersonaEntity, Long>, 
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_FOTOPERSONA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    FotoPersonaEntity findByIdPersona(Long idPersona);
 }

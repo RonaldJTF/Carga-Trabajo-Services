@@ -56,8 +56,8 @@ public class TipologiaServiceImpl implements TipologiaService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void deleteByProcedure(Long id, TipologiaEntity entity) {
-        Integer rows = tipologiaDAO.deleteByProcedure(id, entity.getRegistradorDTO().getJsonAsString());
+    public void deleteByProcedure(Long id, String register) {
+        Integer rows = tipologiaDAO.deleteByProcedure(id, register);
         if (1 != rows) {
             throw new RuntimeException( "Se han afectado " + rows + " filas." );
         }

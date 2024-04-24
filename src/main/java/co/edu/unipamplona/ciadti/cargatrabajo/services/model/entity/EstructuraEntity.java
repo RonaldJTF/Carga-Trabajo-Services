@@ -70,7 +70,7 @@ public class EstructuraEntity implements Serializable{
     private String registradoPor;
 
     @OneToMany
-    @JoinColumn(name="estr_id", insertable=false, updatable=false)
+    @JoinColumn(name="estr_idpadre", insertable=false, updatable=false)
     private List<EstructuraEntity> subEstructuras;
 
     @JsonManagedReference

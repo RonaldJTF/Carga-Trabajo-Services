@@ -8,6 +8,6 @@ public interface CommonService<T> {
     Iterable<T> findAll();
     T save (T entity);
     Iterable<T> save(Collection<T> entities);
-    void deleteByProcedure(Long id, T entity);
+    void deleteByProcedure(Long id, String register);
     Iterable<T> findAllFilteredBy(T filter);
 }

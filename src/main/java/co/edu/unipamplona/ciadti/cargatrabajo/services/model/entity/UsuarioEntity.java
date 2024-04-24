@@ -47,6 +47,9 @@ public class UsuarioEntity implements Serializable, UserDetails {
     @Column(name = "usua_activo", nullable = false, length = -1)
     private String activo;
 
+    @Column(name = "usua_tokenpassword")
+    private String tokenPassword;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "usua_fechacambio", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

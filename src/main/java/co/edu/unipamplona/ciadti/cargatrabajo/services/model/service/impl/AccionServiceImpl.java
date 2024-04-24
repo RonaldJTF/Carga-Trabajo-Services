@@ -58,8 +58,8 @@ public class AccionServiceImpl implements AccionService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void deleteByProcedure(Long id, AccionEntity entity) {
-        Integer rows = accionDAO.deleteByProcedure(id, entity.getRegistradorDTO().getJsonAsString());
+    public void deleteByProcedure(Long id, String register) {
+        Integer rows = accionDAO.deleteByProcedure(id, register);
         if (1 != rows) {
             throw new RuntimeException( "Se han afectado " + rows + " filas." );
         }
