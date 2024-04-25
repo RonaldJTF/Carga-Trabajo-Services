@@ -77,8 +77,8 @@ public class EstructuraServiceImpl implements EstructuraService{
     public Iterable<EstructuraEntity> findAllFilteredBy(EstructuraEntity filter) {
         Specification<EstructuraEntity> specification = new SpecificationCiadti<>(filter);
         List<EstructuraEntity> results = estructuraDAO.findAll(specification);
-        //results = this.filter(results);
-        //this.orderStructures(results);
+        results = this.filter(results);
+        this.orderStructures(results);
         return results;
     }
 
