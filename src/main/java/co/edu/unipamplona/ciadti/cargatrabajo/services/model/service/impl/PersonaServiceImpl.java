@@ -75,8 +75,7 @@ public class PersonaServiceImpl implements PersonaService {
     @Transactional(readOnly = true)
     public List<PersonaEntity> findAllFilteredBy(PersonaEntity filter) {
         OrderBy orderBy = new OrderBy();
-        orderBy.addOrder("activo", false);
-        orderBy.addOrder("nombre", true);
+        orderBy.addOrder("primerNombre", true);
         Specification<PersonaEntity> specification = new SpecificationCiadti<>(filter, orderBy);
         return personaDAO.findAll(specification);
     }
