@@ -70,4 +70,10 @@ public class TipologiaServiceImpl implements TipologiaService{
         SpecificationCiadti<TipologiaEntity> specificationCiadti = new SpecificationCiadti<TipologiaEntity>(filter, orderBy);
        return tipologiaDAO.findAll(specificationCiadti);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TipologiaEntity findFirstTipology() {
+        return tipologiaDAO.findFirstTipology();
+    }
 }

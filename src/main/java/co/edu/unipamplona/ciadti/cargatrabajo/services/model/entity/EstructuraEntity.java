@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.jackson.JacksonCIADTI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.RegistradorDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Image;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -54,6 +56,7 @@ public class EstructuraEntity implements Serializable{
     @Column(name = "tipo_id", nullable = false)
     private Long idTipologia;
 
+    @JsonIgnore
     @Column(name = "estr_icono")
     private byte[] icono;
 
@@ -81,6 +84,17 @@ public class EstructuraEntity implements Serializable{
     @JoinColumn(name = "tipo_id", insertable = false, updatable = false)
     private TipologiaEntity tipologia;
 
+    @Transient
+    private String srcIcono;
+
+    @JsonGetter("srcIcono")
+    public String getSrcFoto() {
+        return  srcIcono != null ? srcIcono :
+            icono != null
+            ? Image.getSrcImage(icono, mimetype)
+            : null;
+    }
+    
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;
@@ -89,12 +103,12 @@ public class EstructuraEntity implements Serializable{
     void onCreate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
-        this.registradoPor = registradorDTO.getJsonAsString();
+        this.registradoPor = "registradorDTO.getJsonAsString()";
     }
 
     public void onUpdate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
-        this.registradoPor = registradorDTO.getJsonAsString();
+        this.registradoPor = "registradorDTO.getJsonAsString()";
     }
 }

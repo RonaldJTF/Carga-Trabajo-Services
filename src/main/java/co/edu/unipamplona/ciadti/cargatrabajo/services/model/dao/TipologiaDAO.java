@@ -12,6 +12,11 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEnt
 
 public interface TipologiaDAO extends JpaRepository<TipologiaEntity, Long>, JpaSpecificationExecutor<TipologiaEntity>{
 
+    @Query(value = "select t from TipologiaEntity t " + 
+                    "left join TipologiaEntity t2 on (t.id = t2.idTipologiaSiguiente) " + 
+                    "where t2.idTipologiaSiguiente is null")
+    TipologiaEntity findFirstTipology();
+
     @Modifying
     @Query(value = "update TipologiaEntity t set t.idTipologiaSiguiente =:idTipologiaSiguiente, t.nombre =:nombre,  t.claseIcono = :claseIcono, " + 
                     "t.nombreColor =:nombreColor, t.esDependencia =:esDependencia,  t.fechaCambio = :fechaCambio, " + 

@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/structure")
 public class EstructuraController {
     private final EstructuraService estructuraService;
+    private final TipologiaService tipologiaService;
     private final ConfigurationMediator configurationMediator;
     private final ParameterConverter parameterConverter;
     
@@ -55,8 +59,13 @@ public class EstructuraController {
             "Args: estructuraEntity: objeto con información de la estructura. " +
             "Returns: Objeto con la información asociada.")
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestParam("structure") EstructuraEntity estructuraEntity, 
+    public ResponseEntity<?> create(@Valid @RequestParam("structure") String estructuraJSON, 
                                     @RequestParam(value="file", required = false) MultipartFile file) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        EstructuraEntity estructuraEntity = objectMapper.readValue(estructuraJSON, EstructuraEntity.class);
+        TipologiaEntity firstTypology = tipologiaService.findFirstTipology();
+        estructuraEntity.setTipologia(firstTypology);
+        estructuraEntity.setIdTipologia(estructuraEntity.getIdTipologia() == null ? firstTypology.getId() : estructuraEntity.getId());
         if(file != null){
             estructuraEntity.setMimetype(file.getContentType());
             estructuraEntity.setIcono(file.getBytes());
@@ -71,15 +80,20 @@ public class EstructuraController {
             "id: identificador de la estructura. " +
             "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
-    public ResponseEntity<?> update (@Valid @RequestParam("structure") EstructuraEntity estructuraEntity, 
+    public ResponseEntity<?> update (@Valid @RequestParam("structure") String estructuraJSON, 
                                      @RequestParam(value = "file", required = false) MultipartFile file,
                                      @PathVariable Long id) throws CiadtiException, IOException{
-        estructuraEntity.setId(id);
+        ObjectMapper objectMapper = new ObjectMapper();
+        EstructuraEntity estructuraEntity = objectMapper.readValue(estructuraJSON, EstructuraEntity.class);
+
+        EstructuraEntity estructuraEntityBD = estructuraService.findById(id);
+        estructuraEntityBD.setNombre(estructuraEntity.getNombre());
+        estructuraEntityBD.setDescripcion(estructuraEntity.getDescripcion());
         if(file != null){
-            estructuraEntity.setMimetype(file.getContentType());
-            estructuraEntity.setIcono(file.getBytes());
+            estructuraEntityBD.setMimetype(file.getContentType());
+            estructuraEntityBD.setIcono(file.getBytes());
         }
-        return new ResponseEntity<>(estructuraService.save(estructuraEntity), HttpStatus.CREATED);
+        return new ResponseEntity<>(estructuraService.save(estructuraEntityBD), HttpStatus.CREATED);
     }
 
     @Operation(

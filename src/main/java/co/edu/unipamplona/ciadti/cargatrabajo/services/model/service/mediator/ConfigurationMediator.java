@@ -47,7 +47,7 @@ public class ConfigurationMediator {
                 deleteStructure(e.getId());
             }
         }
-        estructuraService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+        estructuraService.deleteByProcedure(id, "RegisterContext.getRegistradorDTO().getJsonAsString()");
     }
 
     /**

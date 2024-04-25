@@ -4,4 +4,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEnt
 
 public interface TipologiaService extends CommonService<TipologiaEntity>{
 
+    TipologiaEntity findFirstTipology();
+
 }

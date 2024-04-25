@@ -3,6 +3,8 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PersonaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PersonaService;
@@ -56,8 +58,10 @@ public class PersonaController {
             "Args: personaEntity: objeto con información de la persona. " +
             "Returns: Objeto con la información asociada.")
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestParam(value = "person") PersonaEntity personaEntity, 
+    public ResponseEntity<?> create(@Valid @RequestParam(value = "person") String personaJSON, 
                                     @RequestParam (value = "file", required = false) MultipartFile photoFile) throws IOException{
+        ObjectMapper objectMapper = new ObjectMapper();
+        PersonaEntity personaEntity = objectMapper.readValue(personaJSON, PersonaEntity.class);
         return new ResponseEntity<>(configurationMediator.savePerson(personaEntity, photoFile), HttpStatus.CREATED);
     }
 
@@ -70,8 +74,10 @@ public class PersonaController {
             "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
-                                    @Valid @RequestParam (value = "person") PersonaEntity personaEntity, 
+                                    @Valid @RequestParam (value = "person") String personaJSON, 
                                     @RequestParam(value = "file", required = false) MultipartFile photoFile) throws IOException{
+        ObjectMapper objectMapper = new ObjectMapper();
+        PersonaEntity personaEntity = objectMapper.readValue(personaJSON, PersonaEntity.class);
         personaEntity.setId(id);
         return new ResponseEntity<>(configurationMediator.savePerson(personaEntity, photoFile), HttpStatus.CREATED);
     }
