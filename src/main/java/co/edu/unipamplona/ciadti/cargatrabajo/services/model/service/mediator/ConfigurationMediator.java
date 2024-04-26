@@ -22,7 +22,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.FotoPersona
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PersonaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioRolService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -48,6 +47,39 @@ public class ConfigurationMediator {
             }
         }
         estructuraService.deleteByProcedure(id, "RegisterContext.getRegistradorDTO().getJsonAsString()");
+    }
+
+    /**
+     * Elimina todas las estructuras pasadas en el parámetro structureIds
+     * @param structureIds: Contiene los identificadores de las estructuras a eliminar
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteStructures(List<Long> structureIds) throws CiadtiException {
+        List<Long> deletedStructures = new ArrayList<>();
+        for (Long id : structureIds){
+            deleteStructure(id, deletedStructures);
+        }
+    } 
+
+    /**
+     * Elimina una estructura y sus subestructuras de manera recursiva
+     * @param id: identificador de la estructura a eliminar
+     * @param deletedStructures: almacena las estructuras que se han eliminado, esto para evitar tratar 
+     *                           de eliminar una estructura que ha sido eliminada en el mismo proceso
+     * @throws CiadtiException
+     */
+    private void deleteStructure(Long id, List<Long> deletedStructures ) throws CiadtiException{
+        EstructuraEntity structure = estructuraService.findById(id);
+        if (structure.getSubEstructuras() != null){
+            for (EstructuraEntity e : structure.getSubEstructuras()){
+                deleteStructure(e.getId(), deletedStructures);
+            }
+        }
+        if (!deletedStructures.contains(id)){
+            estructuraService.deleteByProcedure(id, "RegisterContext.getRegistradorDTO().getJsonAsString()");
+            deletedStructures.add(id);
+        }
     }
 
     /**
@@ -135,5 +167,5 @@ public class ConfigurationMediator {
             usuarioRolService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         });
         usuarioService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
-    }   
+    }  
 }
