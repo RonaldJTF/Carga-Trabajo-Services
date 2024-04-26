@@ -79,6 +79,10 @@ public class PersonaEntity implements Serializable {
     @JoinColumn(name = "gene_id", insertable = false, updatable = false)
     private GeneroEntity genero;
 
+    @OneToOne
+    @JoinColumn(name = "tido_id", insertable = false, updatable = false)
+    private TipoDocumentoEntity tipoDocumento;
+
     @Transient
     private String srcFoto;
 

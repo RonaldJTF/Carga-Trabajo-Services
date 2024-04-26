@@ -119,12 +119,37 @@ public class EstructuraController {
     }
 
     @Operation(
+        summary = "Obtener o listar las actividades",
+        description = "Obtiene o lista las actividades de acuerdo a ciertas variables o parámetros. " +
+            "Args: id: identificador de la actividad. " +
+            "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase ActividadEntity). " +
+            "Returns: Objeto o lista de objetos con información de la actividad. " +
+            "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
+    @GetMapping(value = {"/activity", "/activity/{id}"})
+    public ResponseEntity<?> getActivity(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
+        ActividadEntity filter = (ActividadEntity) parameterConverter.converter(request.getParameterMap(), ActividadEntity.class);
+        filter.setId(id==null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, actividadService.findAllFilteredBy(filter));
+    }
+
+    @Operation(
         summary="Crear una actividad o detalle de la estructura de tipología actividad",
         description = "Crea una actividad o detalle de la estructura de tipología actividad. " + 
             "Args: actividadEntity: objeto con información de la actividad. " +
             "Returns: Objeto con la información asociada.")
     @PostMapping("/activity")
     public ResponseEntity<?> createActivity(@Valid @RequestBody ActividadEntity actividadEntity ){
+        return new ResponseEntity<>(actividadService.save(actividadEntity), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary="Crear una actividad o detalle de la estructura de tipología actividad",
+        description = "Crea una actividad o detalle de la estructura de tipología actividad. " + 
+            "Args: actividadEntity: objeto con información de la actividad. " +
+            "Returns: Objeto con la información asociada.")
+    @PutMapping("/activity/{id}")
+    public ResponseEntity<?> updateActivity(@Valid @RequestBody ActividadEntity actividadEntity, @PathVariable Long id ){
+        actividadEntity.setId(id);
         return new ResponseEntity<>(actividadService.save(actividadEntity), HttpStatus.CREATED);
     }
 }
