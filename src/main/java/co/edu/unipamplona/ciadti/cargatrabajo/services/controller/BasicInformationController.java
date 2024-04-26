@@ -9,6 +9,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.RolEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipoDocumentoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GeneroService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.RolService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipoDocumentoService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
@@ -31,7 +32,7 @@ public class BasicInformationController {
     private final NivelService nivelService;
     private final ParameterConverter parameterConverter;
     private final GeneroService generoService;
-    private final Rol
+    private final RolService rolService;
 
     @Operation(
         summary = "Obtener o listar los tipos de documentos",
