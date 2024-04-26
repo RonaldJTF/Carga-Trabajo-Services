@@ -2,61 +2,60 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.Collection;
 
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.TipoDocumentoDAO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipoDocumentoEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipoDocumentoService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.RolDAO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.RolEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.RolService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class TipoDocumentoImpl implements TipoDocumentoService{
+public class RolServiceImpl implements RolService{
 
-    private final TipoDocumentoDAO tipoDocumentoDAO;
+    private final RolDAO rolDAO;
 
     @Override
     @Transactional(readOnly = true)
-    public TipoDocumentoEntity findById(Long id) throws CiadtiException {
-        return tipoDocumentoDAO.findById(id).orElseThrow(() -> new CiadtiException("TipoDocumento no encontrado para el id :: " + id, 404));
+    public RolEntity findById(Long id) throws CiadtiException {
+        return rolDAO.findById(id).orElseThrow(() -> new CiadtiException("Rol no encontrado para el id :: " + id, 404));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<TipoDocumentoEntity> findAll() {
-        return tipoDocumentoDAO.findAll();
+    public Iterable<RolEntity> findAll() {
+        return rolDAO.findAll();
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public TipoDocumentoEntity save(TipoDocumentoEntity entity) {
+    public RolEntity save(RolEntity entity) {
         if (entity.getId() != null){
             entity.onUpdate();
-            tipoDocumentoDAO.update(
-                    entity.getDescripcion(),
-                    entity.getAbreviatura(),
+            rolDAO.update(
+                    entity.getNombre(),
+                    entity.getCodigo(),
                     entity.getFechaCambio(),
                     entity.getRegistradoPor(),
                     entity.getId());
             return  entity;
         }
-        return tipoDocumentoDAO.save(entity);
+        return rolDAO.save(entity);
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<TipoDocumentoEntity> save(Collection<TipoDocumentoEntity> entities) {
+    public Iterable<RolEntity> save(Collection<RolEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteByProcedure(Long id, String register) {
-        Integer rows = tipoDocumentoDAO.deleteByProcedure(id, register);
+        Integer rows = rolDAO.deleteByProcedure(id, register);
         if (1 != rows) {
             throw new RuntimeException( "Se han afectado " + rows + " filas." );
         }
@@ -64,8 +63,8 @@ public class TipoDocumentoImpl implements TipoDocumentoService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<TipoDocumentoEntity> findAllFilteredBy(TipoDocumentoEntity filter) {
-        SpecificationCiadti<TipoDocumentoEntity> specification = new SpecificationCiadti<>(filter);
-        return tipoDocumentoDAO.findAll(specification);
-    }    
+    public Iterable<RolEntity> findAllFilteredBy(RolEntity filter) {
+        SpecificationCiadti<RolEntity> specification = new SpecificationCiadti<>(filter);
+        return rolDAO.findAll(specification);
+    }
 }

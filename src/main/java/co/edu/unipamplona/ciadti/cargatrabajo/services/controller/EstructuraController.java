@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
@@ -151,5 +152,15 @@ public class EstructuraController {
     public ResponseEntity<?> updateActivity(@Valid @RequestBody ActividadEntity actividadEntity, @PathVariable Long id ){
         actividadEntity.setId(id);
         return new ResponseEntity<>(actividadService.save(actividadEntity), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary = "Eliminar una actividad por su id",
+        description = "Elimina una actividad por su id." + 
+            "Args: id: identificador de la actividad a eliminar." )
+    @DeleteMapping("/activity/{id}")
+    public ResponseEntity<?> deleteActivity (@PathVariable Long id) throws CiadtiException{
+        actividadService.deleteByProcedure(id, "RegisterContext.getRegistradorDTO().getJsonAsString()");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

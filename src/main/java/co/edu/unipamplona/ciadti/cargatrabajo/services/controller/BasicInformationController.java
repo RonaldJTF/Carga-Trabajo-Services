@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GeneroEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.RolEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipoDocumentoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GeneroService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
@@ -30,6 +31,7 @@ public class BasicInformationController {
     private final NivelService nivelService;
     private final ParameterConverter parameterConverter;
     private final GeneroService generoService;
+    private final Rol
 
     @Operation(
         summary = "Obtener o listar los tipos de documentos",
@@ -60,4 +62,11 @@ public class BasicInformationController {
         return Methods.getResponseAccordingToId(id, nivelService.findAllFilteredBy(filter));
     }
     
+    @GetMapping(value = {"role", "role/{id}"})
+    public ResponseEntity<?> getRole(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
+        RolEntity filter = (RolEntity) parameterConverter.converter(request.getParameterMap(), RolEntity.class);
+        filter.setId(id==null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, rolService.findAllFilteredBy(filter));
+    }
+
 }

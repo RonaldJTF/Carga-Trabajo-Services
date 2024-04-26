@@ -90,6 +90,6 @@ public class ActividadEntity implements Serializable{
     public void onUpdate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
-        this.registradoPor = registradorDTO.getJsonAsString();
+        this.registradoPor = "registradorDTO.getJsonAsString()";
     }
 }
