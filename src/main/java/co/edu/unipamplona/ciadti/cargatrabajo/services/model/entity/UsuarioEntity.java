@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Entity
 @Table(name = "USUARIO", schema = "FORTALECIMIENTO")
-public class UsuarioEntity implements Serializable, UserDetails {
+public class UsuarioEntity implements Serializable, Cloneable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usua_id", nullable = false)
@@ -130,5 +130,10 @@ public class UsuarioEntity implements Serializable, UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

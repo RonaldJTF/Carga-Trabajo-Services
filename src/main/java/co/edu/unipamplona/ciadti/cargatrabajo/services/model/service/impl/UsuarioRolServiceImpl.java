@@ -63,7 +63,7 @@ public class UsuarioRolServiceImpl implements UsuarioRolService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<UsuarioRolEntity> findAllFilteredBy(UsuarioRolEntity filter) {
+    public List<UsuarioRolEntity> findAllFilteredBy(UsuarioRolEntity filter) {
         SpecificationCiadti<UsuarioRolEntity> specification = new SpecificationCiadti<UsuarioRolEntity>(filter);
         return usuarioRolDAO.findAll(specification);
     }

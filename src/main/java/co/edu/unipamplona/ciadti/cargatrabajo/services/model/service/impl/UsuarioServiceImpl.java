@@ -12,6 +12,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioEntit
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioService;
 
 import java.util.Collection;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -66,7 +67,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<UsuarioEntity> findAllFilteredBy(UsuarioEntity filter) {
+    public List<UsuarioEntity> findAllFilteredBy(UsuarioEntity filter) {
         SpecificationCiadti<UsuarioEntity> specification = new SpecificationCiadti<UsuarioEntity>(filter);
         return usuarioDAO.findAll(specification);
     }

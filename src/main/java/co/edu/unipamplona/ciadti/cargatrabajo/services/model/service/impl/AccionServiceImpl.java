@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -67,7 +68,7 @@ public class AccionServiceImpl implements AccionService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<AccionEntity> findAllFilteredBy(AccionEntity filter) {
+    public List<AccionEntity> findAllFilteredBy(AccionEntity filter) {
         OrderBy orderBy = new OrderBy("nombre", true);
         Specification<AccionEntity> specification = new SpecificationCiadti<>(filter, orderBy);
         return accionDAO.findAll(specification);

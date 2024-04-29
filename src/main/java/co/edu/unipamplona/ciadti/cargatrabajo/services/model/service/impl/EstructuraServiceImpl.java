@@ -74,7 +74,7 @@ public class EstructuraServiceImpl implements EstructuraService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<EstructuraEntity> findAllFilteredBy(EstructuraEntity filter) {
+    public List<EstructuraEntity> findAllFilteredBy(EstructuraEntity filter) {
         Specification<EstructuraEntity> specification = new SpecificationCiadti<>(filter);
         List<EstructuraEntity> results = estructuraDAO.findAll(specification);
         results = this.filter(results);

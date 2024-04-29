@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +68,7 @@ public class ActividadServiceImpl implements ActividadService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<ActividadEntity> findAllFilteredBy(ActividadEntity filter) {
+    public List<ActividadEntity> findAllFilteredBy(ActividadEntity filter) {
         SpecificationCiadti<ActividadEntity> specification = new SpecificationCiadti<ActividadEntity>(filter);
         return actividadDAO.findAll(specification);
     }

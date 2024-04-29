@@ -2,14 +2,17 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioService;
@@ -17,7 +20,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.Co
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,8 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
     private final ParameterConverter parameterConverter;
     private final ConfigurationMediator configurationMediator;
+    private final PasswordEncoder passwordEncoder;
+    private final CipherService cipherService;
 
     @Operation(
         summary = "Obtener o listar las usuarios",
@@ -50,7 +54,9 @@ public class UsuarioController {
             "Args: usuarioEntity: objeto con información del usuario. " +
             "Returns: Objeto con la información asociada.")
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody UsuarioEntity usuarioEntity){
+    public ResponseEntity<?> create(@Valid @RequestBody UsuarioEntity usuarioEntity) throws Exception{
+        String password = cipherService.decryptCredential(usuarioEntity.getPassword());
+        usuarioEntity.setPassword(passwordEncoder.encode(password));
         return new ResponseEntity<>(configurationMediator.saveUser(usuarioEntity), HttpStatus.CREATED);
     }
 
@@ -61,8 +67,13 @@ public class UsuarioController {
             "id: identificador del usuario. " + 
             "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody UsuarioEntity usuarioEntity, @PathVariable Long id){
+    public ResponseEntity<?> update(@Valid @RequestBody UsuarioEntity usuarioEntity, @PathVariable Long id) throws Exception{
         usuarioEntity.setId(id);
+        UsuarioEntity usuarioEntityBD = usuarioService.findById(id);
+        usuarioEntityBD.setRoles(usuarioEntity.getRoles());
+        usuarioEntityBD.setPassword(usuarioEntity.getPassword() != null ? usuarioEntity.getPassword() : usuarioEntityBD.getPassword());
+        usuarioEntityBD.setActivo(usuarioEntity.getActivo());
+        usuarioEntityBD.setTokenPassword(usuarioEntity.getTokenPassword());
         return new ResponseEntity<>(configurationMediator.saveUser(usuarioEntity), HttpStatus.CREATED);
     }
 

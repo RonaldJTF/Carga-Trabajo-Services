@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,7 @@ public class TipoDocumentoImpl implements TipoDocumentoService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<TipoDocumentoEntity> findAllFilteredBy(TipoDocumentoEntity filter) {
+    public List<TipoDocumentoEntity> findAllFilteredBy(TipoDocumentoEntity filter) {
         SpecificationCiadti<TipoDocumentoEntity> specification = new SpecificationCiadti<>(filter);
         return tipoDocumentoDAO.findAll(specification);
     }    

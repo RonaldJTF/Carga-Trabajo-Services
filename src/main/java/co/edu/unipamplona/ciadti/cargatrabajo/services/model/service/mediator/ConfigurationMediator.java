@@ -46,7 +46,7 @@ public class ConfigurationMediator {
                 deleteStructure(e.getId());
             }
         }
-        estructuraService.deleteByProcedure(id, "RegisterContext.getRegistradorDTO().getJsonAsString()");
+        estructuraService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
 
     /**
@@ -77,7 +77,7 @@ public class ConfigurationMediator {
             }
         }
         if (!deletedStructures.contains(id)){
-            estructuraService.deleteByProcedure(id, "RegisterContext.getRegistradorDTO().getJsonAsString()");
+            estructuraService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
             deletedStructures.add(id);
         }
     }
@@ -128,13 +128,18 @@ public class ConfigurationMediator {
      * rol que ya existía en la base de datos, entonces se procede a eliminarlo.
      * @param usuarioEntity: Objeto con información del usuario a crear o actualizar
      * @return
+     * @throws CloneNotSupportedException 
      */
-    public UsuarioEntity saveUser(UsuarioEntity usuarioEntity) {
-        usuarioEntity = usuarioService.save(usuarioEntity);
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public UsuarioEntity saveUser(UsuarioEntity usuarioEntity) throws CloneNotSupportedException {
         UsuarioRolEntity usuarioRolEntity;
         List<UsuarioRolEntity> usuarioRolesToDelete = new ArrayList<>();
         List<UsuarioRolEntity> usuarioRolesBD = usuarioRolService.findAllByIdUsuario(usuarioEntity.getId());
 
+        UsuarioEntity usuarioEntityToSave =  (UsuarioEntity) usuarioEntity.clone();
+        usuarioEntityToSave.setRoles(null);
+        usuarioService.save(usuarioEntityToSave);
+        usuarioEntity.setId(usuarioEntityToSave.getId());
         if (usuarioEntity.getRoles() != null){
             for (RolEntity rol : usuarioEntity.getRoles()) {
                 usuarioRolEntity =  UsuarioRolEntity.builder()

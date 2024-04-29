@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +64,7 @@ public class RolServiceImpl implements RolService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<RolEntity> findAllFilteredBy(RolEntity filter) {
+    public List<RolEntity> findAllFilteredBy(RolEntity filter) {
         SpecificationCiadti<RolEntity> specification = new SpecificationCiadti<>(filter);
         return rolDAO.findAll(specification);
     }

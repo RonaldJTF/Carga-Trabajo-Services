@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +63,7 @@ public class NivelServiceImpl implements NivelService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<NivelEntity> findAllFilteredBy(NivelEntity filter) {
+    public List<NivelEntity> findAllFilteredBy(NivelEntity filter) {
         SpecificationCiadti<NivelEntity> specification = new SpecificationCiadti<NivelEntity>(filter);
         return nivelDAO.findAll(specification);
     }

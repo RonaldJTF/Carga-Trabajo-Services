@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +66,7 @@ public class TipologiaServiceImpl implements TipologiaService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<TipologiaEntity> findAllFilteredBy(TipologiaEntity filter) {
+    public List<TipologiaEntity> findAllFilteredBy(TipologiaEntity filter) {
         OrderBy orderBy = new OrderBy("nombre", true);
         SpecificationCiadti<TipologiaEntity> specificationCiadti = new SpecificationCiadti<TipologiaEntity>(filter, orderBy);
        return tipologiaDAO.findAll(specificationCiadti);
