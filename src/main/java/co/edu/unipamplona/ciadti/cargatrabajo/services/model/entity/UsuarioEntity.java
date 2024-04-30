@@ -44,7 +44,7 @@ public class UsuarioEntity implements Serializable, Cloneable, UserDetails {
     @Column(name = "usua_password", nullable = false, length = 255)
     private String password;
     
-    @Column(name = "usua_activo", nullable = false, length = -1)
+    @Column(name = "usua_activo", nullable = false)
     private String activo;
 
     @Column(name = "usua_tokenpassword")

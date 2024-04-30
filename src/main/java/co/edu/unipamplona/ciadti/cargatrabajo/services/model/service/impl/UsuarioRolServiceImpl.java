@@ -74,4 +74,10 @@ public class UsuarioRolServiceImpl implements UsuarioRolService{
         return usuarioRolDAO.findAllByIdUsuario(idUsuario);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public UsuarioRolEntity findByIdUsuarioAndIdRol(Long idUsuario, Long idRol) {
+        return usuarioRolDAO.findByIdUsuarioAndIdRol(idUsuario, idRol);
+    }
+
 }

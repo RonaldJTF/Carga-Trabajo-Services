@@ -28,4 +28,6 @@ public interface UsuarioRolDAO extends JpaRepository<UsuarioRolEntity, Long>, Jp
 
 
     List<UsuarioRolEntity> findAllByIdUsuario(Long idUsuario);
+
+    UsuarioRolEntity findByIdUsuarioAndIdRol(Long idUsuario, Long idRol);
 }

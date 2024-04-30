@@ -1,5 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
+import java.util.ArrayList;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,10 +56,10 @@ public class UsuarioController {
             "Args: usuarioEntity: objeto con información del usuario. " +
             "Returns: Objeto con la información asociada.")
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody UsuarioEntity usuarioEntity) throws Exception{
+    public ResponseEntity<?> create(@Valid @RequestBody UsuarioEntity usuarioEntity) throws CloneNotSupportedException{
         String password = cipherService.decryptCredential(usuarioEntity.getPassword());
         usuarioEntity.setPassword(passwordEncoder.encode(password));
-        return new ResponseEntity<>(configurationMediator.saveUser(usuarioEntity), HttpStatus.CREATED);
+        return new ResponseEntity<>(configurationMediator.createUser(usuarioEntity), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -67,14 +69,13 @@ public class UsuarioController {
             "id: identificador del usuario. " + 
             "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody UsuarioEntity usuarioEntity, @PathVariable Long id) throws Exception{
+    public ResponseEntity<?> update(@Valid @RequestBody UsuarioEntity usuarioEntity, @PathVariable Long id) throws CiadtiException, CloneNotSupportedException{
         usuarioEntity.setId(id);
         UsuarioEntity usuarioEntityBD = usuarioService.findById(id);
-        usuarioEntityBD.setRoles(usuarioEntity.getRoles());
         usuarioEntityBD.setPassword(usuarioEntity.getPassword() != null ? usuarioEntity.getPassword() : usuarioEntityBD.getPassword());
         usuarioEntityBD.setActivo(usuarioEntity.getActivo());
         usuarioEntityBD.setTokenPassword(usuarioEntity.getTokenPassword());
-        return new ResponseEntity<>(configurationMediator.saveUser(usuarioEntity), HttpStatus.CREATED);
+        return new ResponseEntity<>(configurationMediator.updateUser(usuarioEntityBD, usuarioEntity.getRoles() != null ? usuarioEntity.getRoles() : new ArrayList<>()), HttpStatus.CREATED);
     }
 
     @Operation(

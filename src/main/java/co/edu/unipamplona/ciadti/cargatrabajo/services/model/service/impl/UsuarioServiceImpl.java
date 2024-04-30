@@ -1,6 +1,8 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import org.hibernate.Session;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,8 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.UsuarioDAO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,13 +21,17 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
-
+    @PersistenceContext
+    private EntityManager entityManager;
     private final UsuarioDAO usuarioDAO;
 
     @Override
     @Transactional(readOnly = true)
     public UsuarioEntity findById(Long id) throws CiadtiException{
-        return usuarioDAO.findById(id).orElseThrow(() -> new CiadtiException("Usuario no encontrado para el id :: " + id, 404));
+        UsuarioEntity entity = usuarioDAO.findById(id).orElseThrow(() -> new CiadtiException("Usuario no encontrado para el id :: " + id, 404));
+        Session session = entityManager.unwrap(Session.class);
+        session.evict(entity);
+        return entity;
     }
 
     @Override

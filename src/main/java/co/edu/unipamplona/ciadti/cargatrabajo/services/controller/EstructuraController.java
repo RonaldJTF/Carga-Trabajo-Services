@@ -186,16 +186,24 @@ public class EstructuraController {
     }
 
     @GetMapping("/report/pdf")
-    public ResponseEntity<?> downloadReportPDF() throws CiadtiException  {
-        String filePath = "reports\\Simple_Blue.jasper";
+    public ResponseEntity<?> downloadReportPDF() throws CiadtiException, JRException  {
+        String filePath = "reports\\structures\\Structures.jrxml";
+        String filePathDependency = "reports\\structures\\Dependency.jrxml";
         Map<String, Object> parameters = new HashMap<String, Object>();
-        List<EstructuraEntity> lista = estructuraService.findAllFilteredBy(EstructuraEntity.builder().descripcion("a").build());
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(lista);
-        //parameters.put("autor", "RONALD Torres");
-        //parameters.put("total", lista.size());
-        //parameters.put("ds", dataSource);
 
-        byte[] fileBytes = report.converterToPDF(parameters, dataSource, filePath);
+        Map<String, Object> dependencyParameters = new HashMap<String, Object>(); 
+    
+        List<EstructuraEntity> structures = estructuraService.findAllFilteredBy(EstructuraEntity.builder().descripcion("a").build());
+        JRBeanCollectionDataSource structureDataSource = new JRBeanCollectionDataSource(structures);
+        parameters.put("structureDataset", structureDataSource);
+
+        dependencyParameters.put("dependencyDataset",  new JRBeanCollectionDataSource(structures));//DataSource de lista resumen
+        JasperReport dependencyReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(filePathDependency));
+
+        parameters.put("dependencyReport", dependencyReport);
+        parameters.put("dependencyParameter", dependencyParameters);
+
+        byte[] fileBytes = report.converterToPDF(parameters, null, filePath);
 
         if (fileBytes != null) {
             HttpHeaders headers = new HttpHeaders();
@@ -209,4 +217,6 @@ public class EstructuraController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -123,20 +124,15 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Crea o actualiza la información de un usuario junto a sus roles.
-     * Nota: Si en la lista de los nuevos roles que trae el objeto 'usuarioEntity' no se encuentra un 
-     * rol que ya existía en la base de datos, entonces se procede a eliminarlo.
+     * Crea la información de un usuario junto a sus roles.
      * @param usuarioEntity: Objeto con información del usuario a crear o actualizar
      * @return
      * @throws CloneNotSupportedException 
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public UsuarioEntity saveUser(UsuarioEntity usuarioEntity) throws CloneNotSupportedException {
+    public UsuarioEntity createUser(UsuarioEntity usuarioEntity) throws CloneNotSupportedException {
         UsuarioRolEntity usuarioRolEntity;
-        List<UsuarioRolEntity> usuarioRolesToDelete = new ArrayList<>();
-        List<UsuarioRolEntity> usuarioRolesBD = usuarioRolService.findAllByIdUsuario(usuarioEntity.getId());
-
-        UsuarioEntity usuarioEntityToSave =  (UsuarioEntity) usuarioEntity.clone();
+        UsuarioEntity usuarioEntityToSave = (UsuarioEntity) usuarioEntity.clone();
         usuarioEntityToSave.setRoles(null);
         usuarioService.save(usuarioEntityToSave);
         usuarioEntity.setId(usuarioEntityToSave.getId());
@@ -148,17 +144,46 @@ public class ConfigurationMediator {
                                     .build();
                 usuarioRolService.save(usuarioRolEntity);
             }    
-            for (UsuarioRolEntity urBD : usuarioRolesBD) {
-                if (usuarioEntity.getRoles().stream().noneMatch(rol -> Objects.equals(rol.getId(), urBD.getIdRol()))){
-                    usuarioRolesToDelete.add(urBD);
-                }
-            }
-        }else{usuarioRolesToDelete = usuarioRolesBD;}
+        }
+        return usuarioEntity;
+    }
 
-        usuarioRolesToDelete.forEach( e -> {
-            usuarioRolService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
-        });
-        
+    /**
+     * Actualiza la información de un usuario junto a sus roles.
+     * Nota: Si en la lista de los nuevos roles no se encuentra un 
+     * rol que ya existía en la base de datos, entonces se procede a eliminarlo.
+     * @param usuarioEntity: Objeto con información del usuario a crear o actualizar
+     * @return
+     * @throws CloneNotSupportedException 
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public UsuarioEntity updateUser(UsuarioEntity usuarioEntity, List<RolEntity> newRoles) throws CloneNotSupportedException {
+        UsuarioRolEntity usuarioRolEntity;
+        List<RolEntity> oldRoles = usuarioEntity.getRoles();
+        List<RolEntity> rolesToDelete = oldRoles.stream()
+                .filter(e -> !newRoles.stream().map(RolEntity::getId).collect(Collectors.toList()).contains(e.getId()))
+                .collect(Collectors.toList());
+        List<RolEntity> rolesToInsert = newRoles.stream()
+                .filter(e -> !oldRoles.stream().map(RolEntity::getId).collect(Collectors.toList()).contains(e.getId()))
+                .collect(Collectors.toList());
+
+        UsuarioEntity usuarioEntityToSave = (UsuarioEntity) usuarioEntity.clone();
+        usuarioEntityToSave.setRoles(null);
+        usuarioService.save(usuarioEntityToSave);
+
+        for (RolEntity e : rolesToInsert){
+            usuarioRolEntity =  UsuarioRolEntity.builder()
+                                    .idRol(e.getId())
+                                    .idUsuario(usuarioEntity.getId())
+                                    .build();
+            usuarioRolService.save(usuarioRolEntity);
+        }
+
+        for (RolEntity e : rolesToDelete){
+            usuarioRolEntity =  usuarioRolService.findByIdUsuarioAndIdRol(usuarioEntity.getId(), e.getId());
+            usuarioRolService.deleteByProcedure(usuarioRolEntity.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+        usuarioEntity.setRoles(newRoles);
         return usuarioEntity;
     }
 

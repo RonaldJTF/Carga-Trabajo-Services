@@ -1,5 +1,6 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,7 +31,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "USUARIOROL", schema = "FORTALECIMIENTO")
-public class UsuarioRolEntity {
+public class UsuarioRolEntity implements Serializable, Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usro_id", nullable = false)
@@ -66,5 +67,10 @@ public class UsuarioRolEntity {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
         this.registradoPor = registradorDTO.getJsonAsString();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

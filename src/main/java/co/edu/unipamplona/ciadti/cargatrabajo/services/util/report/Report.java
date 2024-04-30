@@ -13,6 +13,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -36,18 +37,18 @@ public class Report {
         ByteArrayOutputStream outputStream;
         byte[] fileBytes = null;
         try {
-            //jasperReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(filePath));
-            Resource resource = resourceLoader.getResource("classpath:" + filePath);
-            File file = resource.getFile();
-            jasperReport = (JasperReport) JRLoader.loadObject(file);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+            jasperReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(filePath));
+            //Resource resource = resourceLoader.getResource("classpath:" + filePath);
+            //File file = resource.getFile();
+            //jasperReport = (JasperReport) JRLoader.loadObject(file);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource == null ? new JREmptyDataSource() : dataSource);
             exporter = new JRPdfExporter();
             exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
             outputStream = new ByteArrayOutputStream();
             exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
             exporter.exportReport();
             fileBytes = outputStream.toByteArray();
-        } catch (JRException | IOException e) {
+        } catch (JRException e) {
             Trace.logError(this.getClass().getName(), Methods.getCurrentMethodName(this.getClass()), e);
             throw new CiadtiException("Ha ocurrido un error al generar el reporte", 500);
         }

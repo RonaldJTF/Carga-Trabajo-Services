@@ -6,4 +6,5 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioRolEn
 
 public interface UsuarioRolService extends CommonService<UsuarioRolEntity>{
     List<UsuarioRolEntity> findAllByIdUsuario(Long idUsuario);
+    UsuarioRolEntity findByIdUsuarioAndIdRol(Long idUsuario, Long idRol);
 }
