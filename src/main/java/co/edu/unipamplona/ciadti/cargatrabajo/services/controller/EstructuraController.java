@@ -196,7 +196,7 @@ public class EstructuraController {
         List<EstructuraEntity> structures = estructuraService.findAllFilteredBy(EstructuraEntity.builder().descripcion("a").build());
         JRBeanCollectionDataSource structureDataSource = new JRBeanCollectionDataSource(structures);
         parameters.put("structureDataset", structureDataSource);
-
+        
         dependencyParameters.put("dependencyDataset",  new JRBeanCollectionDataSource(structures));//DataSource de lista resumen
         JasperReport dependencyReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(filePathDependency));
 

@@ -94,6 +94,7 @@ public class UsuarioEntity implements Serializable, Cloneable, UserDetails {
     private List<RolEntity> roles;
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<String> roles = this.roles.stream().map(RolEntity :: getCodigo).toList();
         List<GrantedAuthority> authorities = roles
@@ -113,21 +114,25 @@ public class UsuarioEntity implements Serializable, Cloneable, UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }
