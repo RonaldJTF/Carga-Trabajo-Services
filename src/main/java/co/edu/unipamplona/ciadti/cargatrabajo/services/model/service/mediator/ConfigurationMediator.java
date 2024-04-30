@@ -115,8 +115,11 @@ public class ConfigurationMediator {
      * Elimina una Persona junto a su objeto FotoPersona si tiene relacionada una foto de perfil
      * @param id
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deletePerson(Long id){
         FotoPersonaEntity fotoPersona = fotoPersonaService.findByIdPersona(id);
+        UsuarioEntity usuarioEntity = usuarioService.findByIdPersona(id);
+        deleteUser(usuarioEntity.getId());
         if (fotoPersona != null){
             fotoPersonaService.deleteByProcedure(fotoPersona.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         }
@@ -191,6 +194,7 @@ public class ConfigurationMediator {
      * Elimina un usuario junto a su relación con los roles que tiene.
      * @param id: Identificador del usuario
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteUser(Long id) {
         List<UsuarioRolEntity> usuarioRoles = usuarioRolService.findAllByIdUsuario(id);
         usuarioRoles.forEach( e -> {

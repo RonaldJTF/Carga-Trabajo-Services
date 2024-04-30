@@ -85,4 +85,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     public UsuarioEntity findByUsername(String username) {
         return usuarioDAO.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Nombre de Usuario " + username + " no encontrado."));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UsuarioEntity findByIdPersona(Long idPersona) {
+        return usuarioDAO.findByIdPersona(idPersona);
+    }
 }

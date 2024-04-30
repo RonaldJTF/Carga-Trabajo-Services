@@ -28,4 +28,6 @@ public interface UsuarioDAO extends JpaRepository<UsuarioEntity, Long>, JpaSpeci
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_USUARIO(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    UsuarioEntity findByIdPersona(Long idPersona);
 }

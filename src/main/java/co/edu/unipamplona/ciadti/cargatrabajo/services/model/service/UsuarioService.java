@@ -4,4 +4,5 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioEntit
 
 public interface UsuarioService extends CommonService<UsuarioEntity> {
     UsuarioEntity findByUsername (String userName);
+    UsuarioEntity findByIdPersona(Long idPersona);
 }
