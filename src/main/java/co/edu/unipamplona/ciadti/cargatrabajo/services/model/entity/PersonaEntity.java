@@ -25,7 +25,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "PERSONA", schema = "FORTALECIMIENTO")
-public class PersonaEntity implements Serializable {
+public class PersonaEntity implements Serializable, Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pers_id", nullable = false)
@@ -109,5 +109,10 @@ public class PersonaEntity implements Serializable {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
         this.registradoPor = registradorDTO.getJsonAsString();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

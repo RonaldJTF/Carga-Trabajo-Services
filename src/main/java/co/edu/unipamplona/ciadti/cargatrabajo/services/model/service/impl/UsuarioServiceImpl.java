@@ -36,7 +36,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<UsuarioEntity> findAll() {
+    public List<UsuarioEntity> findAll() {
         return usuarioDAO.findAll();
     }
 
@@ -60,7 +60,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<UsuarioEntity> save(Collection<UsuarioEntity> entities) {
+    public List<UsuarioEntity> save(Collection<UsuarioEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 

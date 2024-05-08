@@ -7,9 +7,9 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException
 
 public interface CommonService<T> {
     T findById(Long id) throws CiadtiException;
-    Iterable<T> findAll();
+    List<T> findAll();
     T save (T entity);
-    Iterable<T> save(Collection<T> entities);
+    List<T> save(Collection<T> entities);
     void deleteByProcedure(Long id, String register);
     List<T> findAllFilteredBy(T filter);
 }

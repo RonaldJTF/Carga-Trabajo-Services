@@ -72,7 +72,6 @@ public class UsuarioController {
     public ResponseEntity<?> update(@Valid @RequestBody UsuarioEntity usuarioEntity, @PathVariable Long id) throws CiadtiException, CloneNotSupportedException{
         usuarioEntity.setId(id);
         UsuarioEntity usuarioEntityBD = usuarioService.findById(id);
-        usuarioEntityBD.setPassword(usuarioEntity.getPassword() != null ? usuarioEntity.getPassword() : usuarioEntityBD.getPassword());
         usuarioEntityBD.setActivo(usuarioEntity.getActivo());
         usuarioEntityBD.setTokenPassword(usuarioEntity.getTokenPassword());
         return new ResponseEntity<>(configurationMediator.updateUser(usuarioEntityBD, usuarioEntity.getRoles() != null ? usuarioEntity.getRoles() : new ArrayList<>()), HttpStatus.CREATED);

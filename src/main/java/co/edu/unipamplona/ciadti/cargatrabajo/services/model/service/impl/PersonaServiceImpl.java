@@ -29,7 +29,7 @@ public class PersonaServiceImpl implements PersonaService {
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<PersonaEntity> findAll() {
+    public List<PersonaEntity> findAll() {
         return personaDAO.findAll();
     }
 
@@ -58,7 +58,7 @@ public class PersonaServiceImpl implements PersonaService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<PersonaEntity> save(Collection<PersonaEntity> entities) {
+    public List<PersonaEntity> save(Collection<PersonaEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 

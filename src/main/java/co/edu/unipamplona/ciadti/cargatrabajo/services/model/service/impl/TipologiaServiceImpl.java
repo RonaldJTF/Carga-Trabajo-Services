@@ -28,7 +28,7 @@ public class TipologiaServiceImpl implements TipologiaService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<TipologiaEntity> findAll() {
+    public List<TipologiaEntity> findAll() {
         return tipologiaDAO.findAll();
     }
 
@@ -51,7 +51,7 @@ public class TipologiaServiceImpl implements TipologiaService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<TipologiaEntity> save(Collection<TipologiaEntity> entities) {
+    public List<TipologiaEntity> save(Collection<TipologiaEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
@@ -76,5 +76,11 @@ public class TipologiaServiceImpl implements TipologiaService{
     @Transactional(readOnly = true)
     public TipologiaEntity findFirstTipology() {
         return tipologiaDAO.findFirstTipology();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TipologiaEntity> findAllManagement() {
+        return tipologiaDAO.findAllManagement();
     }
 }

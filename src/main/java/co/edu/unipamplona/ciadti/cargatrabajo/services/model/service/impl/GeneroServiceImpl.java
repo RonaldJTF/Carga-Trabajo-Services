@@ -28,7 +28,7 @@ public class GeneroServiceImpl implements GeneroService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<GeneroEntity> findAll() {
+    public List<GeneroEntity> findAll() {
         return generoDAO.findAll();
     }
 
@@ -49,7 +49,7 @@ public class GeneroServiceImpl implements GeneroService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<GeneroEntity> save(Collection<GeneroEntity> entities) {
+    public List<GeneroEntity> save(Collection<GeneroEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 

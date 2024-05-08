@@ -28,7 +28,7 @@ public class TipoDocumentoImpl implements TipoDocumentoService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<TipoDocumentoEntity> findAll() {
+    public List<TipoDocumentoEntity> findAll() {
         return tipoDocumentoDAO.findAll();
     }
 
@@ -50,7 +50,7 @@ public class TipoDocumentoImpl implements TipoDocumentoService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<TipoDocumentoEntity> save(Collection<TipoDocumentoEntity> entities) {
+    public List<TipoDocumentoEntity> save(Collection<TipoDocumentoEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 

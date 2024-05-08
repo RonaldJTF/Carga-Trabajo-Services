@@ -27,7 +27,7 @@ public class FotoPersonaServiceImpl implements FotoPersonaService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<FotoPersonaEntity> findAll() {
+    public List<FotoPersonaEntity> findAll() {
         return fotoPersonaDAO.findAll();
     }
 
@@ -50,7 +50,7 @@ public class FotoPersonaServiceImpl implements FotoPersonaService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<FotoPersonaEntity> save(Collection<FotoPersonaEntity> entities) {
+    public List<FotoPersonaEntity> save(Collection<FotoPersonaEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 

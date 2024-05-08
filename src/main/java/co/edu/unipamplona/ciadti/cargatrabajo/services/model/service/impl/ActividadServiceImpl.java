@@ -27,7 +27,7 @@ public class ActividadServiceImpl implements ActividadService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<ActividadEntity> findAll() {
+    public List<ActividadEntity> findAll() {
         return actividadDAO.findAll();
     }
 
@@ -53,7 +53,7 @@ public class ActividadServiceImpl implements ActividadService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<ActividadEntity> save(Collection<ActividadEntity> entities) {
+    public List<ActividadEntity> save(Collection<ActividadEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 

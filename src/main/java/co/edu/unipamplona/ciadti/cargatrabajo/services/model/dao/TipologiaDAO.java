@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -32,4 +33,8 @@ public interface TipologiaDAO extends JpaRepository<TipologiaEntity, Long>, JpaS
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_TIPOLOGIA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    @Query(value =  "select distinct(t) from TipologiaEntity t " +
+                    "inner join EstructuraEntity e on (t.id = e.idTipologia) order by t.id desc")
+    List<TipologiaEntity> findAllManagement();
 }

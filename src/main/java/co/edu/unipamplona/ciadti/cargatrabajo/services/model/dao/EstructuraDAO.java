@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -28,4 +29,7 @@ public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, Jp
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_ESTRUCTURA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    @Query(value = "select e from EstructuraEntity e where e.id in :structureIds")
+    List<EstructuraEntity> findAllFilteredByIds(@Param("structureIds") List<Long> structureIds);
 }   

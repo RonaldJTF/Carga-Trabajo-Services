@@ -27,7 +27,7 @@ public class NivelServiceImpl implements NivelService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<NivelEntity> findAll() {
+    public List<NivelEntity> findAll() {
         return nivelDAO.findAll();
     }
 
@@ -48,7 +48,7 @@ public class NivelServiceImpl implements NivelService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<NivelEntity> save(Collection<NivelEntity> entities) {
+    public List<NivelEntity> save(Collection<NivelEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 

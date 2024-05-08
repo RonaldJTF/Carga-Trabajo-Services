@@ -27,7 +27,7 @@ public class RolServiceImpl implements RolService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<RolEntity> findAll() {
+    public List<RolEntity> findAll() {
         return rolDAO.findAll();
     }
 
@@ -49,7 +49,7 @@ public class RolServiceImpl implements RolService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<RolEntity> save(Collection<RolEntity> entities) {
+    public List<RolEntity> save(Collection<RolEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 

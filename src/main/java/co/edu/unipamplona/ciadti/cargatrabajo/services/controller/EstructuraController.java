@@ -1,13 +1,22 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.compress.compressors.lz77support.LZ77Compressor.Block;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,33 +29,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.AccionEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PersonaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ActividadService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Image;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportExcel;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportPDF;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.Report;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jasperReport.ReportJR;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,7 +67,9 @@ public class EstructuraController {
     private final ActividadService actividadService;
     private final ConfigurationMediator configurationMediator;
     private final ParameterConverter parameterConverter;
-    private final Report report;
+    private final StructureReportExcel structureReportExcel;
+    private final StructureReportPDF structureReportPDF;
+
     @Operation(
         summary = "Obtener o listar las estructuras (Dependencia, Procesos, Procedimientos, Actividad, etc.)",
         description = "Obtiene o lista las estructuras de acuerdo a ciertas variables o parámetros. " +
@@ -185,38 +189,47 @@ public class EstructuraController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/report/pdf")
-    public ResponseEntity<?> downloadReportPDF() throws CiadtiException, JRException  {
-        String filePath = "reports\\structures\\Structures.jrxml";
-        String filePathDependency = "reports\\structures\\Dependency.jrxml";
-        Map<String, Object> parameters = new HashMap<String, Object>();
+    @GetMapping("/report")
+    public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type,
+                                                 @RequestParam(name = "structureIds", required = false) String structureIdsString) throws CiadtiException, JRException{   
+        structureIdsString = structureIdsString.replaceAll("\\[|\\]|\\s", "");
+        List<Long> structureIds = new ArrayList<>();
+        if (!structureIdsString.isEmpty()) {
+            String[] parts = structureIdsString.split(",");
+            for (String part : parts) {
+                structureIds.add(Long.parseLong(part));
+            }
+        }        
+        byte[] fileBytes = null;
+        String extension = null;
+        String mediaType = null;
 
-        Map<String, Object> dependencyParameters = new HashMap<String, Object>(); 
-    
-        List<EstructuraEntity> structures = estructuraService.findAllFilteredBy(EstructuraEntity.builder().descripcion("a").build());
-        JRBeanCollectionDataSource structureDataSource = new JRBeanCollectionDataSource(structures);
-        parameters.put("structureDataset", structureDataSource);
-        
-        dependencyParameters.put("dependencyDataset",  new JRBeanCollectionDataSource(structures));//DataSource de lista resumen
-        JasperReport dependencyReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(filePathDependency));
+        if(type == null || "EXCEL".equals(type.toUpperCase())){
+            extension = "xlsx";
+            mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            fileBytes = structureReportExcel.generate(structureIds);
+        }else if ("PDF".equals(type.toUpperCase())){
+            extension = "pdf";
+            mediaType = "application/pdf";
+            fileBytes = structureReportPDF.generate(structureIds);
+        }
 
-        parameters.put("dependencyReport", dependencyReport);
-        parameters.put("dependencyParameter", dependencyParameters);
-
-        byte[] fileBytes = report.converterToPDF(parameters, null, filePath);
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+        String fileName = String.format("reporte_%s.%s", currentDateTime, extension);
 
         if (fileBytes != null) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "reporte.pdf");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
             headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition, Content-Type");
             return ResponseEntity.ok()
                     .headers(headers)
-                    .contentType(MediaType.parseMediaType("application/pdf"))
+                    .contentType(MediaType.parseMediaType(mediaType))
                     .body(fileBytes);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-
+    
+    
 }

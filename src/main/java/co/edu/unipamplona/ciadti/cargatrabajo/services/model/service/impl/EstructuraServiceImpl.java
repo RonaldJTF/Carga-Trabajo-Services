@@ -33,7 +33,7 @@ public class EstructuraServiceImpl implements EstructuraService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<EstructuraEntity> findAll() {
+    public List<EstructuraEntity> findAll() {
         return estructuraDAO.findAll();
     }
 
@@ -59,7 +59,7 @@ public class EstructuraServiceImpl implements EstructuraService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<EstructuraEntity> save(Collection<EstructuraEntity> entities) {
+    public List<EstructuraEntity> save(Collection<EstructuraEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
@@ -77,6 +77,16 @@ public class EstructuraServiceImpl implements EstructuraService{
     public List<EstructuraEntity> findAllFilteredBy(EstructuraEntity filter) {
         Specification<EstructuraEntity> specification = new SpecificationCiadti<>(filter);
         List<EstructuraEntity> results = estructuraDAO.findAll(specification);
+        results = this.filter(results);
+        this.orderStructures(results);
+        return results;
+    }
+    
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EstructuraEntity> findAllFilteredByIds(List<Long> structureIds) {
+        List<EstructuraEntity> results = estructuraDAO.findAllFilteredByIds(structureIds);
         results = this.filter(results);
         this.orderStructures(results);
         return results;

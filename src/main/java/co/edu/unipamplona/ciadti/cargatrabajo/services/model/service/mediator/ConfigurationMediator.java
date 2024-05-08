@@ -3,7 +3,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -89,7 +88,9 @@ public class ConfigurationMediator {
      * @param photoFile
      * @return PersonaEntity
      * @throws IOException
+     * @throws CloneNotSupportedException 
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public PersonaEntity savePerson(PersonaEntity personaEntity, MultipartFile photoFile) throws IOException {
         FotoPersonaEntity fotoPersonaEntity;
         personaEntity = personaService.save(personaEntity);

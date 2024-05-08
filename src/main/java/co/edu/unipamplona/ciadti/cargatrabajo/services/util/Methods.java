@@ -12,6 +12,8 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.config.mimeTypes.MimeType
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Time;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -21,6 +23,10 @@ import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 public class Methods {
     public Methods() {
@@ -336,5 +342,29 @@ public class Methods {
             objeto = ((List<?>) objeto).get(0);
         }
         return new ResponseEntity<>(objeto, HttpStatus.OK);
+    }
+
+    public static int[] getImageDimensions(byte[] imageBytes) {
+        try {
+            ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
+            ImageInputStream iis = ImageIO.createImageInputStream(bis);
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+            if (readers.hasNext()) {
+                ImageReader reader = readers.next();
+                try {
+                    reader.setInput(iis);
+                    int width = reader.getWidth(0); 
+                    int height = reader.getHeight(0);
+                    return new int[]{width, height};
+                } finally {
+                    reader.dispose();
+                    iis.close();
+                    bis.close();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new int[]{100, 100}; 
     }
 }

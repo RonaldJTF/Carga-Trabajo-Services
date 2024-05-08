@@ -29,7 +29,7 @@ public class AccionServiceImpl implements AccionService{
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<AccionEntity> findAll() {
+    public List<AccionEntity> findAll() {
         return accionDAO.findAll();
     }
 
@@ -53,7 +53,7 @@ public class AccionServiceImpl implements AccionService{
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public Iterable<AccionEntity> save(Collection<AccionEntity> entities) {
+    public List<AccionEntity> save(Collection<AccionEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
