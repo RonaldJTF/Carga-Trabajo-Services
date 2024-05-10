@@ -49,6 +49,10 @@ public class ConfigurationMediator {
                 deleteStructure(e.getId());
             }
         }
+        ActividadEntity activityToDelete = actividadService.findByIdEstructura(id);
+        if (activityToDelete != null){
+            actividadService.deleteByProcedure(activityToDelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
         estructuraService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
 
