@@ -11,12 +11,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.FotoPersonaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PersonaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.RolEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioRolEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ActividadService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.FotoPersonaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PersonaService;
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class ConfigurationMediator {
     private final EstructuraService estructuraService;
+    private final ActividadService actividadService;
     private final PersonaService personaService;
     private final FotoPersonaService fotoPersonaService;
     private final UsuarioService usuarioService;
@@ -69,6 +72,7 @@ public class ConfigurationMediator {
      *                           de eliminar una estructura que ha sido eliminada en el mismo proceso
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     private void deleteStructure(Long id, List<Long> deletedStructures ) throws CiadtiException{
         EstructuraEntity structure = estructuraService.findById(id);
         if (structure.getSubEstructuras() != null){
@@ -77,6 +81,10 @@ public class ConfigurationMediator {
             }
         }
         if (!deletedStructures.contains(id)){
+            ActividadEntity activityToDelete = actividadService.findByIdEstructura(id);
+            if (activityToDelete != null){
+                actividadService.deleteByProcedure(activityToDelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+            }
             estructuraService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
             deletedStructures.add(id);
         }

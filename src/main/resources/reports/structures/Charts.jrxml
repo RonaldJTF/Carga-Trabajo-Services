@@ -37,18 +37,20 @@
 		<field name="nombre" class="java.lang.String"/>
 		<field name="valor" class="java.lang.Double"/>
 		<field name="nivel" class="java.lang.String"/>
+		<field name="horasPorMes" class="java.lang.Double"/>
 	</subDataset>
 	<parameter name="chartBarHoursDataset" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<parameter name="chartPieDataset" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<parameter name="chartBarPeopleDataset" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="logo" class="java.io.InputStream"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
 	<detail>
-		<band height="460">
+		<band height="483">
 			<pieChart>
 				<chart evaluationTime="Report">
-					<reportElement x="-12" y="20" width="820" height="119" uuid="4706a67d-41c8-492d-94bd-2779ae879912">
+					<reportElement x="-11" y="80" width="821" height="119" uuid="d4fb95e3-01e1-439c-96fe-f6315ef24783">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<chartTitle/>
@@ -57,13 +59,13 @@
 				</chart>
 				<pieDataset>
 					<dataset>
-						<datasetRun subDataset="ChartDataset" uuid="de5b2b9e-107d-4b32-ae6f-2e36dcfe44f0">
+						<datasetRun subDataset="ChartDataset" uuid="c4fa2edf-1fd0-4332-a05c-aeb7a751bee3">
 							<dataSourceExpression><![CDATA[$P{chartPieDataset}]]></dataSourceExpression>
 						</datasetRun>
 					</dataset>
 					<keyExpression><![CDATA[$F{nombre}]]></keyExpression>
 					<valueExpression><![CDATA[$F{valor}]]></valueExpression>
-					<labelExpression><![CDATA[$F{valor} + "h" + " / " + Math.round(($F{valor} /167)*10.0)/10.0 + "p"]]></labelExpression>
+					<labelExpression><![CDATA[$F{valor} + "h" + " / " + Math.round(($F{valor} /$F{horasPorMes})*10.0)/10.0 + "p"]]></labelExpression>
 				</pieDataset>
 				<piePlot>
 					<plot backgroundAlpha="1.0" foregroundAlpha="1.0">
@@ -81,29 +83,34 @@
 				</piePlot>
 			</pieChart>
 			<staticText>
-				<reportElement mode="Transparent" x="-12" y="-20" width="820" height="20" backcolor="#E6E6E6" uuid="6f5f5e63-854f-4a47-a7fb-cbb1f9bd5c42"/>
+				<reportElement mode="Transparent" x="-11" y="40" width="821" height="20" backcolor="#E6E6E6" uuid="6f5f5e63-854f-4a47-a7fb-cbb1f9bd5c42"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
-					<font fontName="SansSerif" size="14" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[RESUMEN]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="-12" y="0" width="820" height="20" backcolor="#E6E6E6" uuid="0ad44700-dbff-464f-84dd-7f32391f2205"/>
+				<reportElement style="Table_TD" mode="Transparent" x="-11" y="60" width="821" height="20" forecolor="#787878" backcolor="#E6E6E6" uuid="0ad44700-dbff-464f-84dd-7f32391f2205"/>
+				<box>
+					<pen lineWidth="0.0"/>
+				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
+					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Horas y personal requerido por dependencia]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="-12" y="150" width="820" height="20" backcolor="#E6E6E6" uuid="e2825406-3d99-4da2-babc-a4db07bf7f13"/>
+				<reportElement mode="Transparent" x="-12" y="210" width="822" height="15" forecolor="#787878" backcolor="#E6E6E6" uuid="e2825406-3d99-4da2-babc-a4db07bf7f13">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
+					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Horas requeridas por nivel en cada dependencia]]></text>
 			</staticText>
 			<barChart>
 				<chart evaluationTime="Report">
-					<reportElement x="-12" y="170" width="820" height="130" uuid="f736791d-48e3-4199-9f1e-36dcc439b89d">
+					<reportElement x="-12" y="225" width="822" height="120" uuid="c5bcc97d-9240-43cc-ab95-b1b8d6e09c61">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<chartTitle/>
@@ -112,7 +119,7 @@
 				</chart>
 				<categoryDataset>
 					<dataset>
-						<datasetRun subDataset="ChartDataset" uuid="b7004c3e-d643-4ccb-b610-414f7c581763">
+						<datasetRun subDataset="ChartDataset" uuid="0dd36f60-2922-4827-8523-f352bc7dcb44">
 							<dataSourceExpression><![CDATA[$P{chartBarHoursDataset}]]></dataSourceExpression>
 						</datasetRun>
 					</dataset>
@@ -141,30 +148,30 @@
 					<categoryAxisFormat labelRotation="0.0">
 						<axisFormat labelColor="#787878" tickLabelColor="#000000" axisLineColor="#000000">
 							<labelFont>
-								<font isBold="true"/>
+								<font isBold="false"/>
 							</labelFont>
 						</axisFormat>
 					</categoryAxisFormat>
-					<valueAxisLabelExpression><![CDATA["Tiempo en horas"]]></valueAxisLabelExpression>
+					<valueAxisLabelExpression><![CDATA["Horas"]]></valueAxisLabelExpression>
 					<valueAxisFormat>
 						<axisFormat labelColor="#787878" tickLabelColor="#030303" axisLineColor="#000000">
 							<labelFont>
-								<font isBold="true"/>
+								<font size="9" isBold="false"/>
 							</labelFont>
 						</axisFormat>
 					</valueAxisFormat>
 				</barPlot>
 			</barChart>
 			<staticText>
-				<reportElement mode="Transparent" x="-12" y="310" width="820" height="18" backcolor="#E6E6E6" uuid="9be4f29b-0f1e-4f92-a1a6-11df24b88e0b"/>
+				<reportElement mode="Transparent" x="-12" y="345" width="822" height="18" forecolor="#787878" backcolor="#E6E6E6" uuid="9be4f29b-0f1e-4f92-a1a6-11df24b88e0b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
+					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Personal requerido por nivel en cada dependencia]]></text>
 			</staticText>
 			<barChart>
 				<chart evaluationTime="Report">
-					<reportElement x="-12" y="330" width="820" height="130" uuid="a1b8a713-ae0b-4311-b552-43754fc26bb3">
+					<reportElement x="-12" y="363" width="822" height="120" uuid="029b3751-9691-464d-be8b-a41a7005faf6">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<chartTitle/>
@@ -173,14 +180,14 @@
 				</chart>
 				<categoryDataset>
 					<dataset>
-						<datasetRun subDataset="ChartDataset" uuid="d3bad097-49fe-4104-926a-df2e70e0fed3">
+						<datasetRun subDataset="ChartDataset" uuid="e11bd36e-3460-4785-be73-d138eda142fb">
 							<dataSourceExpression><![CDATA[$P{chartBarPeopleDataset}]]></dataSourceExpression>
 						</datasetRun>
 					</dataset>
 					<categorySeries>
 						<seriesExpression><![CDATA[$F{nivel}]]></seriesExpression>
 						<categoryExpression><![CDATA[$F{nombre}]]></categoryExpression>
-						<valueExpression><![CDATA[Math.round(($F{valor} / 167)*10.0)/10.0]]></valueExpression>
+						<valueExpression><![CDATA[Math.round(($F{valor} / $F{horasPorMes})*10.0)/10.0]]></valueExpression>
 						<labelExpression><![CDATA[$F{valor} > 0 ? Math.round(($F{valor} /167)*10.0)/10.0 + ""  : ""]]></labelExpression>
 					</categorySeries>
 				</categoryDataset>
@@ -202,20 +209,121 @@
 					<categoryAxisFormat labelRotation="0.0">
 						<axisFormat labelColor="#787878" tickLabelColor="#000000" axisLineColor="#000000">
 							<labelFont>
-								<font isBold="true"/>
+								<font size="9" isBold="true"/>
 							</labelFont>
 						</axisFormat>
 					</categoryAxisFormat>
-					<valueAxisLabelExpression><![CDATA["Nº de personas"]]></valueAxisLabelExpression>
+					<valueAxisLabelExpression><![CDATA["Nº personas"]]></valueAxisLabelExpression>
 					<valueAxisFormat>
 						<axisFormat labelColor="#787878" tickLabelColor="#030303" axisLineColor="#000000">
 							<labelFont>
-								<font isBold="true"/>
+								<font size="9" isBold="false"/>
 							</labelFont>
 						</axisFormat>
 					</valueAxisFormat>
 				</barPlot>
 			</barChart>
+			<frame>
+				<reportElement mode="Opaque" x="-11" y="-20" width="821" height="60" backcolor="#F2F2F2" uuid="395c0df7-61b7-491a-8c8a-dcf52da9b099"/>
+				<box>
+					<pen lineWidth="0.25"/>
+				</box>
+				<staticText>
+					<reportElement x="100" y="4" width="680" height="18" uuid="0b0e81b6-a540-4a26-a7be-b84cfb8b371d">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="14" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DEPARTAMENTO ADMINISTRATIVO DE LA FUNCIÓN PÚBLICA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="100" y="22" width="680" height="15" uuid="5fb393cc-4606-4ef0-bfcd-f34cf6ffec39">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<text><![CDATA[TALENTO HUMANO]]></text>
+				</staticText>
+				<image vAlign="Middle">
+					<reportElement x="4" y="3" width="190" height="53" uuid="2dfc6172-5f40-4df2-af8c-e5aea6313d43">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<imageExpression><![CDATA[$P{logo}]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="100" y="37" width="680" height="19" uuid="8e1f71a5-b6f7-41f4-aeae-bd254ca80f08">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<text><![CDATA[MEDICIÓN DE CARGAS DE TRABAJO POR DEPENDENCIA]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement mode="Transparent" x="710" y="80" width="100" height="50" backcolor="#F2F2F2" uuid="1d50903a-d787-4545-b369-c9d163ddafbf">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.0"/>
+				</box>
+				<rectangle radius="7">
+					<reportElement x="0" y="0" width="100" height="50" backcolor="#F2F2F2" uuid="3951a4a2-253c-4672-b6db-dcff8f82e2e6"/>
+					<graphicElement>
+						<pen lineWidth="0.25" lineColor="#E6E6E6"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="0" y="20" width="20" height="30" forecolor="#787878" uuid="ac5bc840-e1d8-4d52-93ac-b8f725c05e86">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.0"/>
+					</box>
+					<textElement>
+						<font isBold="true"/>
+						<paragraph leftIndent="4" rightIndent="3"/>
+					</textElement>
+					<text><![CDATA[h:
+p:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="20" y="20" width="80" height="30" forecolor="#787878" uuid="0e663d9a-b97c-4b56-8028-04c2a59362be">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.0"/>
+					</box>
+					<textElement>
+						<paragraph leftIndent="4" rightIndent="3"/>
+					</textElement>
+					<text><![CDATA[Horas
+Personas]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="0" width="100" height="20" forecolor="#4B4B4B" uuid="9fcd6873-79bd-4eb9-b983-abb26a0b3195">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Notación]]></text>
+				</staticText>
+			</frame>
 		</band>
 	</detail>
 </jasperReport>

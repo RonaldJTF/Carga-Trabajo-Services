@@ -72,4 +72,10 @@ public class ActividadServiceImpl implements ActividadService{
         SpecificationCiadti<ActividadEntity> specification = new SpecificationCiadti<ActividadEntity>(filter);
         return actividadDAO.findAll(specification);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ActividadEntity findByIdEstructura(Long idEstructura) {
+        return actividadDAO.findByIdEstructura(idEstructura);
+    }
 }

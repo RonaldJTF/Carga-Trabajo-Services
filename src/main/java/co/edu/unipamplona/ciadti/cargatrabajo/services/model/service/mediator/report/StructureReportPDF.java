@@ -41,9 +41,14 @@ public class StructureReportPDF {
     private final NivelService nivelService;
     private final ResourceLoader resourceLoader;
 
-    private final Map<String, Object> registry = new HashMap<>();
+    private Map<String, Object> registry;
+    private Double HOURS_PER_MONTH;
 
     public byte[] generate(List<Long> structureIds) throws JRException, CiadtiException{
+        registry = new HashMap<>();
+        HOURS_PER_MONTH = 167.0;
+
+        byte[] logo = getImageBytes();
         String filePath = "reports\\structures\\Structures.jrxml";
         String filePathDependency = "reports\\structures\\Charts.jrxml";
 
@@ -68,13 +73,14 @@ public class StructureReportPDF {
         chartParameters.put("chartPieDataset",  new JRBeanCollectionDataSource(getChartPieData(structureData)));
         chartParameters.put("chartBarHoursDataset",  new JRBeanCollectionDataSource(getChartBarData(structureData)));
         chartParameters.put("chartBarPeopleDataset",  new JRBeanCollectionDataSource(getChartBarData(structureData)));
+        chartParameters.put("logo", new ByteArrayInputStream(logo));
 
         JasperReport chartReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(filePathDependency));
 
         parameters.put("chartReport", chartReport);
         parameters.put("chartParameter", chartParameters);
-        parameters.put("logo", new ByteArrayInputStream(getImageBytes()));
-        parameters.put("entity", "ALCALDÍA DE SAN JOSÉ DE CÚCUTA");
+        parameters.put("logo", new ByteArrayInputStream(logo));
+        parameters.put("hoursPerMonth", HOURS_PER_MONTH);
         parameters.put("levels", levels.stream().map(e -> e.getDescripcion().substring(0, 3).toUpperCase()).toList());
 
         return reportJR.converterToPDF(parameters, structureDataSource, filePath);
@@ -88,7 +94,7 @@ public class StructureReportPDF {
         for (ReportStructureDTO e : structureData) {
             if (!e.getDependencia().equals(structureName)){
                 structureName = e.getDependencia();
-                reportChartDTO = ReportChartDTO.builder().nombre(structureName).valor(0.0).build();
+                reportChartDTO = ReportChartDTO.builder().nombre(structureName).valor(0.0).horasPorMes(HOURS_PER_MONTH).build();
                 list.add(reportChartDTO);
             }
             reportChartDTO.setValor( reportChartDTO.getValor() + (
@@ -111,7 +117,7 @@ public class StructureReportPDF {
                 structureName = e.getDependencia();
                 group = new ArrayList<>();
                 for(NivelEntity levl : levels){
-                    group.add(ReportChartDTO.builder().nombre(structureName).nivel(levl.getDescripcion()).valor(0.0).build());
+                    group.add(ReportChartDTO.builder().nombre(structureName).nivel(levl.getDescripcion()).valor(0.0).horasPorMes(HOURS_PER_MONTH).build());
                 }
                 list.addAll(group);
             }
@@ -159,10 +165,10 @@ public class StructureReportPDF {
                     levelNomenclature = structure.getActividad().getNivel().getDescripcion().substring(0, 3).toUpperCase();
                     levl = String.format("%s (%s)", structure.getActividad().getNivel().getDescripcion(), levelNomenclature) ;
                     frecuency = structure.getActividad().getFrecuencia();
-                    minTime = (double) Math.round((structure.getActividad().getTiempoMinimo() / 60.0)*10)/10;
-                    meanTime = (double) Math.round((structure.getActividad().getTiempoPromedio() / 60.0)*10)/10;
-                    maxTime = (double) Math.round((structure.getActividad().getTiempoMaximo() / 60.0)*10)/10;
-                    standarTime = (double) Math.round((1.07*(minTime + 4*meanTime + maxTime)/6)*10) /10;
+                    minTime = (double) Math.round((structure.getActividad().getTiempoMinimo() / 60.0)*100)/100;
+                    meanTime = (double) Math.round((structure.getActividad().getTiempoPromedio() / 60.0)*100)/100;
+                    maxTime = (double) Math.round((structure.getActividad().getTiempoMaximo() / 60.0)*100)/100;
+                    standarTime = (double) Math.round((1.07*(minTime + 4*meanTime + maxTime)/6)*100) /100;
                     for (NivelEntity e : levels){
                         tiemposPorNivel.add(e.getId() == structure.getActividad().getIdNivel() ? Math.round((frecuency * standarTime)*10)/10.0 : null);
                     }

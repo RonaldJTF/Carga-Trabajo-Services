@@ -28,4 +28,6 @@ public interface ActividadDAO extends JpaRepository<ActividadEntity, Long>, JpaS
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_ACTIVIDAD(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    ActividadEntity findByIdEstructura(Long idEstructura);
 }

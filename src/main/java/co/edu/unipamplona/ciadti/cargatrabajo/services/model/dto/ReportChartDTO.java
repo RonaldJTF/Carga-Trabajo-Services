@@ -13,4 +13,5 @@ public class ReportChartDTO {
     private String nombre;
     private Double valor;
     private String nivel;
+    private Double horasPorMes;
 }
