@@ -3,6 +3,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 import java.util.Date;
 import java.util.List;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.InventarioTipologiaDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -37,4 +38,11 @@ public interface TipologiaDAO extends JpaRepository<TipologiaEntity, Long>, JpaS
     @Query(value =  "select distinct(t) from TipologiaEntity t " +
                     "inner join EstructuraEntity e on (t.id = e.idTipologia) order by t.id desc")
     List<TipologiaEntity> findAllManagement();
+
+    @Query(value = "SELECT t.tipo_nombre AS nombre, t.tipo_claseicono AS claseIcono, t.tipo_nombrecolor AS nombreColor, COUNT(e.estr_id) AS cantidad " +
+                    "FROM fortalecimiento.tipologia t " +
+                    "JOIN fortalecimiento.estructura e ON t.tipo_id = e.tipo_id " +
+                    "GROUP BY t.tipo_nombre, t.tipo_claseicono, t.tipo_nombrecolor " +
+                    "ORDER BY t.tipo_nombre ASC", nativeQuery = true)
+    List<InventarioTipologiaDTO> findInventarioTipologia();
 }

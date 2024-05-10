@@ -4,6 +4,8 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
+
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
@@ -33,6 +35,7 @@ public class   AES {
 
     public String decrypt(String salt, String iv, String passphrase, String ciphertext) {
         try {
+            System.out.println(base64(ciphertext));
             SecretKey key = generateKey(salt, passphrase);
             byte[] decrypted = doFinal(Cipher.DECRYPT_MODE, key, iv, base64(ciphertext));
             return new String(decrypted, "UTF-8");
@@ -55,6 +58,7 @@ public class   AES {
                 | InvalidAlgorithmParameterException
                 | IllegalBlockSizeException
                 | BadPaddingException e) {
+            Trace.logError(e);
             return null;
         }
     }

@@ -100,12 +100,17 @@ public class ConfigurationMediator {
      * @param photoFile
      * @return PersonaEntity
      * @throws IOException
-     * @throws CloneNotSupportedException 
+     * @throws CloneNotSupportedException
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public PersonaEntity savePerson(PersonaEntity personaEntity, MultipartFile photoFile) throws IOException {
+    public PersonaEntity savePerson(PersonaEntity personaEntity, MultipartFile photoFile) throws IOException, CloneNotSupportedException {
         FotoPersonaEntity fotoPersonaEntity;
-        personaEntity = personaService.save(personaEntity);
+
+        PersonaEntity personToSave = (PersonaEntity) personaEntity.clone();
+        personToSave.setUsuario(null);
+        personaService.save(personToSave);
+        personaEntity.setId(personToSave.getId());
+
         if (photoFile != null){
             fotoPersonaEntity = fotoPersonaService.findByIdPersona(personaEntity.getId());
             if (fotoPersonaEntity != null){
@@ -125,6 +130,18 @@ public class ConfigurationMediator {
     }
 
     /**
+     * Elimina todas las estructuras pasadas en el parámetro structureIds
+     * @param personIds: Contiene los identificadores de las estructuras a eliminar
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deletePeople(List<Long> personIds) throws CiadtiException {
+        for (Long id : personIds){
+            deletePerson(id);
+        }
+    }
+
+    /**
      * Elimina una Persona junto a su objeto FotoPersona si tiene relacionada una foto de perfil
      * @param id
      */
@@ -132,7 +149,9 @@ public class ConfigurationMediator {
     public void deletePerson(Long id){
         FotoPersonaEntity fotoPersona = fotoPersonaService.findByIdPersona(id);
         UsuarioEntity usuarioEntity = usuarioService.findByIdPersona(id);
-        deleteUser(usuarioEntity.getId());
+        if (usuarioEntity != null){
+            deleteUser(usuarioEntity.getId());
+        }
         if (fotoPersona != null){
             fotoPersonaService.deleteByProcedure(fotoPersona.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         }

@@ -81,6 +81,10 @@ public class StructureReportPDF {
         parameters.put("chartParameter", chartParameters);
         parameters.put("logo", new ByteArrayInputStream(logo));
         parameters.put("hoursPerMonth", HOURS_PER_MONTH);
+
+        parameters.put("logo", new ByteArrayInputStream(getImageBytes()));
+        parameters.put("entity", "Universidad Distrital Francisco José de Caldas".toUpperCase());
+
         parameters.put("levels", levels.stream().map(e -> e.getDescripcion().substring(0, 3).toUpperCase()).toList());
 
         return reportJR.converterToPDF(parameters, structureDataSource, filePath);

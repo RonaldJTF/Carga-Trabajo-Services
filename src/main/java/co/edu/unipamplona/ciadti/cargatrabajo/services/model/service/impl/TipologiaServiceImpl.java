@@ -10,6 +10,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.Orde
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.TipologiaDAO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.InventarioTipologiaDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import lombok.RequiredArgsConstructor;
@@ -83,4 +84,12 @@ public class TipologiaServiceImpl implements TipologiaService{
     public List<TipologiaEntity> findAllManagement() {
         return tipologiaDAO.findAllManagement();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<InventarioTipologiaDTO> findInventarioTipologia() {
+        List<InventarioTipologiaDTO> inventarioList = tipologiaDAO.findInventarioTipologia();
+        return inventarioList;
+    }
+
 }

@@ -1,16 +1,20 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GeneroEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.RolEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipoDocumentoEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GeneroService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.RolService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipoDocumentoService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +37,8 @@ public class BasicInformationController {
     private final ParameterConverter parameterConverter;
     private final GeneroService generoService;
     private final RolService rolService;
+    private final TipologiaService tipologiaService;
+    private final EstructuraService estructuraService;
 
     @Operation(
         summary = "Obtener o listar los tipos de documentos",
@@ -68,6 +74,18 @@ public class BasicInformationController {
         RolEntity filter = (RolEntity) parameterConverter.converter(request.getParameterMap(), RolEntity.class);
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, rolService.findAllFilteredBy(filter));
+    }
+
+    @GetMapping(value = {"inventory", "inventory/{id}"})
+    public ResponseEntity<?> getInventory(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
+        return Methods.getResponseAccordingToId(id, tipologiaService.findInventarioTipologia());
+    }
+
+    @GetMapping(value = {"statistics", "statistics/{id}"})
+    public ResponseEntity<?> getStatistics(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
+        EstructuraEntity filter = (EstructuraEntity) parameterConverter.converter(request.getParameterMap(), EstructuraEntity.class);
+        filter.setId(id==null ? filter.getId() : id);
+        return new ResponseEntity<>(estructuraService.statisticsDependence(filter), HttpStatus.OK);
     }
 
 }

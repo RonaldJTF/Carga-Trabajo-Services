@@ -102,17 +102,18 @@ public class PersonaEntity implements Serializable, Cloneable {
     void onCreate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
-        this.registradoPor = registradorDTO.getJsonAsString();
+        this.registradoPor = "LPR";//registradorDTO.getJsonAsString();
     }
 
     public void onUpdate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
-        this.registradoPor = registradorDTO.getJsonAsString();
+        this.registradoPor = "LPR";//registradorDTO.getJsonAsString();
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
 }

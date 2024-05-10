@@ -72,13 +72,13 @@ public class FotoPersonaEntity implements Serializable{
     void onCreate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
-        this.registradoPor = registradorDTO.getJsonAsString();
+        this.registradoPor = "LPR";//registradorDTO.getJsonAsString();
     }
 
     public void onUpdate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
-        this.registradoPor = registradorDTO.getJsonAsString();
+        this.registradoPor = "LPR";//registradorDTO.getJsonAsString();
     }
 
 }

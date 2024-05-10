@@ -1,6 +1,6 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,16 +17,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 
 @RequiredArgsConstructor
 @RestController
@@ -57,7 +51,7 @@ public class PersonaController {
             "Returns: Objeto con la información asociada.")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestParam(value = "person") String personaJSON, 
-                                    @RequestParam (value = "file", required = false) MultipartFile photoFile) throws IOException{
+                                    @RequestParam (value = "file", required = false) MultipartFile photoFile) throws IOException, CloneNotSupportedException{
         ObjectMapper objectMapper = new ObjectMapper();
         PersonaEntity personaEntity = objectMapper.readValue(personaJSON, PersonaEntity.class);
         return new ResponseEntity<>(configurationMediator.savePerson(personaEntity, photoFile), HttpStatus.CREATED);
@@ -73,7 +67,7 @@ public class PersonaController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestParam (value = "person") String personaJSON, 
-                                    @RequestParam(value = "file", required = false) MultipartFile photoFile) throws IOException{
+                                    @RequestParam(value = "file", required = false) MultipartFile photoFile) throws IOException, CloneNotSupportedException{
         ObjectMapper objectMapper = new ObjectMapper();
         PersonaEntity personaEntity = objectMapper.readValue(personaJSON, PersonaEntity.class);
         personaEntity.setId(id);
@@ -87,6 +81,12 @@ public class PersonaController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id){
         configurationMediator.deletePerson(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deletePeople(@RequestBody List<Long> personIds) throws CiadtiException {
+        configurationMediator.deletePeople(personIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -43,7 +43,7 @@ public class ActividadEntity implements Serializable{
     @Column(name = "nive_id", nullable = false)
     private Long idNivel;
 
-    @Column(name="estr_id", nullable = false)
+    @Column(name = "estr_id", nullable = false)
     private Long idEstructura;
 
     @Column(name = "acti_frecuencia", nullable = false)
@@ -69,7 +69,7 @@ public class ActividadEntity implements Serializable{
 
     @JsonBackReference
     @OneToOne
-    @JoinColumn(name="estr_id", insertable = false, updatable = false)
+    @JoinColumn(name = "estr_id", insertable = false, updatable = false)
     private EstructuraEntity estructura;
 
     @OneToOne

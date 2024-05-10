@@ -72,13 +72,13 @@ public class UsuarioEntity implements Serializable, Cloneable, UserDetails {
     void onCreate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
-        this.registradoPor = registradorDTO.getJsonAsString();
+        this.registradoPor = "LPR";//registradorDTO.getJsonAsString();
     }
 
     public void onUpdate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
-        this.registradoPor = registradorDTO.getJsonAsString();
+        this.registradoPor = "LPR";//registradorDTO.getJsonAsString();
     }
 
     @ManyToMany(fetch = FetchType.EAGER)

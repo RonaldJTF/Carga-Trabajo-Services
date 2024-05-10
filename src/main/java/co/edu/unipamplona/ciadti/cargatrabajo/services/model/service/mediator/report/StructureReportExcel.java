@@ -53,7 +53,7 @@ public class StructureReportExcel {
     private final NivelService nivelService;
     private final ResourceLoader resourceLoader;
 
-    private Map<String, Object> registry;
+    private final Map<String, Object> registry = new HashMap<>();
 
     private final int[] GRAY = {242, 242, 242};
     private final int[] GREEN = {238, 245, 208};
@@ -67,22 +67,21 @@ public class StructureReportExcel {
     private final Boolean[] BORDER_BOTTOM = {false, false, true, false};
     private final Boolean[] BORDER_LEFT = {false, false, false, true};
 
-    /**
-     * Genera byte[] de reporte en excel
-     * @param structureIds
-     * @return
-     * @throws CiadtiException
-     */
     public byte[] generate(List<Long> structureIds) throws CiadtiException{
-        registry = new HashMap<>();
         BlockPOI titleBlock = buildDependencyReportTitle(Position.builder().x(1).y(1).build());
+        BlockPOI entityBlock = buildDependencyReportEntity(null);
+
         Map<String, Position> positions;
         ReportPOI report = new ReportPOI();
         positions = report.addTitle(titleBlock);
         Position bottomTitlePosition = positions.get("bottom");
-        bottomTitlePosition.setY(bottomTitlePosition.getY() + 3);
+        bottomTitlePosition.setY(bottomTitlePosition.getY() + 1);
 
-        positions = report.addBlock(buildDependencyReportHead(bottomTitlePosition));
+        entityBlock.setPosition(bottomTitlePosition);
+        positions = report.addBlock(entityBlock);
+        Position bottomEntityPosition = positions.get("bottom");
+        bottomEntityPosition.setY(bottomEntityPosition.getY() + 1);
+        positions = report.addBlock(buildDependencyReportHead(bottomEntityPosition));
 
         Position TopRightHeadPosition = positions.get("top-right");
         TopRightHeadPosition.setY(TopRightHeadPosition.getY() - 1);
@@ -120,6 +119,15 @@ public class StructureReportExcel {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private BlockPOI buildDependencyReportEntity(Position position){
+        return BlockPOI.builder()
+            .style(Style.builder().backgroundColorRGB(GRAY).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER).border(BorderStyle.THIN).wrapText(true).build())
+            .items(List.of(
+                CellPOI.builder().value("ENTIDAD").build(),
+                CellPOI.builder().value("ALCALDÍA DE SAN JOSÉ DE CÚCUTA").style(Style.builder().backgroundColorRGB(WHITE).build()).build()
+            )).build();
     }
 
     private BlockPOI buildDependencyReportDate(Position position){
@@ -235,18 +243,15 @@ public class StructureReportExcel {
                         List<CellPOI> timeResume = new ArrayList<>();
                         for (NivelEntity e : levels){
                             timeResume.add(CellPOI.builder().value(e.getId() == structure.getActividad().getIdNivel() ? String.valueOf(Math.round((frecuency * standarTime)*100.0)/100.0) : "").build());
+                             
                             Double acc = (Double)registry.get("totalTimePerDependency_"+e.getId());  
                             if (e.getId() == structure.getActividad().getIdNivel()){
-                                System.out.println("****Entra***");
                                 if (acc == null){
-                                    System.out.println("nLL " + acc);
                                    acc = 0.0;
-                                }
-                                else{System.out.println("No nLL " + acc);}
+                                } 
                                 acc += frecuency * standarTime;
                                 registry.put("totalTimePerDependency_"+e.getId(), acc);
                             }
-                            System.out.println("totalTimePerDependency_"+e.getId() + " :: " + acc);
 
                             Double accPerDependency = (Double)registry.get("temporalTotalTimePerDependency_"+e.getId());  
                             if (e.getId() == structure.getActividad().getIdNivel()){
