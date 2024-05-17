@@ -35,9 +35,6 @@ public class MultitenantConfig {
     @Autowired
     private ResourceLoader resourceLoader;
 
-    @Autowired
-    private Environment env;
-
     @Bean
     public DataSource dataSource() throws IOException {
         File[] files = this.getAllTenantFiles();
@@ -48,11 +45,11 @@ public class MultitenantConfig {
             DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
             try {
                 tenantProperties.load(new FileInputStream(propertyFile));
-                String tenantId = env.getProperty(tenantProperties.getProperty("name"));
-                dataSourceBuilder.driverClassName(env.getProperty(tenantProperties.getProperty("datasource.driver-class-name")));
-                dataSourceBuilder.username(env.getProperty(tenantProperties.getProperty("datasource.username")));
-                dataSourceBuilder.password(env.getProperty(tenantProperties.getProperty("datasource.password")));
-                dataSourceBuilder.url(env.getProperty(tenantProperties.getProperty("datasource.url")));
+                String tenantId = tenantProperties.getProperty("name");
+                dataSourceBuilder.driverClassName(tenantProperties.getProperty("datasource.driver-class-name"));
+                dataSourceBuilder.username(tenantProperties.getProperty("datasource.username"));
+                dataSourceBuilder.password(tenantProperties.getProperty("datasource.password"));
+                dataSourceBuilder.url(tenantProperties.getProperty("datasource.url"));
                 resolvedDataSources.put(tenantId, dataSourceBuilder.build());
             } catch (IOException exp) {
                 throw new RuntimeException("Problem in tenant datasource:" + exp);

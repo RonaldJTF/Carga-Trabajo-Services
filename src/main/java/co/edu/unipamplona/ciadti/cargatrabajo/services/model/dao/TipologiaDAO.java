@@ -42,7 +42,7 @@ public interface TipologiaDAO extends JpaRepository<TipologiaEntity, Long>, JpaS
     @Query(value = "SELECT t.tipo_nombre AS nombre, t.tipo_claseicono AS claseIcono, t.tipo_nombrecolor AS nombreColor, COUNT(e.estr_id) AS cantidad " +
                     "FROM fortalecimiento.tipologia t " +
                     "JOIN fortalecimiento.estructura e ON t.tipo_id = e.tipo_id " +
-                    "GROUP BY t.tipo_nombre, t.tipo_claseicono, t.tipo_nombrecolor " +
-                    "ORDER BY t.tipo_nombre ASC", nativeQuery = true)
+                    "GROUP BY t.tipo_id , t.tipo_nombre, t.tipo_claseicono, t.tipo_nombrecolor " +
+                    "ORDER BY t.tipo_id DESC", nativeQuery = true)
     List<InventarioTipologiaDTO> findInventarioTipologia();
 }

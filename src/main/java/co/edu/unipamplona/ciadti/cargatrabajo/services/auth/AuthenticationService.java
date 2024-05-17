@@ -32,6 +32,7 @@ public class AuthenticationService {
         );
 
         UsuarioEntity usuario = usuarioService.findByUsername(authData.getUsername());
+        usuarioService.isActivo(usuario.getId());
         PersonaEntity personaEntity = (PersonaEntity) personaService.findById(usuario.getIdPersona());
         
         Map<String, Object> extraClaims = new HashMap<>();

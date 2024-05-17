@@ -12,6 +12,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.UsuarioDAO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Active;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -90,5 +91,14 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional(readOnly = true)
     public UsuarioEntity findByIdPersona(Long idPersona) {
         return usuarioDAO.findByIdPersona(idPersona);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UsuarioEntity isActivo(Long id) throws CiadtiException {
+        UsuarioEntity entity = usuarioDAO.findByIdAndActivo(id, Active.ACTIVATED).orElseThrow(() -> new CiadtiException("El usuario no se encuentra activo", 500));
+        Session session = entityManager.unwrap(Session.class);
+        session.evict(entity);
+        return entity;
     }
 }

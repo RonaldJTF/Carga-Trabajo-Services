@@ -49,8 +49,8 @@ public class StructureReportPDF {
         HOURS_PER_MONTH = 167.0;
 
         byte[] logo = getImageBytes();
-        String filePath = "reports\\structures\\Structures.jrxml";
-        String filePathDependency = "reports\\structures\\Charts.jrxml";
+        String filePath = "reports/structures/Structures.jrxml";
+        String filePathDependency = "reports/structures/Charts.jrxml";
 
         List<NivelEntity> levels = nivelService.findAll();
         registry.put("levels", levels);
@@ -75,6 +75,8 @@ public class StructureReportPDF {
         chartParameters.put("chartBarPeopleDataset",  new JRBeanCollectionDataSource(getChartBarData(structureData)));
         chartParameters.put("logo", new ByteArrayInputStream(logo));
 
+        System.out.println("********************************************");
+        System.out.println(getClass().getClassLoader().getResourceAsStream(filePath));
         JasperReport chartReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(filePathDependency));
 
         parameters.put("chartReport", chartReport);

@@ -30,4 +30,6 @@ public interface UsuarioDAO extends JpaRepository<UsuarioEntity, Long>, JpaSpeci
     Integer deleteByProcedure(Long id, String registradoPor);
 
     UsuarioEntity findByIdPersona(Long idPersona);
+
+    Optional<UsuarioEntity> findByIdAndActivo(Long id, String activated);
 }

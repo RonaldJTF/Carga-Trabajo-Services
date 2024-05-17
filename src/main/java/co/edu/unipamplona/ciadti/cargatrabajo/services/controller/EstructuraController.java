@@ -83,7 +83,7 @@ public class EstructuraController {
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, estructuraService.findAllFilteredBy(filter));
     }
-
+    
     @Operation(
         summary="Crear una estructura junto a sus subestructuras",
         description = "Crea una estructura junto a sus subestructuras si estas son definidas. " + 
