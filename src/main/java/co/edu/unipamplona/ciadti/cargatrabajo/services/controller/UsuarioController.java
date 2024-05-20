@@ -31,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/user")
 public class UsuarioController {
     private final UsuarioService usuarioService;
-    private final ParameterConverter parameterConverter;
     private final ConfigurationMediator configurationMediator;
     private final PasswordEncoder passwordEncoder;
     private final CipherService cipherService;
@@ -45,7 +44,8 @@ public class UsuarioController {
             "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
     @GetMapping(value = {"", "/{id}"})
     public ResponseEntity<?> get(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
-        UsuarioEntity filter = (UsuarioEntity) parameterConverter.converter(request.getParameterMap(), UsuarioEntity.class);
+        ParameterConverter parameterConverter = new ParameterConverter(UsuarioEntity.class);
+        UsuarioEntity filter = (UsuarioEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, usuarioService.findAllFilteredBy(filter));
     }

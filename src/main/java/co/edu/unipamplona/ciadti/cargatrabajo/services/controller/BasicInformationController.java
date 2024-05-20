@@ -34,7 +34,6 @@ public class BasicInformationController {
 
     private final TipoDocumentoService tipoDocumentoService;
     private final NivelService nivelService;
-    private final ParameterConverter parameterConverter;
     private final GeneroService generoService;
     private final RolService rolService;
     private final TipologiaService tipologiaService;
@@ -49,7 +48,8 @@ public class BasicInformationController {
             "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
     @GetMapping(value={"document-type", "document-type/{id}"})
     public ResponseEntity<?> getDocumentType(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
-        TipoDocumentoEntity filter = (TipoDocumentoEntity) parameterConverter.converter(request.getParameterMap(), TipoDocumentoEntity.class);
+        ParameterConverter parameterConverter = new ParameterConverter(TipoDocumentoEntity.class);
+        TipoDocumentoEntity filter = (TipoDocumentoEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, tipoDocumentoService.findAllFilteredBy(filter));
     }
@@ -57,21 +57,24 @@ public class BasicInformationController {
 
     @GetMapping(value = {"gender", "gender/{id}"})
     public ResponseEntity<?> getGender(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
-        GeneroEntity filter = (GeneroEntity) parameterConverter.converter(request.getParameterMap(), GeneroEntity.class);
+        ParameterConverter parameterConverter = new ParameterConverter(GeneroEntity.class);
+        GeneroEntity filter = (GeneroEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, generoService.findAllFilteredBy(filter));
     }
 
     @GetMapping(value = {"level", "level/{id}"})
     public ResponseEntity<?> getLevel(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
-        NivelEntity filter = (NivelEntity) parameterConverter.converter(request.getParameterMap(), NivelEntity.class);
+        ParameterConverter parameterConverter = new ParameterConverter(NivelEntity.class);
+        NivelEntity filter = (NivelEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, nivelService.findAllFilteredBy(filter));
     }
     
     @GetMapping(value = {"role", "role/{id}"})
     public ResponseEntity<?> getRole(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
-        RolEntity filter = (RolEntity) parameterConverter.converter(request.getParameterMap(), RolEntity.class);
+        ParameterConverter parameterConverter = new ParameterConverter(RolEntity.class);
+        RolEntity filter = (RolEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, rolService.findAllFilteredBy(filter));
     }
@@ -83,7 +86,8 @@ public class BasicInformationController {
 
     @GetMapping(value = {"statistics", "statistics/{id}"})
     public ResponseEntity<?> getStatistics(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
-        EstructuraEntity filter = (EstructuraEntity) parameterConverter.converter(request.getParameterMap(), EstructuraEntity.class);
+        ParameterConverter parameterConverter = new ParameterConverter(EstructuraEntity.class);
+        EstructuraEntity filter = (EstructuraEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         return new ResponseEntity<>(estructuraService.statisticsDependence(filter), HttpStatus.OK);
     }

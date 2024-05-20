@@ -27,7 +27,6 @@ import org.springframework.http.ResponseEntity;
 @RequestMapping("/api/person")
 public class PersonaController {
     private final PersonaService personaService;
-    private final ParameterConverter parameterConverter;
     private final ConfigurationMediator configurationMediator;
 
     @Operation(
@@ -39,7 +38,8 @@ public class PersonaController {
             "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
     @GetMapping(value={"", "/{id}"})
     public ResponseEntity<?> get(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
-        PersonaEntity filter = (PersonaEntity) parameterConverter.converter(request.getParameterMap(), PersonaEntity.class);
+        ParameterConverter parameterConverter = new ParameterConverter(PersonaEntity.class);
+        PersonaEntity filter = (PersonaEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, personaService.findAllFilteredBy(filter));
     }

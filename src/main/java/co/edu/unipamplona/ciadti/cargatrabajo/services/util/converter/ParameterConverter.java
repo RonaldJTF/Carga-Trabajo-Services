@@ -3,9 +3,9 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.stereotype.Service;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
+import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +28,6 @@ import java.util.Map;
  * y este tiene un atributo A, entonces el nombre del parámetro debe de ser: atributoClaseY.atributoA. Siga esta
  * regla para más valores en cascada (atributoClaseY.atributoClaseZ.atributoB...)
  */
-@Service
 public class ParameterConverter {
     private Map<String, String[]>  parameters;
     private Class<?> clazz;
@@ -41,16 +40,18 @@ public class ParameterConverter {
     @Qualifier("mvcConversionService")
     private ConversionService conversionService;
 
-    public Object converter(Map<String, String[]> parameters,  Class<?> clazz) throws CiadtiException {
-        this.parameters = parameters;
+    public ParameterConverter (Class<?> clazz){
         this.clazz = clazz;
+    }
+
+    public Object converter(Map<String, String[]> parameters) throws CiadtiException {
+        this.parameters = parameters;
         this.delimiter = this.DELIMITER_DEFAULT;
         return this.converterToObject();
     }
 
-    public Object converter(Map<String, String[]> parameters, Class<?> clazz, String delimiter) throws CiadtiException {
+    public Object converter(Map<String, String[]> parameters, String delimiter) throws CiadtiException {
         this.parameters = parameters;
-        this.clazz = clazz;
         this.delimiter = delimiter;
         return this.converterToObject();
     }

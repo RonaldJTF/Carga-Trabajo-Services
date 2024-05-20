@@ -1,22 +1,11 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.compress.compressors.lz77support.LZ77Compressor.Block;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,15 +29,11 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.re
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportPDF;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jasperReport.ReportJR;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,7 +51,6 @@ public class EstructuraController {
     private final TipologiaService tipologiaService;
     private final ActividadService actividadService;
     private final ConfigurationMediator configurationMediator;
-    private final ParameterConverter parameterConverter;
     private final StructureReportExcel structureReportExcel;
     private final StructureReportPDF structureReportPDF;
 
@@ -79,7 +63,8 @@ public class EstructuraController {
             "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
     @GetMapping(value = {"", "/{id}"})
     public ResponseEntity<?> get (@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
-        EstructuraEntity filter = (EstructuraEntity) parameterConverter.converter(request.getParameterMap(), EstructuraEntity.class);
+        ParameterConverter parameterConverter = new ParameterConverter(EstructuraEntity.class);
+        EstructuraEntity filter = (EstructuraEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, estructuraService.findAllFilteredBy(filter));
     }
@@ -153,7 +138,8 @@ public class EstructuraController {
             "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
     @GetMapping(value = {"/activity", "/activity/{id}"})
     public ResponseEntity<?> getActivity(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
-        ActividadEntity filter = (ActividadEntity) parameterConverter.converter(request.getParameterMap(), ActividadEntity.class);
+        ParameterConverter parameterConverter = new ParameterConverter(ActividadEntity.class);
+        ActividadEntity filter = (ActividadEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, actividadService.findAllFilteredBy(filter));
     }
