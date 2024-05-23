@@ -3,6 +3,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -12,18 +13,31 @@ import org.springframework.web.multipart.MultipartFile;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ArchivoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EtapaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.FotoPersonaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PersonaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.RolEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.SeguimientoArchivoEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.SeguimientoEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TareaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioRolEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ActividadService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ArchivoService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EtapaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.FotoPersonaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PersonaService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PlanTrabajoService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.SeguimientoArchivoService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.SeguimientoService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TareaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioRolService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Routes;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Active;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -35,6 +49,13 @@ public class ConfigurationMediator {
     private final FotoPersonaService fotoPersonaService;
     private final UsuarioService usuarioService;
     private final UsuarioRolService usuarioRolService;
+    private final PlanTrabajoService planTrabajoService;
+    private final EtapaService etapaService;
+    private final TareaService tareaService;
+    private final SeguimientoService seguimientoService;
+    private final ArchivoService archivoService;
+    private final SeguimientoArchivoService seguimientoArchivoService;
+    private final MediaMediator mediaMediator;
 
     /**
      * Elimina una estructura por su id y todas sus subestructuras en cascada.
@@ -233,5 +254,106 @@ public class ConfigurationMediator {
             usuarioRolService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         });
         usuarioService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+    }
+
+    /**
+     * Elimina un plan de trabajo junto a sus etapas.
+     * @param id: Identificador del plan de trabajo
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteWorkplan(Long id) {
+        List<EtapaEntity> stagesToDelete = etapaService.findAllByIdPlanTrabajo(id);
+        for (EtapaEntity e : stagesToDelete){
+            deleteStage(e.getId());
+        }
+        planTrabajoService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
     }  
+
+    /**
+     * Elimina una etapa junto a sus tareas
+     * @param id: identificador de la etapa
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteStage(Long id){
+        List<TareaEntity> taskToDelete = tareaService.findAllByIdEtapa(id);
+        List<EtapaEntity> subStagesToDelete = etapaService.findAllSubstages(id);
+        for (TareaEntity t : taskToDelete){
+            deleteTask(t.getId());
+        }
+        for (EtapaEntity e : subStagesToDelete){
+            deleteStage(e.getId());
+        }
+        etapaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+    }
+
+    /**
+     * Elimina una tarea junto a los seguimientos realizados
+     * @param id: Identificador de la tarea
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteTask(Long id){
+        List<SeguimientoEntity> followUpList = seguimientoService.findAllByIdTarea(id);
+        for(SeguimientoEntity s : followUpList){
+            deleteFolloUp(s.getId());
+        }
+        tareaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+    }
+
+    /**
+     * Elimina un seguimiento junto a los archivos soportes cargados
+     * @param id: Identificador del seguimiento
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteFolloUp(Long id){
+        List<ArchivoEntity> files = archivoService.findAllByIdSeguimiento(id);
+        SeguimientoArchivoEntity seguimientoArchivoEntity;
+        for (ArchivoEntity f : files){
+            seguimientoArchivoEntity = seguimientoArchivoService.findByIdSeguimientoAndIdArchivo(id, f.getId());
+            seguimientoArchivoService.deleteByProcedure(seguimientoArchivoEntity.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+        seguimientoService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+    }
+
+    /**
+     * Crea o actualiza un seguimiento junto a los nuevos archivos soportes.
+     * Nota: En el atributo archivos del objeto de la clase SeguimientoEntity se definen los archivos que no ha sido removidos en la actualización.
+     * @param seguimientoEntity: Objeto con información del seguimiento
+     * @param files: Lista de nuevos archivos soportes
+     * @return: SeguimientoEntity
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public SeguimientoEntity saveFollowUp(SeguimientoEntity seguimientoEntity, List<MultipartFile> files) {
+        ArchivoEntity archivoEntity;
+    
+        seguimientoEntity.setActivo(seguimientoEntity.getPorcentajeAvance() >= 100 ? Active.ACTIVATED : Active.INACTIVATED);
+        tareaService.updateActivoById(seguimientoEntity.getIdTarea(), seguimientoEntity.getActivo(), RegisterContext.getRegistradorDTO().getJsonAsString()); 
+        seguimientoService.save(seguimientoEntity);
+
+        SeguimientoArchivoEntity seguimientoArchivoEntity;
+        List<ArchivoEntity> filesBD = archivoService.findAllByIdSeguimiento(seguimientoEntity.getId());
+        List<ArchivoEntity>  filesToDelete = filesBD.stream()
+                    .filter(obj -> seguimientoEntity.getArchivos().stream().noneMatch(filtro -> Objects.equals(filtro.getId(), obj.getId()))).toList();
+        for (ArchivoEntity a : filesToDelete){
+            seguimientoArchivoEntity =  seguimientoArchivoService.findByIdSeguimientoAndIdArchivo(seguimientoEntity.getId(), a.getId());
+            seguimientoArchivoService.deleteByProcedure(seguimientoArchivoEntity.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+
+        if (files != null){
+            for (MultipartFile file : files){
+                archivoEntity = mediaMediator.saveFile(file,  Routes.PATH_SUPPORTS.getPath());
+                seguimientoArchivoService.save(
+                    SeguimientoArchivoEntity
+                        .builder()
+                        .idSeguimiento(seguimientoEntity.getId())
+                        .idArchivo(archivoEntity.getId())
+                        .build()
+                );
+                if (seguimientoEntity.getArchivos() == null){
+                    seguimientoEntity.setArchivos(new ArrayList<>());
+                }
+                seguimientoEntity.getArchivos().add(archivoEntity);
+            }
+        }
+        return seguimientoEntity;
+    }
 }

@@ -1,14 +1,21 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,6 +35,7 @@ import java.util.Map;
  * y este tiene un atributo A, entonces el nombre del parámetro debe de ser: atributoClaseY.atributoA. Siga esta
  * regla para más valores en cascada (atributoClaseY.atributoClaseZ.atributoB...)
  */
+@NoArgsConstructor
 public class ParameterConverter {
     private Map<String, String[]>  parameters;
     private Class<?> clazz;
@@ -36,9 +44,7 @@ public class ParameterConverter {
     private final String REGEX_OF_SEPARATOR_OF_ATTRIBUTE = "\\.";
     private final String SEPARATOR_OF_ATTRIBUTE = ".";
 
-    @Autowired
-    @Qualifier("mvcConversionService")
-    private ConversionService conversionService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ParameterConverter (Class<?> clazz){
         this.clazz = clazz;
@@ -56,93 +62,39 @@ public class ParameterConverter {
         return this.converterToObject();
     }
 
-    private Object converterToObject() throws CiadtiException {
+   private Object converterToObject() throws CiadtiException {
         Object instanceClass;
         try {
             Class<?> classVO = this.clazz;
-            instanceClass = classVO.newInstance();
+            instanceClass = classVO.getDeclaredConstructor().newInstance();
+
+            Map<String, Object> paramMap = new HashMap<>();
             for (Map.Entry<String, String[]> entry : this.parameters.entrySet()) {
                 String name = entry.getKey();
                 String[] values = entry.getValue();
                 String valueString = String.join(delimiter, values);
-                if (name.contains(SEPARATOR_OF_ATTRIBUTE)){
-                    this.addObjectToObject(classVO, instanceClass, name, valueString);
-                }else {
-                    this.addAttributeToObject(classVO, instanceClass, name, valueString);
+
+                if (name.contains(SEPARATOR_OF_ATTRIBUTE)) {
+                    addNestedParam(paramMap, name.split(REGEX_OF_SEPARATOR_OF_ATTRIBUTE), valueString);
+                } else {
+                    paramMap.put(name, valueString);
                 }
             }
-        } catch (InstantiationException | IllegalAccessException e) {
+
+            String jsonString = objectMapper.writeValueAsString(paramMap);
+            instanceClass = objectMapper.readValue(jsonString, classVO);
+
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | JsonProcessingException e) {
             throw new CiadtiException(e.getMessage(), 500);
         }
         return instanceClass;
     }
 
-    private Object addAttributeToObject(Class<?> classVO, Object instanceClass, String nameField, String valueField) throws CiadtiException {
-        Field field;
-        try {
-            field = getDeclaredFieldIgnoreCase(classVO, nameField.substring(0, nameField.length()));
-            if (field != null) {
-                field.setAccessible(true);
-                field.set(instanceClass, convertStringToType(valueField, field.getType()) );
-            }
-        } catch (SecurityException | IllegalAccessException e) {
-            throw new CiadtiException(e.getMessage(), 500);
+    private void addNestedParam(Map<String, Object> map, String[] keys, String value) {
+        Map<String, Object> currentMap = map;
+        for (int i = 0; i < keys.length - 1; i++) {
+            currentMap = (Map<String, Object>) currentMap.computeIfAbsent(keys[i], k -> new HashMap<>());
         }
-        return classVO;
-    }
-
-    private void addObjectToObject(Class<?> classVO,  Object rootInstance, String nameParameter,  String value) throws CiadtiException {
-        Field field;
-        Class<?> classTemp = classVO;
-        boolean isValid = true;
-        try {
-            String[] attrs = nameParameter.split(REGEX_OF_SEPARATOR_OF_ATTRIBUTE);
-            for (String attr : attrs) {
-                field = getDeclaredFieldIgnoreCase(classTemp, attr);
-                if (field != null) {
-                    field.setAccessible(true);
-                    classTemp = field.getType();
-                } else {
-                    isValid = false;
-                    break;
-                }
-            }
-
-            if (isValid) {
-                Object actualObject = rootInstance;
-                for (int i = 0; i < attrs.length - 1; i++) {
-                    field = actualObject.getClass().getDeclaredField(attrs[i]);
-                    field.setAccessible(true);
-                    Object attributeValue = field.get(actualObject);
-                    if (attributeValue == null) {
-                        Class<?> fieldType = field.getType();
-                        attributeValue = fieldType.getDeclaredConstructor().newInstance();
-                        field.set(actualObject, attributeValue);
-                    }
-                    actualObject = attributeValue;
-                }
-                Field lastField = actualObject.getClass().getDeclaredField(attrs[attrs.length - 1]);
-                lastField.setAccessible(true);
-                lastField.set(actualObject, this.convertStringToType(value, lastField.getType()));
-            }
-        } catch (RuntimeException | IllegalAccessException | NoSuchFieldException | NoSuchMethodException |
-                 InstantiationException | InvocationTargetException e) {
-            throw new CiadtiException(e.getMessage(), 500);
-        }
-    }
-
-    private Field getDeclaredFieldIgnoreCase(Class<?> clazz, String fieldName) {
-        Field field = null;
-        for (Field f : clazz.getDeclaredFields()) {
-            if (f.getName().equalsIgnoreCase(fieldName)) {
-                field = f;
-                break;
-            }
-        }
-        return field;
-    }
-
-    private <T> T convertStringToType(String str, Class<T> targetType) {
-        return conversionService.convert(str, targetType);
+        currentMap.put(keys[keys.length - 1], value);
     }
 }

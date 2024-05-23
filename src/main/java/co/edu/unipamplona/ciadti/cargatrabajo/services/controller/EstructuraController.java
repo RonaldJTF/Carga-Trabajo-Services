@@ -155,14 +155,20 @@ public class EstructuraController {
     }
 
     @Operation(
-        summary="Crear una actividad o detalle de la estructura de tipología actividad",
-        description = "Crea una actividad o detalle de la estructura de tipología actividad. " + 
+        summary="Actualizar una actividad o detalle de la estructura de tipología actividad",
+        description = "Actualiza una actividad o detalle de la estructura de tipología actividad. " + 
             "Args: actividadEntity: objeto con información de la actividad. " +
             "Returns: Objeto con la información asociada.")
     @PutMapping("/activity/{id}")
-    public ResponseEntity<?> updateActivity(@Valid @RequestBody ActividadEntity actividadEntity, @PathVariable Long id ){
-        actividadEntity.setId(id);
-        return new ResponseEntity<>(actividadService.save(actividadEntity), HttpStatus.CREATED);
+    public ResponseEntity<?> updateActivity(@Valid @RequestBody ActividadEntity actividadEntity, @PathVariable Long id ) throws CiadtiException{
+        ActividadEntity actividadEntityBD = actividadService.findById(id);
+        actividadEntityBD.setFrecuencia(actividadEntity.getFrecuencia());
+        actividadEntityBD.setTiempoMinimo(actividadEntity.getTiempoMinimo());
+        actividadEntityBD.setTiempoMaximo(actividadEntity.getTiempoMaximo());
+        actividadEntityBD.setTiempoPromedio(actividadEntity.getTiempoPromedio());
+        actividadEntityBD.setIdEstructura(actividadEntity.getIdEstructura());
+        actividadEntityBD.setIdNivel(actividadEntity.getIdNivel());
+        return new ResponseEntity<>(actividadService.save(actividadEntityBD), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -215,7 +221,5 @@ public class EstructuraController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
-    
-    
+    }    
 }

@@ -5,62 +5,61 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.OrderBy;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.AccionDAO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.AccionEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.AccionService;
-import org.springframework.transaction.annotation.Transactional;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.FtpDAO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.FtpEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.FtpService;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Service
-public class AccionServiceImpl implements AccionService{
-    
-    private final AccionDAO accionDAO;
+@RequiredArgsConstructor
+public class FtpServiceImpl implements FtpService{
+    private final FtpDAO ftpDAO;
 
     @Override
     @Transactional(readOnly = true)
-    public AccionEntity findById(Long id) throws CiadtiException {
-        return accionDAO.findById(id).orElseThrow(() -> new CiadtiException("Accion no encontrado para el id :: " + id, 404));
+    public FtpEntity findById(Long id) throws CiadtiException {
+        return ftpDAO.findById(id).orElseThrow(() -> new CiadtiException("Ftp no encontrado para el id :: " + id, 404));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<AccionEntity> findAll() {
-        return accionDAO.findAll();
+    public List<FtpEntity> findAll() {
+        return ftpDAO.findAll();
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public AccionEntity save(AccionEntity entity) {
+    public FtpEntity save(FtpEntity entity) {
         if (entity.getId() != null){
             entity.onUpdate();
-            accionDAO.update(
+            ftpDAO.update(
                     entity.getNombre(),
-                    entity.getClaseIcono(),
-                    entity.getClaseEstado(),
-                    entity.getPath(),
+                    entity.getDescripcion(),
+                    entity.getCodigo(),
+                    entity.getActivo(),
                     entity.getFechaCambio(),
                     entity.getRegistradoPor(),
                     entity.getId());
             return  entity;
         }
-        return accionDAO.save(entity);
+        return ftpDAO.save(entity);
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public List<AccionEntity> save(Collection<AccionEntity> entities) {
+    public List<FtpEntity> save(Collection<FtpEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteByProcedure(Long id, String register) {
-        Integer rows = accionDAO.deleteByProcedure(id, register);
+        Integer rows = ftpDAO.deleteByProcedure(id, register);
         if (1 != rows) {
             throw new RuntimeException( "Se han afectado " + rows + " filas." );
         }
@@ -68,9 +67,15 @@ public class AccionServiceImpl implements AccionService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<AccionEntity> findAllFilteredBy(AccionEntity filter) {
+    public List<FtpEntity> findAllFilteredBy(FtpEntity filter) {
         OrderBy orderBy = new OrderBy("nombre", true);
-        Specification<AccionEntity> specification = new SpecificationCiadti<>(filter, orderBy);
-        return accionDAO.findAll(specification);
+        Specification<FtpEntity> specification = new SpecificationCiadti<>(filter, orderBy);
+        return ftpDAO.findAll(specification);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FtpEntity findActive() throws CiadtiException {
+        return ftpDAO.findActive().orElseThrow(() -> new CiadtiException("No se ha encontrado ningún ftp activo", 500));
     }
 }

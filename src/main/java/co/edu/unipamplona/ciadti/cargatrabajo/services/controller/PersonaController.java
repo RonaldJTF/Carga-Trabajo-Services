@@ -67,10 +67,21 @@ public class PersonaController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @Valid @RequestParam (value = "person") String personaJSON, 
-                                    @RequestParam(value = "file", required = false) MultipartFile photoFile) throws IOException, CloneNotSupportedException{
+                                    @RequestParam(value = "file", required = false) MultipartFile photoFile) throws IOException, CloneNotSupportedException, CiadtiException{
         ObjectMapper objectMapper = new ObjectMapper();
         PersonaEntity personaEntity = objectMapper.readValue(personaJSON, PersonaEntity.class);
         personaEntity.setId(id);
+        
+        PersonaEntity personaEntityBD = personaService.findById(id);
+        personaEntityBD.setCorreo(personaEntity.getCorreo());   
+        personaEntityBD.setDocumento(personaEntity.getDocumento());   
+        personaEntityBD.setIdGenero(personaEntity.getIdGenero());   
+        personaEntityBD.setIdTipoDocumento(personaEntity.getIdTipoDocumento());    
+        personaEntityBD.setPrimerNombre(personaEntity.getPrimerNombre()); 
+        personaEntityBD.setSegundoNombre(personaEntity.getSegundoNombre());   
+        personaEntityBD.setPrimerApellido(personaEntity.getPrimerApellido());   
+        personaEntityBD.setSegundoApellido(personaEntity.getSegundoApellido());  
+        personaEntityBD.setTelefono(personaEntity.getTelefono());   
         return new ResponseEntity<>(configurationMediator.savePerson(personaEntity, photoFile), HttpStatus.CREATED);
     }
 

@@ -5,62 +5,62 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.OrderBy;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.AccionDAO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.AccionEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.AccionService;
-import org.springframework.transaction.annotation.Transactional;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.ArchivoDAO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ArchivoEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ArchivoService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class AccionServiceImpl implements AccionService{
-    
-    private final AccionDAO accionDAO;
+public class ArchivoServiceImpl implements ArchivoService{
+    private final ArchivoDAO archivoDAO;
 
     @Override
     @Transactional(readOnly = true)
-    public AccionEntity findById(Long id) throws CiadtiException {
-        return accionDAO.findById(id).orElseThrow(() -> new CiadtiException("Accion no encontrado para el id :: " + id, 404));
+    public ArchivoEntity findById(Long id) throws CiadtiException {
+        return archivoDAO.findById(id).orElseThrow(() -> new CiadtiException("Archivo no encontrado para el id :: " + id, 404));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<AccionEntity> findAll() {
-        return accionDAO.findAll();
+    public List<ArchivoEntity> findAll() {
+        return archivoDAO.findAll();
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public AccionEntity save(AccionEntity entity) {
+    public ArchivoEntity save(ArchivoEntity entity) {
         if (entity.getId() != null){
             entity.onUpdate();
-            accionDAO.update(
+            archivoDAO.update(
+                    entity.getIdFtp(),
                     entity.getNombre(),
-                    entity.getClaseIcono(),
-                    entity.getClaseEstado(),
                     entity.getPath(),
+                    entity.getTamanio(),
+                    entity.getMimetype(),
                     entity.getFechaCambio(),
                     entity.getRegistradoPor(),
                     entity.getId());
             return  entity;
         }
-        return accionDAO.save(entity);
+        return archivoDAO.save(entity);
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public List<AccionEntity> save(Collection<AccionEntity> entities) {
+    public List<ArchivoEntity> save(Collection<ArchivoEntity> entities) {
         throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteByProcedure(Long id, String register) {
-        Integer rows = accionDAO.deleteByProcedure(id, register);
+        Integer rows = archivoDAO.deleteByProcedure(id, register);
         if (1 != rows) {
             throw new RuntimeException( "Se han afectado " + rows + " filas." );
         }
@@ -68,9 +68,15 @@ public class AccionServiceImpl implements AccionService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<AccionEntity> findAllFilteredBy(AccionEntity filter) {
+    public List<ArchivoEntity> findAllFilteredBy(ArchivoEntity filter) {
         OrderBy orderBy = new OrderBy("nombre", true);
-        Specification<AccionEntity> specification = new SpecificationCiadti<>(filter, orderBy);
-        return accionDAO.findAll(specification);
+        Specification<ArchivoEntity> specification = new SpecificationCiadti<>(filter, orderBy);
+        return archivoDAO.findAll(specification);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ArchivoEntity> findAllByIdSeguimiento(Long idSeguimiento) {
+        return archivoDAO.findAllByIdSeguimiento(idSeguimiento);
     }
 }
