@@ -56,9 +56,8 @@ public class PlanTrabajoEntity implements Serializable{
     @Column(name = "pltr_registradopor", nullable = false, length = 250)
     private String registradoPor; 
 
-    @JsonManagedReference
-    @OneToMany(mappedBy="planTrabajo")
-    private List<EtapaEntity> etapas;
+    @Transient
+    private Double avance;
 
     @JsonIgnore
     @Transient

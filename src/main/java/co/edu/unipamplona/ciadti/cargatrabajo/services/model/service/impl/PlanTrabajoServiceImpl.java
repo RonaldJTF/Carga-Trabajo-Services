@@ -1,7 +1,9 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -69,5 +71,18 @@ public class PlanTrabajoServiceImpl implements PlanTrabajoService{
         OrderBy orderBy = new OrderBy("nombre", true);
         Specification<PlanTrabajoEntity> specification = new SpecificationCiadti<>(filter, orderBy);
         return planTrabajoDAO.findAll(specification);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<Long, Double> getAllAvances() {
+        List<Object[]> results = planTrabajoDAO.getAllAvances();
+        Map<Long, Double> avancesMap = new HashMap<>();
+        for (Object[] result : results) {
+            Long planTrabajoId = ((Number) result[0]).longValue();
+            Double porcentajeAvance = ((Number)(result[1] != null ? result[1] : 0)).doubleValue();
+            avancesMap.put(planTrabajoId, porcentajeAvance);
+        }
+        return avancesMap;
     }
 }

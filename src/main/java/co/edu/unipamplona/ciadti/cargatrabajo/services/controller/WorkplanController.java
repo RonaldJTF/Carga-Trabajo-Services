@@ -3,13 +3,10 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EtapaEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PersonaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PlanTrabajoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.SeguimientoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TareaEntity;
@@ -25,7 +22,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +59,14 @@ public class WorkplanController {
         ParameterConverter parameterConverter = new ParameterConverter(PlanTrabajoEntity.class);
         PlanTrabajoEntity filter = (PlanTrabajoEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, planTrabajoService.findAllFilteredBy(filter));
+        List<PlanTrabajoEntity> result = planTrabajoService.findAllFilteredBy(filter);
+        Map<Long, Double> advances = planTrabajoService.getAllAvances();
+
+        result.forEach(planTrabajo -> {
+            Double avance = advances.get(planTrabajo.getId());
+            planTrabajo.setAvance(avance);
+        });
+        return Methods.getResponseAccordingToId(id, result);
     }
 
 
@@ -95,6 +101,12 @@ public class WorkplanController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete (@PathVariable Long id){
         configurationMediator.deleteWorkplan(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteWorkplans(@RequestBody List<Long> workplanIds) throws CiadtiException {
+        configurationMediator.deleteWorkplans(workplanIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -144,6 +156,12 @@ public class WorkplanController {
     @DeleteMapping("/stage/{id}")
     public ResponseEntity<?> deleteStage (@PathVariable Long id){
         configurationMediator.deleteStage(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/stage")
+    public ResponseEntity<?> deleteStages(@RequestBody List<Long> stageIds) throws CiadtiException {
+        configurationMediator.deleteStages(stageIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -200,6 +218,11 @@ public class WorkplanController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @DeleteMapping("/task")
+    public ResponseEntity<?> deleteTasks(@RequestBody List<Long> taskIds) throws CiadtiException {
+        configurationMediator.deleteTasks(taskIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
     @Operation(
         summary = "Obtener o listar los seguimientos de una tarea",

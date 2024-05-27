@@ -2,12 +2,9 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ActividadOutDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.ActividadDTO;
-import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 

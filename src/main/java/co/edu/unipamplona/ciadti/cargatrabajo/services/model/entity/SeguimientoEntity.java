@@ -57,6 +57,10 @@ public class SeguimientoEntity implements Serializable{
     @Column(name = "segu_activo")
     private String activo;
 
+    @Column(name = "segu_fecha", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fecha;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "segu_fechacambio", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

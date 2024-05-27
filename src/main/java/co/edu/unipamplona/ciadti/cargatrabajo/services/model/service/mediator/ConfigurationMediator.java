@@ -356,4 +356,62 @@ public class ConfigurationMediator {
         }
         return seguimientoEntity;
     }
+
+
+     /**
+     * Elimina todos los planes de trabajos pasados en el parámetro workplanIds
+     * @param workplanIds: Contiene los identificadores de los planes de trabajo a eliminar
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteWorkplans(List<Long> workplanIds) {
+        for (Long id : workplanIds){
+            deleteWorkplan(id);
+        }
+    } 
+
+    /**
+     * Elimina todas las etapas pasadas en el parámetro stageIds
+     * @param stageIds: Contiene los identificadores de las etapas a eliminar
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteStages(List<Long> stageIds) throws CiadtiException {
+        List<Long> delectedStages = new ArrayList<>();
+        for (Long id : stageIds){
+            deleteStage(id, delectedStages);
+        }
+    } 
+
+    /**
+     * Elimina una etapa y sus subetapas de manera recursiva
+     * @param id: identificador de la etapa a eliminar
+     * @param deletedStructures: almacena las etapas que se han eliminado, esto para evitar tratar 
+     *                           de eliminar una etapa que ha sido eliminada en el mismo proceso
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    private void deleteStage(Long id, List<Long> deleteStages) throws CiadtiException{
+        EtapaEntity stage = etapaService.findById(id);
+        if (stage.getSubEtapas() != null){
+            for (EtapaEntity e : stage.getSubEtapas()){
+                deleteStage(e.getId(), deleteStages);
+            }
+        }
+        if (!deleteStages.contains(id)){
+            deleteStage(id);
+            deleteStages.add(id);
+        }
+    }
+
+    /**
+     * Elimina las tareas con sus seguimientos
+     * @param taskIds: Lista de tareas a eliminar
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteTasks(List<Long> taskIds) {
+        for (Long id : taskIds){
+            deleteTask(id);
+        }
+    }
+
 }

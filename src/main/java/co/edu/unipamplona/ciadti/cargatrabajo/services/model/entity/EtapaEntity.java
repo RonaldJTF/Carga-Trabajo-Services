@@ -64,18 +64,13 @@ public class EtapaEntity implements Serializable{
     @Column(name = "etap_registradopor", nullable = false, length = 250)
     private String registradoPor; 
 
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "pltr_id", insertable = false, updatable = false)
-    private PlanTrabajoEntity planTrabajo;
-
     @JsonManagedReference
     @OneToMany(mappedBy = "etapa")
     private List<TareaEntity> tareas;
 
     @OneToMany
     @JoinColumn(name = "etap_idpadre", insertable = false, updatable = false)
-    private List<EtapaEntity> subetapas;
+    private List<EtapaEntity> subEtapas;
 
     @JsonIgnore
     @Transient
