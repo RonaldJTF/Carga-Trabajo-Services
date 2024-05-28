@@ -245,7 +245,7 @@ public class WorkplanController {
             "Args: seguimientoEntity: objeto con información del seguimiento. " +
             "Returns: Objeto con la información asociada.")
     @PostMapping("/follow-up")
-    public ResponseEntity<?> createTask (@Valid @RequestParam(value = "follouUp") String followUpJSON, 
+    public ResponseEntity<?> createFollowUp (@Valid @RequestParam(value = "followUp") String followUpJSON,
                                          @RequestParam(value = "files", required = false) List<MultipartFile> files) throws Exception{
         ObjectMapper objectMapper = new ObjectMapper();
         SeguimientoEntity seguimientoEntity = objectMapper.readValue(followUpJSON, SeguimientoEntity.class);
@@ -259,7 +259,7 @@ public class WorkplanController {
             "id: identificador del seguimiento. " +
             "Returns: Objeto con la información asociada.")
     @PutMapping("/follow-up/{id}")
-    public ResponseEntity<?> updateFollowUp(@Valid @RequestParam(value = "follouUp") String followUpJSON, 
+    public ResponseEntity<?> updateFollowUp(@Valid @RequestParam(value = "followUp") String followUpJSON,
                                             @RequestParam(value = "files", required = false) List<MultipartFile> files, 
                                             @PathVariable Long id) throws Exception{
         ObjectMapper objectMapper = new ObjectMapper();

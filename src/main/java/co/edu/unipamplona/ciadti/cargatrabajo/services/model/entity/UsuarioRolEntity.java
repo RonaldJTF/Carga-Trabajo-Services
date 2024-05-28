@@ -60,13 +60,13 @@ public class UsuarioRolEntity implements Serializable, Cloneable{
     void onCreate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
-        this.registradoPor = "registradorDTO.getJsonAsString()";
+        this.registradoPor = registradorDTO.getJsonAsString();
     }
 
     public void onUpdate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
-        this.registradoPor = "registradorDTO.getJsonAsString()";
+        this.registradoPor = registradorDTO.getJsonAsString();
     }
 
     @Override

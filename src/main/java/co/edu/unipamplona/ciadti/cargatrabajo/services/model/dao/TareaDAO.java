@@ -34,6 +34,7 @@ public interface TareaDAO extends JpaRepository<TareaEntity, Long>, JpaSpecifica
 
     List<TareaEntity> findAllByIdEtapa(Long idEtapa);
 
+    @Modifying
     @Query(value =  "update TareaEntity t set t.activo = :activo, t.fechaCambio = :fechaCambio, t.registradoPor = :registradoPor where t.id=:id")
     int updateActivoById(@Param("activo") String activo,
                          @Param("fechaCambio") Date fechaCambio,

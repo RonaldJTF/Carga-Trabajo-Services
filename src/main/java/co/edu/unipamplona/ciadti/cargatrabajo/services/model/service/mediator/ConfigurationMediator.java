@@ -322,12 +322,16 @@ public class ConfigurationMediator {
      * @return: SeguimientoEntity
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public SeguimientoEntity saveFollowUp(SeguimientoEntity seguimientoEntity, List<MultipartFile> files) {
+    public SeguimientoEntity saveFollowUp(SeguimientoEntity seguimientoEntity, List<MultipartFile> files) throws CloneNotSupportedException {
         ArchivoEntity archivoEntity;
     
         seguimientoEntity.setActivo(seguimientoEntity.getPorcentajeAvance() >= 100 ? Active.ACTIVATED : Active.INACTIVATED);
-        tareaService.updateActivoById(seguimientoEntity.getIdTarea(), seguimientoEntity.getActivo(), RegisterContext.getRegistradorDTO().getJsonAsString()); 
-        seguimientoService.save(seguimientoEntity);
+        tareaService.updateActivoById(seguimientoEntity.getIdTarea(), seguimientoEntity.getActivo(), RegisterContext.getRegistradorDTO().getJsonAsString());
+
+        SeguimientoEntity seguimientoEntityToSave = (SeguimientoEntity) seguimientoEntity.clone();
+        seguimientoService.save(seguimientoEntityToSave);
+        seguimientoEntity.setId(seguimientoEntityToSave.getId());
+        seguimientoEntity.setFecha(seguimientoEntityToSave.getFecha());
 
         SeguimientoArchivoEntity seguimientoArchivoEntity;
         List<ArchivoEntity> filesBD = archivoService.findAllByIdSeguimiento(seguimientoEntity.getId());
