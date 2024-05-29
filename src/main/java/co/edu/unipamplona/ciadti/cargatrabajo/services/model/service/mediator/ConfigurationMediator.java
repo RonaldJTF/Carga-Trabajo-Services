@@ -294,7 +294,7 @@ public class ConfigurationMediator {
     public void deleteTask(Long id){
         List<SeguimientoEntity> followUpList = seguimientoService.findAllByIdTarea(id);
         for(SeguimientoEntity s : followUpList){
-            deleteFolloUp(s.getId());
+            deleteFollowUp(s.getId());
         }
         tareaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
