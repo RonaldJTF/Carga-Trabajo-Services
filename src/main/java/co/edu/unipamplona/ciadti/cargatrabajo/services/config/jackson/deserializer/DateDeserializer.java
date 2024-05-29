@@ -34,6 +34,8 @@ public class DateDeserializer extends StdDeserializer<Date> {
                 format = Format.DATETIME.value;
             }else if (this.isMatcher(date, Format.TIME)){
                 format = Format.TIME.value;
+            }else if (this.isMatcher(date, Format.FULLTIME)){
+                format = Format.FULLTIME.value;
             }else{
                 format = Format.DEFAULT.value;
             }
@@ -60,6 +62,10 @@ public class DateDeserializer extends StdDeserializer<Date> {
                     formatter = DateTimeFormatter.ofPattern(format.value);
                     LocalTime.parse(input, formatter);
                     return true;
+                case FULLTIME:
+                    formatter = DateTimeFormatter.ofPattern(format.value);
+                    LocalTime.parse(input, formatter);
+                    return true;
                 default:
                     return false;
             }
@@ -73,6 +79,7 @@ public class DateDeserializer extends StdDeserializer<Date> {
         DATE ("yyyy-MM-dd", "Solo fecha. Ej: 2023-07-24"),
         DATETIME ("yyyy-MM-dd HH:mm:ss", "Fecha y hora. Ej: 2023-07-24 15:30:00"),
         TIME ("HH:mm:ss", "Solo hora. Ej: 15:30:00"),
+        FULLTIME ("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "Formato completo con zona horaria. Ej: 2023-07-24T15:30:00.000Z"),
         DEFAULT ("yyyy-MM-dd'T'HH:mm:ssZ", "Formato completo con zona horaria. Ej: 2023-07-24T15:30:00+0530");
 
         private final String value;

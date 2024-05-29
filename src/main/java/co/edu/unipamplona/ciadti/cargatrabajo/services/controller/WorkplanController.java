@@ -22,7 +22,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -203,6 +202,20 @@ public class WorkplanController {
         tareaEntityBD.setNombre(tareaEntity.getNombre());
         tareaEntityBD.setEntregable(tareaEntity.getEntregable());
         tareaEntityBD.setResponsable(tareaEntity.getResponsable());
+        tareaEntityBD.setFechaInicio(tareaEntity.getFechaInicio());
+        tareaEntityBD.setFechaFin(tareaEntity.getFechaFin());
+        return new ResponseEntity<>(tareaService.save(tareaEntityBD), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary="Actualizar fecha de realización de la tarea",
+        description = "Actualiza fecha de realización de la tarea. " + 
+            "Args: tareaEntity: objeto con información de las fechas de la tarea. " +
+            "id: identificador de la tarea. " +
+            "Returns: Objeto con la información asociada.")
+    @PutMapping("/task/dates/{id}")
+    public ResponseEntity<?> updateStageDates (@Valid @RequestBody TareaEntity tareaEntity, @PathVariable Long id) throws CiadtiException{
+        TareaEntity tareaEntityBD = tareaService.findById(id);
         tareaEntityBD.setFechaInicio(tareaEntity.getFechaInicio());
         tareaEntityBD.setFechaFin(tareaEntity.getFechaFin());
         return new ResponseEntity<>(tareaService.save(tareaEntityBD), HttpStatus.CREATED);
