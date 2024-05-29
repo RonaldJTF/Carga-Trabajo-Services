@@ -304,7 +304,7 @@ public class ConfigurationMediator {
      * @param id: Identificador del seguimiento
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void deleteFolloUp(Long id){
+    public void deleteFollowUp(Long id){
         List<ArchivoEntity> files = archivoService.findAllByIdSeguimiento(id);
         SeguimientoArchivoEntity seguimientoArchivoEntity;
         for (ArchivoEntity f : files){

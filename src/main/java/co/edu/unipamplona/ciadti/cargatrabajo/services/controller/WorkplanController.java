@@ -289,7 +289,7 @@ public class WorkplanController {
             "Args: id: identificador del seguimiento a eliminar. ")
     @DeleteMapping("/follow-up/{id}")
     public ResponseEntity<?> deleteFollowUp (@PathVariable Long id){
-        configurationMediator.deleteTask(id);
+        configurationMediator.deleteFollowUp(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
