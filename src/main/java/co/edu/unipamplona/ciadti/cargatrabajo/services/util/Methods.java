@@ -367,4 +367,68 @@ public class Methods {
         }
         return new int[]{100, 100}; 
     }
+
+    /**
+     * Obtiene un color interpolado entre tonos pasteles desde rojo hasta verde en función de un porcentaje dado.
+     * @param percentage El porcentaje del color entre 0 y 100.
+     * @return Un array de enteros que representa el color en formato RGB.
+     * @throws IllegalArgumentException si el porcentaje está fuera del rango válido [0, 100].
+     */
+    public static int[] getColorFromPercentage(double percentage) throws IllegalArgumentException {
+        if (percentage < 0) {
+            throw new IllegalArgumentException("El porcentaje debe ser mayor o igual que cero");
+        }
+        if (percentage > 100){
+            percentage = 100;
+        }
+
+        // Colores de inicio y fin para cada transición en formato RGB (en tonos pasteles)
+        int[] startRed = {255, 182, 193};       // Rosa pálido
+        int[] startOrange = {255, 218, 185};    // Melocotón
+        int[] startYellow = {255, 253, 182};    // Amarillo pálido
+        int[] startGreen = {152, 251, 152};     // Verde claro
+
+        int[] endRed = {255, 218, 185};         // Melocotón
+        int[] endOrange = {255, 253, 182};      // Amarillo pálido
+        int[] endYellow = {240, 255, 240};      // Verde lima claro
+        int[] endGreen = {152, 251, 152};       // Verde claro
+
+        // Definir los límites de los porcentajes para cada transición
+        double redLimit = 25.0;
+        double orangeLimit = 50.0;
+        double yellowLimit = 75.0;
+        double greenLimit = 100.0;
+
+        // Determinar la transición actual
+        int[] startColor;
+        int[] endColor;
+        double adjustedPercentage;
+
+        if (percentage <= redLimit) {
+            startColor = startRed;
+            endColor = endRed;
+            adjustedPercentage = percentage / redLimit;
+        } else if (percentage <= orangeLimit) {
+            startColor = startOrange;
+            endColor = endOrange;
+            adjustedPercentage = (percentage - redLimit) / (orangeLimit - redLimit);
+        } else if (percentage <= yellowLimit) {
+            startColor = startYellow;
+            endColor = endYellow;
+            adjustedPercentage = (percentage - orangeLimit) / (yellowLimit - orangeLimit);
+        } else {
+            startColor = startGreen;
+            endColor = endGreen;
+            adjustedPercentage = (percentage - yellowLimit) / (greenLimit - yellowLimit);
+        }
+
+        // Interpolar los valores RGB en función del porcentaje ajustado
+        int r = (int) (startColor[0] + (endColor[0] - startColor[0]) * adjustedPercentage);
+        int g = (int) (startColor[1] + (endColor[1] - startColor[1]) * adjustedPercentage);
+        int b = (int) (startColor[2] + (endColor[2] - startColor[2]) * adjustedPercentage);
+
+        return new int[]{r, g, b};
+    }
+
+
 }

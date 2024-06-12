@@ -38,6 +38,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioRolS
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Routes;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Active;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -58,6 +59,44 @@ public class ConfigurationMediator {
     private final MediaMediator mediaMediator;
 
     /**
+     * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
+     * @param structure
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public EstructuraEntity createStructure(EstructuraEntity structure) {
+        estructuraService.save(structure);
+        boolean exists = estructuraService.existsByIdPadreAndOrdenAndNotId(structure.getIdPadre(), structure.getOrden(), structure.getId());
+        if (exists){
+            estructuraService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(structure.getIdPadre(), structure.getOrden(), structure.getId(),  1);
+        }
+        return structure;
+    }
+
+    /**
+     * Actualiza una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
+     * @param structure
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public EstructuraEntity updateStructure(EstructuraEntity structure, Long previousOrder) {
+        estructuraService.save(structure);
+        boolean exists = estructuraService.existsByIdPadreAndOrdenAndNotId(structure.getIdPadre(), structure.getOrden(), structure.getId());
+        if (exists){
+            if (previousOrder != null){
+                if(previousOrder >= structure.getOrden()){
+                    estructuraService.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(structure.getIdPadre(), structure.getOrden(), previousOrder, structure.getId(),  1);
+                }else{
+                    estructuraService.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(structure.getIdPadre(), previousOrder, structure.getOrden(), structure.getId(),  -1);
+                }
+            }else{
+                estructuraService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(structure.getIdPadre(), structure.getOrden(), structure.getId(),  1);
+            }
+        }
+        return structure;
+    }
+
+    /**
      * Elimina una estructura por su id y todas sus subestructuras en cascada.
      * @param id: Identificador de la estructura a eliminar
      * @throws CiadtiException
@@ -65,6 +104,7 @@ public class ConfigurationMediator {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteStructure(Long id) throws CiadtiException{
         EstructuraEntity structure = estructuraService.findById(id);
+        estructuraService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(structure.getIdPadre(), structure.getOrden(), structure.getId(),  -1);
         if (structure.getSubEstructuras() != null){
             for (EstructuraEntity e : structure.getSubEstructuras()){
                 deleteStructure(e.getId());
@@ -100,6 +140,7 @@ public class ConfigurationMediator {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     private void deleteStructure(Long id, List<Long> deletedStructures ) throws CiadtiException{
         EstructuraEntity structure = estructuraService.findById(id);
+        estructuraService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(structure.getIdPadre(), structure.getOrden(), structure.getId(),  -1);
         if (structure.getSubEstructuras() != null){
             for (EstructuraEntity e : structure.getSubEstructuras()){
                 deleteStructure(e.getId(), deletedStructures);
@@ -417,5 +458,58 @@ public class ConfigurationMediator {
             deleteTask(id);
         }
     }
+
+    public List<EtapaEntity> findAllStagesByIds(List<Long> stageIds) {
+        List<EtapaEntity> stages = etapaService.findAllFilteredByIds(stageIds);
+        stages.forEach(e -> {
+            assignAdvance(e);
+        });
+        return stages;
+    }
+
+    public List<EtapaEntity> findAllStagesByIdWorkplan(Long idWorkplan) {
+        List<EtapaEntity> stages = etapaService.findAllFilteredBy(EtapaEntity.builder().idPlanTrabajo(idWorkplan).build());
+        stages.forEach(e -> {
+            assignAdvance(e);
+        });
+        return stages;
+    }
+
+    private Double assignAdvance(EtapaEntity stage){
+        if (stage == null) {
+            return 0.0;
+        }
+        Double totalAdvance = 0.0;
+        int count = 0;
+        if (stage.getTareas() != null && !stage.getTareas().isEmpty()) {
+            for (TareaEntity task : stage.getTareas()) {
+                if (task.getSeguimientos() != null && !task.getSeguimientos().isEmpty()) {
+                    SeguimientoEntity lastFollowUp = task.getSeguimientos().stream()
+                        .max((f1, f2) -> f1.getFecha().compareTo(f2.getFecha()))
+                        .orElse(null);
+
+                    if (lastFollowUp != null) {
+                        task.setAvance(Math.round(lastFollowUp.getPorcentajeAvance() * 10.0) / 10.0);
+                    }
+                } else {
+                    task.setAvance(0.0);
+                }
+                totalAdvance += task.getAvance();
+                count++;
+            }
+        }
+        if (stage.getSubEtapas() != null && !stage.getSubEtapas().isEmpty()) {
+            for (EtapaEntity subStage : stage.getSubEtapas()) {
+                totalAdvance += assignAdvance(subStage);
+                count++;
+            }
+        }
+        if (count == 0) {
+            return 0.0;
+        }
+        stage.setAvance(Math.round((totalAdvance / count) * 10.0) / 10.0);
+        return Math.round(stage.getAvance() * 10.0) / 10.0;
+    }
+
 
 }

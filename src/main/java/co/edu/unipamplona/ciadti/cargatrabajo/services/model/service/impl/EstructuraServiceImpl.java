@@ -53,6 +53,7 @@ public class EstructuraServiceImpl implements EstructuraService {
                     entity.getIdTipologia(),
                     entity.getIcono(),
                     entity.getMimetype(),
+                    entity.getOrden(),
                     entity.getFechaCambio(),
                     entity.getRegistradoPor(),
                     entity.getId());
@@ -136,9 +137,9 @@ public class EstructuraServiceImpl implements EstructuraService {
 
     private void orderSubstructures(List<EstructuraEntity> structures) {
         List<PropertyComparator<EstructuraEntity>> propertyComparators = new ArrayList<>();
-        propertyComparators.add(new PropertyComparator<>("nombre", true));
-        MultiPropertyComparator<EstructuraEntity> multiPropertyComparator = new MultiPropertyComparator<>(
-                propertyComparators);
+        propertyComparators.add(new PropertyComparator<>("orden", true));
+        propertyComparators.add(new PropertyComparator<>("id", true));
+        MultiPropertyComparator<EstructuraEntity> multiPropertyComparator = new MultiPropertyComparator<>(propertyComparators);
         Collections.sort(structures, multiPropertyComparator);
     }
 
@@ -216,4 +217,27 @@ public class EstructuraServiceImpl implements EstructuraService {
         return actividad;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Long findLastOrderByIdPadre(Long idPadre) {
+        return estructuraDAO.findLastOrderByIdPadre(idPadre);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(Long idPadre, Long orden, Long id, int increment) {
+        return estructuraDAO.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(idPadre, orden, id, increment);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByIdPadreAndOrdenAndNotId(Long idPadre, Long orden, Long id) {
+        return estructuraDAO.existsByIdPadreAndOrdenAndNotId(idPadre, orden, id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(Long idPadre, Long inferiorOrder, Long superiorOrder, Long id, int increment) {
+        return estructuraDAO.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(idPadre, inferiorOrder, superiorOrder, id, increment);
+    }
 }

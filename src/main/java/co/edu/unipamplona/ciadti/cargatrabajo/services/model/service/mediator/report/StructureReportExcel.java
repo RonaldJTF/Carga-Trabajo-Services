@@ -1,8 +1,5 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -14,19 +11,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -53,7 +41,8 @@ public class StructureReportExcel {
     private final NivelService nivelService;
     private final ResourceLoader resourceLoader;
 
-    private final Map<String, Object> registry = new HashMap<>();
+    private Map<String, Object> registry;
+    private Double HOURS_PER_MONTH;
 
     private final int[] GRAY = {242, 242, 242};
     private final int[] GREEN = {238, 245, 208};
@@ -68,30 +57,37 @@ public class StructureReportExcel {
     private final Boolean[] BORDER_LEFT = {false, false, false, true};
 
     public byte[] generate(List<Long> structureIds) throws CiadtiException{
-        BlockPOI titleBlock = buildDependencyReportTitle(Position.builder().x(1).y(1).build());
-        BlockPOI entityBlock = buildDependencyReportEntity(null);
+        registry = new HashMap<>();
+        HOURS_PER_MONTH = 167.0;
 
+        BlockPOI titleBlock = buildDependencyReportTitle(Position.builder().x(1).y(1).build());
         Map<String, Position> positions;
-        ReportPOI report = new ReportPOI();
+        ReportPOI report = new ReportPOI("Detalle");
         positions = report.addTitle(titleBlock);
         Position bottomTitlePosition = positions.get("bottom");
-        bottomTitlePosition.setY(bottomTitlePosition.getY() + 1);
-
-        entityBlock.setPosition(bottomTitlePosition);
-        positions = report.addBlock(entityBlock);
-        Position bottomEntityPosition = positions.get("bottom");
-        bottomEntityPosition.setY(bottomEntityPosition.getY() + 1);
-        positions = report.addBlock(buildDependencyReportHead(bottomEntityPosition));
-
+        bottomTitlePosition.setY(bottomTitlePosition.getY() + 3);
+        positions = report.addBlock(buildDependencyReportHead(bottomTitlePosition));
         Position TopRightHeadPosition = positions.get("top-right");
         TopRightHeadPosition.setY(TopRightHeadPosition.getY() - 1);
         TopRightHeadPosition.setX(TopRightHeadPosition.getX() - 3);
-        report.addBlock(buildDependencyReportDate(TopRightHeadPosition));
-
+        report.addBlock(buildDependencyReportDate(TopRightHeadPosition, 1));
         positions = report.addBlock(buildDependencyReportStructure(structureIds, positions.get("bottom")));
         positions = report.addBlock(buildDependencyReportResume(positions.get("bottom")));
+        report.builtSheetContent();
 
-        return report.generate();
+        report.createSheet("Consolidado");
+        titleBlock = buildDependencyReportTitle(Position.builder().x(1).y(1).build());
+        positions = report.addTitle(titleBlock);
+        Position bottomConsolidatedTitlePosition = positions.get("bottom");
+        bottomConsolidatedTitlePosition.setY(bottomConsolidatedTitlePosition.getY() + 3);
+        positions = report.addBlock(buildConsolidatedReportHead(bottomConsolidatedTitlePosition));
+        TopRightHeadPosition = positions.get("top-right");
+        TopRightHeadPosition.setY(TopRightHeadPosition.getY() - 1);
+        TopRightHeadPosition.setX(TopRightHeadPosition.getX() - 1);
+        report.addBlock(buildDependencyReportDate(TopRightHeadPosition, 0));
+        positions = report.addBlock(buildConsolidatedReportStructure(structureIds, positions.get("bottom")));
+        report.builtSheetContent();
+        return report.generateBytes();
     }
 
     private BlockPOI buildDependencyReportTitle(Position position) throws CiadtiException{
@@ -99,12 +95,11 @@ public class StructureReportExcel {
             .position(position)
             .style(Style.builder().backgroundColorRGB(GRAY).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.CENTER).verticalAlignment(VerticalAlignment.CENTER).build())
             .items(List.of(
-                    CellPOI.builder().value(getImageBytes()).style(Style.builder().width(20).border(BorderStyle.MEDIUM).build()).build(),
-                    CellPOI.builder().value("DEPARTAMENTO ADMINISTRATIVO DE LA FUNCIÓN PÚBLICA").style(Style.builder().font("Arial Black").fontSize(14).borderStyle(BorderStyle.MEDIUM).borders(new Boolean[]{true, true, false, false}).build())
+                    CellPOI.builder().value(getImageBytes()).style(Style.builder().width(20).borderStyle(BorderStyle.MEDIUM).build()).build(),
+                    CellPOI.builder().value("Universidad Distrital Francisco José de Caldas").style(Style.builder().font("Arial Black").fontSize(14).borderStyle(BorderStyle.MEDIUM).borders(new Boolean[]{true, true, false, false}).build())
                         .children(CellPOI.createSiblings(List.of(
-                            CellPOI.builder().value("DIRECCIÓN DE DESARROLLO ORGANIZACIONAL").style(Style.builder().fontSize(12).borders(BORDER_RIGHT).build()).build(),
-                            CellPOI.builder().value("MEDICIÓN DE CARGAS DE TRABAJO POR DEPENDENCIA").style(Style.builder().bold(true).font("Calibri").borders(BORDER_RIGHT).build()).build(),
-                            CellPOI.builder().value("FORMULARIO 1").style(Style.builder().borders(new Boolean[]{false, true, true, false}).build()).build()
+                            CellPOI.builder().value("Gestión y Desarrollo del Talento Humano").style(Style.builder().fontSize(12).borders(BORDER_RIGHT).build()).build(),
+                            CellPOI.builder().value("Gestión de Tiempos Laborados por Dependencia").style(Style.builder().borders(new Boolean[]{false, true, true, false}).build()).build()
                         ))).build())
             ).build();
     }
@@ -121,24 +116,16 @@ public class StructureReportExcel {
         return null;
     }
 
-    private BlockPOI buildDependencyReportEntity(Position position){
-        return BlockPOI.builder()
-            .style(Style.builder().backgroundColorRGB(GRAY).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER).border(BorderStyle.THIN).wrapText(true).build())
-            .items(List.of(
-                CellPOI.builder().value("ENTIDAD").build(),
-                CellPOI.builder().value("ALCALDÍA DE SAN JOSÉ DE CÚCUTA").style(Style.builder().backgroundColorRGB(WHITE).build()).build()
-            )).build();
-    }
 
-    private BlockPOI buildDependencyReportDate(Position position){
+    private BlockPOI buildDependencyReportDate(Position position, int aditionalCeld){
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         String date = dateFormat.format(new Date());
         return BlockPOI.builder()
             .position(position)
-            .style(Style.builder().backgroundColorRGB(GRAY).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER).border(BorderStyle.THIN).wrapText(true).build())
+            .style(Style.builder().backgroundColorRGB(GRAY).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER).borderStyle(BorderStyle.THIN).wrapText(true).build())
             .items(List.of(
-                CellPOI.builder().value("Fecha del reporte").aditionalCellsToUse(1).build(),
-                CellPOI.builder().value(date).aditionalCellsToUse(1).build()
+                CellPOI.builder().value("Fecha del reporte").aditionalCellsToUse(aditionalCeld).build(),
+                CellPOI.builder().value(date).aditionalCellsToUse(aditionalCeld).build()
             )).build();
     }
 
@@ -149,12 +136,13 @@ public class StructureReportExcel {
         registry.put("levels", levels);
         registry.put("typologies", typologies);
         registry.put("totalColumns", typologies.size() + levels.size() + 7);
+        registry.put("startColumn", typologies.size() + 7);
 
         for (TipologiaEntity e : typologies){ items.add(CellPOI.builder().value(e.getNombre()).build());}
 
         List<CellPOI> levelHeads = new ArrayList<>();
         for (NivelEntity e : levels){
-            levelHeads.add(CellPOI.builder().value(e.getDescripcion().substring(0, 3).toUpperCase()).build());
+            levelHeads.add(CellPOI.builder().value(getLevelNomenclature(e.getDescripcion())).build());
         }
 
         items.add(CellPOI.builder().value("NIVEL").style(Style.builder().width(15).backgroundColorRGB(GREEN).build()).build());
@@ -171,7 +159,7 @@ public class StructureReportExcel {
             .items(items)
             .style(
                 Style.builder().backgroundColorRGB(BLUE).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.CENTER).verticalAlignment(VerticalAlignment.CENTER)
-                    .bold(true).border(BorderStyle.THIN).wrapText(true).width(30).build())
+                    .bold(true).borderStyle(BorderStyle.THIN).wrapText(true).width(40).build())
             .build();
         return block;
     }
@@ -196,20 +184,20 @@ public class StructureReportExcel {
             .showInColumn(true)
             .noExtend(true)
             .style(Style.builder().backgroundColorRGB(WHITE).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER)
-                .border(BorderStyle.THIN).build())
+                .borderStyle(BorderStyle.THIN).build())
             .build();
     }
 
     private BlockPOI buildDependencyReportResume(Position position){
         List<CellPOI> items = List.of(
-            createTotalCell("TOTAL HORAS REQUERIDAS", "totalTimePerDependency_", 1, PINK),
-            createTotalCell("PERSONAL TOTAL REQUERIDO", "totalTimePerDependency_", 167, PINK)
+            createTotalCell("TOTAL HORAS REQUERIDAS", "totalTime_", null, 1, PINK, false),
+            createTotalCell("PERSONAL TOTAL REQUERIDO", "totalTime_", null, HOURS_PER_MONTH, PINK, false)
         );
         return BlockPOI.builder()
             .showInColumn(true)
             .position(position)
             .items(items)
-            .style(Style.builder().patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER).border(BorderStyle.THIN).bold(true).build())
+            .style(Style.builder().patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER).borderStyle(BorderStyle.THIN).bold(true).build())
             .build();
     }
 
@@ -221,11 +209,12 @@ public class StructureReportExcel {
                 if (maxDeep - deep - 1 > 0){
                     addItem(cell.getChildren(), structure.getSubEstructuras(), deep + 1, maxDeep);
                     if ("1".equals(structure.getTipologia().getEsDependencia())){
-                        items.add(createTotalCell("Horas requeridas", "temporalTotalTimePerDependency_", 1, AQUA));
-                        items.add(createTotalCell("Personal requerido", "temporalTotalTimePerDependency_", 167, AQUA));
+                        items.add(createTotalCell("Horas requeridas", "temporalTotalTimePerDependency_", null, 1, AQUA, false));
+                        items.add(createTotalCell("Personal requerido", "temporalTotalTimePerDependency_", null, HOURS_PER_MONTH, AQUA, false));
                         List<NivelEntity> levels = (List<NivelEntity>)registry.get("levels");
                         for (NivelEntity e : levels){
-                            registry.put("temporalTotalTimePerDependency_"+e.getId(), null);
+                            registry.put("totalTimePerDependency_" + structure.getId() + e.getId(),  registry.get("temporalTotalTimePerDependency_" + e.getId()));
+                            registry.put("temporalTotalTimePerDependency_" + e.getId(), null);
                         }
                     }
                 }else{
@@ -233,7 +222,7 @@ public class StructureReportExcel {
                         List<NivelEntity> levels = (List<NivelEntity>)registry.get("levels");
 
                         String levl = structure.getActividad().getNivel().getDescripcion();
-                        String levelNomenclature = structure.getActividad().getNivel().getDescripcion().substring(0, 3).toUpperCase();
+                        String levelNomenclature = getLevelNomenclature(structure.getActividad().getNivel().getDescripcion());
                         Double frecuency = structure.getActividad().getFrecuencia();
                         Double minTime = (double) Math.round((structure.getActividad().getTiempoMinimo() / 60.0)*100.0)/100.0;
                         Double meanTime = (double) Math.round((structure.getActividad().getTiempoPromedio() / 60.0)*100.0)/100.0;
@@ -244,22 +233,22 @@ public class StructureReportExcel {
                         for (NivelEntity e : levels){
                             timeResume.add(CellPOI.builder().value(e.getId() == structure.getActividad().getIdNivel() ? String.valueOf(Math.round((frecuency * standarTime)*100.0)/100.0) : "").build());
                              
-                            Double acc = (Double)registry.get("totalTimePerDependency_"+e.getId());  
+                            Double acc = (Double)registry.get("totalTime_"+e.getId());  
                             if (e.getId() == structure.getActividad().getIdNivel()){
                                 if (acc == null){
                                    acc = 0.0;
                                 } 
                                 acc += frecuency * standarTime;
-                                registry.put("totalTimePerDependency_"+e.getId(), acc);
+                                registry.put("totalTime_"+e.getId(), acc);
                             }
-
-                            Double accPerDependency = (Double)registry.get("temporalTotalTimePerDependency_"+e.getId());  
+                           
+                            Double accPerDependency = (Double)registry.get("temporalTotalTimePerDependency_" + e.getId());  
                             if (e.getId() == structure.getActividad().getIdNivel()){
                                 if (accPerDependency == null){
                                     accPerDependency = 0.0;
                                 } 
                                 accPerDependency += frecuency * standarTime;
-                                registry.put("temporalTotalTimePerDependency_"+e.getId(), accPerDependency);
+                                registry.put("temporalTotalTimePerDependency_" + e.getId(), accPerDependency);
                             }
                         }
 
@@ -286,19 +275,27 @@ public class StructureReportExcel {
         }
     }
 
-    private CellPOI createTotalCell(String label, String accKey, double divisor, int[] backgroundColorRGB) {
+    private CellPOI createTotalCell(String label, String accKey, Long idStrucure, double divisor, int[] backgroundColorRGB, boolean hasResume) {
         List<CellPOI> items = new ArrayList<>();
         List<NivelEntity> levels = (List<NivelEntity>) registry.get("levels");
+        int startColumn = (int) registry.get("startColumn");
         int totalColumns = (int) registry.get("totalColumns");
+
         NivelEntity level;
         Map<String, String> row = new HashMap<>();
         
+        Double sum = 0.0;
         for (int i = 0; i < levels.size(); i++) {
             level = levels.get(i);
-            Double time = (Double) registry.get(accKey + level.getId());
-            row.put(String.valueOf(i + totalColumns - levels.size()), time != null ? String.valueOf(Math.round((time / divisor)*100.0)/100.0) : "");
+            Double time = (Double) registry.get(accKey + (idStrucure != null ? idStrucure : "") + level.getId());
+            row.put(String.valueOf(i + startColumn), time != null ? String.valueOf(Math.round((time / divisor)*100.0)/100.0) : "");
+            sum += (time != null ? time : 0) / divisor;
         }
     
+        if (hasResume){
+            row.put(String.valueOf(levels.size() + startColumn), String.valueOf(Math.round((sum)*100.0)/100.0));
+        }
+
         for (int j = 1; j < totalColumns; j++) {
             items.add(CellPOI.builder().value(row.get(String.valueOf(j))).build());
         }
@@ -307,7 +304,51 @@ public class StructureReportExcel {
             .children(CellPOI.createSiblings(items))
             .style(Style.builder().backgroundColorRGB(backgroundColorRGB).build()).build();
     }
+    
+    private BlockPOI buildConsolidatedReportHead(Position position){
+        List<CellPOI> items = new ArrayList<>();
+        List<NivelEntity> levels = (List<NivelEntity>)registry.get("levels");
+        registry.put("startColumn", 1);
+        registry.put("totalColumns", levels.size() + 2);
 
+        items.add(CellPOI.builder().value("DEPENDENCIA").build());
+        List<CellPOI> levelHeads = new ArrayList<>();
+        for (NivelEntity e : levels){
+            levelHeads.add(CellPOI.builder().value(e.getDescripcion()).style(Style.builder().width(20).build()).build());
+        }
+        items.add(CellPOI.builder().value("NÚMERO DE EMPLEOS DISTRIBUIDOS POR NIVELES Y DENOMINACIONES DE EMPLEOS")
+                         .style(Style.builder().backgroundColorRGB(GREEN).build())
+                         .children(levelHeads).build());
+        items.add(CellPOI.builder().value("TOTAL DE EMPLEOS").style(Style.builder().width(20).build()).build());
+        BlockPOI block = BlockPOI.builder()
+            .position(position)
+            .items(items)
+            .style(
+                Style.builder().backgroundColorRGB(BLUE).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.CENTER).verticalAlignment(VerticalAlignment.CENTER)
+                    .bold(true).borderStyle(BorderStyle.THIN).wrapText(true).width(40).build())
+            .build();
+        return block;
+    }
+
+    private BlockPOI buildConsolidatedReportStructure(List<Long> structureIds, Position position){
+        List<CellPOI> items = new ArrayList<>();
+        List<EstructuraEntity> plainedStructures = (List<EstructuraEntity>) registry.get("structures");
+        if(plainedStructures != null && plainedStructures.size() > 0){
+            for (EstructuraEntity e : plainedStructures){
+                items.add(createTotalCell(e.getNombre(), "totalTimePerDependency_", e.getId(), HOURS_PER_MONTH, AQUA, true));
+            }
+        }
+        return BlockPOI.builder()
+            .position(position)
+            .items(items)
+            .showInColumn(true)
+            .noExtend(true)
+            .style(Style.builder().backgroundColorRGB(WHITE).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER)
+                .borderStyle(BorderStyle.THIN).build())
+            .build();
+    }
+
+    
     private void filterAndPlainByIdTypology(List<EstructuraEntity> structures, List<EstructuraEntity> plainedStructures, Long idTypology){
         for (EstructuraEntity e : structures) {
             if (e.getTipologia().getId() == idTypology && e.getSubEstructuras() != null ){
@@ -328,4 +369,19 @@ public class StructureReportExcel {
             );
         }
     }
+
+    private String getLevelNomenclature(String str) {
+        if (str == null || str.isEmpty()) {
+            return "";
+        }
+        String[] words = str.split(" ");
+        if (words.length == 1) {
+            return words[0].substring(0, Math.min(3, words[0].length())).toUpperCase();
+        } else {
+            String firstPart = words[0].substring(0, Math.min(3, words[0].length())).toUpperCase();
+            String secondPart = words[1].substring(0, 1).toUpperCase();
+            return firstPart + ". " + secondPart + ".";
+        }
+    }
+    
 }

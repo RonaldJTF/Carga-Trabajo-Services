@@ -80,13 +80,25 @@ public class EstructuraController {
         ObjectMapper objectMapper = new ObjectMapper();
         EstructuraEntity estructuraEntity = objectMapper.readValue(estructuraJSON, EstructuraEntity.class);
         TipologiaEntity firstTypology = tipologiaService.findFirstTipology();
+        TipologiaEntity dependency = tipologiaService.findDependencyTipology();
+       
         estructuraEntity.setIdTipologia(estructuraEntity.getIdTipologia() == null ? firstTypology.getId() : estructuraEntity.getIdTipologia());
         estructuraEntity.setTipologia(tipologiaService.findById(estructuraEntity.getIdTipologia()));
+
+        if (estructuraEntity.getIdTipologia() !=  dependency.getId()){
+            Long lastOrder = estructuraService.findLastOrderByIdPadre(estructuraEntity.getIdPadre());
+            estructuraEntity.setOrden(
+                estructuraEntity.getOrden() != null 
+                ? estructuraEntity.getOrden() 
+                : (lastOrder != null ? lastOrder + 1 : 1)
+            );
+        }
+
         if(file != null){
             estructuraEntity.setMimetype(file.getContentType());
             estructuraEntity.setIcono(file.getBytes());
         }
-        return new ResponseEntity<>(estructuraService.save(estructuraEntity), HttpStatus.CREATED);
+        return new ResponseEntity<>(configurationMediator.createStructure(estructuraEntity), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -103,13 +115,24 @@ public class EstructuraController {
         EstructuraEntity estructuraEntity = objectMapper.readValue(estructuraJSON, EstructuraEntity.class);
 
         EstructuraEntity estructuraEntityBD = estructuraService.findById(id);
+        Long previusOrder = estructuraEntityBD.getOrden();
+        TipologiaEntity dependency = tipologiaService.findDependencyTipology();
+        if (estructuraEntityBD.getIdTipologia() !=  dependency.getId()){
+            Long lastOrder = estructuraService.findLastOrderByIdPadre(estructuraEntityBD.getIdPadre());
+            estructuraEntityBD.setOrden(
+                estructuraEntity.getOrden() != null 
+                ? estructuraEntity.getOrden() 
+                : (lastOrder != null ? lastOrder + 1 : 1)
+            );
+        }
         estructuraEntityBD.setNombre(estructuraEntity.getNombre());
         estructuraEntityBD.setDescripcion(estructuraEntity.getDescripcion());
+        
         if(file != null){
             estructuraEntityBD.setMimetype(file.getContentType());
             estructuraEntityBD.setIcono(file.getBytes());
         }
-        return new ResponseEntity<>(estructuraService.save(estructuraEntityBD), HttpStatus.CREATED);
+        return new ResponseEntity<>(configurationMediator.updateStructure(estructuraEntityBD, previusOrder), HttpStatus.CREATED);
     }
 
     @Operation(

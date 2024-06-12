@@ -92,4 +92,10 @@ public class TipologiaServiceImpl implements TipologiaService{
         return inventarioList;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public TipologiaEntity findDependencyTipology() {
+        return tipologiaDAO.findDependencyTipology();
+    }
+
 }

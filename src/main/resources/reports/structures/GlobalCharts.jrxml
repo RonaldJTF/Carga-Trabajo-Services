@@ -51,7 +51,7 @@
 		<band height="483">
 			<pieChart>
 				<chart evaluationTime="Report">
-					<reportElement x="400" y="80" width="410" height="119" uuid="d90d44e0-47fa-4c10-add1-d04e52b048f6">
+					<reportElement x="-7" y="230" width="816" height="249" uuid="5d0480ea-7754-4d76-b4cc-90dfc467635e">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<chartTitle/>
@@ -60,13 +60,13 @@
 				</chart>
 				<pieDataset>
 					<dataset>
-						<datasetRun subDataset="ChartDataset" uuid="c93c7dfa-8024-42bd-a60d-2eb0773d8f1f">
+						<datasetRun subDataset="ChartDataset" uuid="894853c7-0b9a-4e5b-99b3-fb2fb1609601">
 							<dataSourceExpression><![CDATA[$P{chartPieDataset}]]></dataSourceExpression>
 						</datasetRun>
 					</dataset>
 					<keyExpression><![CDATA[$F{nombre}]]></keyExpression>
 					<valueExpression><![CDATA[$F{valor}]]></valueExpression>
-					<labelExpression><![CDATA[Math.round(($F{valor})*10.0)/10.0 + "h" + " / " + Math.round(($F{valor} /$F{horasPorMes})*10.0)/10.0 + "p"]]></labelExpression>
+					<labelExpression><![CDATA[Math.round(($F{valor})*10.0)/10.0  + "h" + " / " + Math.round(($F{valor} /$F{horasPorMes})*10.0)/10.0 + "p"]]></labelExpression>
 				</pieDataset>
 				<piePlot>
 					<plot backgroundAlpha="1.0" foregroundAlpha="1.0">
@@ -91,7 +91,7 @@
 				<text><![CDATA[RESUMEN]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Table_TD" mode="Transparent" x="-11" y="60" width="411" height="20" forecolor="#787878" backcolor="#E6E6E6" uuid="0ad44700-dbff-464f-84dd-7f32391f2205"/>
+				<reportElement style="Table_TD" mode="Transparent" x="-11" y="60" width="821" height="20" forecolor="#787878" backcolor="#E6E6E6" uuid="0ad44700-dbff-464f-84dd-7f32391f2205"/>
 				<box>
 					<pen lineWidth="0.0"/>
 				</box>
@@ -107,123 +107,8 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Horas requeridas por nivel en cada dependencia]]></text>
+				<text><![CDATA[Horas y personal requerido en cada dependencia]]></text>
 			</staticText>
-			<barChart>
-				<chart evaluationTime="Report">
-					<reportElement x="-12" y="225" width="822" height="120" uuid="c5bcc97d-9240-43cc-ab95-b1b8d6e09c61">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<chartTitle/>
-					<chartSubtitle/>
-					<chartLegend/>
-				</chart>
-				<categoryDataset>
-					<dataset>
-						<datasetRun subDataset="ChartDataset" uuid="0dd36f60-2922-4827-8523-f352bc7dcb44">
-							<dataSourceExpression><![CDATA[$P{chartBarHoursDataset}]]></dataSourceExpression>
-						</datasetRun>
-					</dataset>
-					<categorySeries>
-						<seriesExpression><![CDATA[$F{nivel}]]></seriesExpression>
-						<categoryExpression><![CDATA[$F{nombre}]]></categoryExpression>
-						<valueExpression><![CDATA[$F{valor}]]></valueExpression>
-						<labelExpression><![CDATA[$F{valor} > 0 ? Math.round(($F{valor})*10.0)/10.0 + ""  : ""]]></labelExpression>
-					</categorySeries>
-				</categoryDataset>
-				<barPlot isShowLabels="true">
-					<plot labelRotation="0.0">
-						<seriesColor seriesOrder="0" color="#6A5CFA"/>
-						<seriesColor seriesOrder="1" color="#FAB62F"/>
-						<seriesColor seriesOrder="2" color="#42C761"/>
-						<seriesColor seriesOrder="3" color="#CC3DBB"/>
-						<seriesColor seriesOrder="4" color="#59D4D2"/>
-						<seriesColor seriesOrder="5" color="#F57971"/>
-						<seriesColor seriesOrder="6" color="#9D2EBF"/>
-						<seriesColor seriesOrder="7" color="#E6E035"/>
-						<seriesColor seriesOrder="8" color="#B54326"/>
-					</plot>
-					<itemLabel color="#787878">
-						<font size="8"/>
-					</itemLabel>
-					<categoryAxisFormat labelRotation="0.0">
-						<axisFormat labelColor="#787878" tickLabelColor="#000000" axisLineColor="#000000">
-							<labelFont>
-								<font isBold="false"/>
-							</labelFont>
-						</axisFormat>
-					</categoryAxisFormat>
-					<valueAxisLabelExpression><![CDATA["Horas"]]></valueAxisLabelExpression>
-					<valueAxisFormat>
-						<axisFormat labelColor="#787878" tickLabelColor="#030303" axisLineColor="#000000">
-							<labelFont>
-								<font size="9" isBold="false"/>
-							</labelFont>
-						</axisFormat>
-					</valueAxisFormat>
-				</barPlot>
-			</barChart>
-			<staticText>
-				<reportElement mode="Transparent" x="-12" y="345" width="822" height="18" forecolor="#787878" backcolor="#E6E6E6" uuid="9be4f29b-0f1e-4f92-a1a6-11df24b88e0b"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="false"/>
-				</textElement>
-				<text><![CDATA[Personal requerido por nivel en cada dependencia]]></text>
-			</staticText>
-			<barChart>
-				<chart evaluationTime="Report">
-					<reportElement x="-12" y="363" width="822" height="120" uuid="029b3751-9691-464d-be8b-a41a7005faf6">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<chartTitle/>
-					<chartSubtitle/>
-					<chartLegend/>
-				</chart>
-				<categoryDataset>
-					<dataset>
-						<datasetRun subDataset="ChartDataset" uuid="e11bd36e-3460-4785-be73-d138eda142fb">
-							<dataSourceExpression><![CDATA[$P{chartBarPeopleDataset}]]></dataSourceExpression>
-						</datasetRun>
-					</dataset>
-					<categorySeries>
-						<seriesExpression><![CDATA[$F{nivel}]]></seriesExpression>
-						<categoryExpression><![CDATA[$F{nombre}]]></categoryExpression>
-						<valueExpression><![CDATA[Math.round(($F{valor} / $F{horasPorMes})*10.0)/10.0]]></valueExpression>
-						<labelExpression><![CDATA[$F{valor} > 0 ? Math.round(($F{valor} /167)*10.0)/10.0 + ""  : ""]]></labelExpression>
-					</categorySeries>
-				</categoryDataset>
-				<barPlot isShowLabels="true">
-					<plot labelRotation="0.0">
-						<seriesColor seriesOrder="0" color="#6A5CFA"/>
-						<seriesColor seriesOrder="1" color="#FAB62F"/>
-						<seriesColor seriesOrder="2" color="#42C761"/>
-						<seriesColor seriesOrder="3" color="#CC3DBB"/>
-						<seriesColor seriesOrder="4" color="#59D4D2"/>
-						<seriesColor seriesOrder="5" color="#F57971"/>
-						<seriesColor seriesOrder="6" color="#9D2EBF"/>
-						<seriesColor seriesOrder="7" color="#E6E035"/>
-						<seriesColor seriesOrder="8" color="#B54326"/>
-					</plot>
-					<itemLabel color="#787878">
-						<font size="8"/>
-					</itemLabel>
-					<categoryAxisFormat labelRotation="0.0">
-						<axisFormat labelColor="#787878" tickLabelColor="#000000" axisLineColor="#000000">
-							<labelFont>
-								<font size="9" isBold="true"/>
-							</labelFont>
-						</axisFormat>
-					</categoryAxisFormat>
-					<valueAxisLabelExpression><![CDATA["Nº personas"]]></valueAxisLabelExpression>
-					<valueAxisFormat>
-						<axisFormat labelColor="#787878" tickLabelColor="#030303" axisLineColor="#000000">
-							<labelFont>
-								<font size="9" isBold="false"/>
-							</labelFont>
-						</axisFormat>
-					</valueAxisFormat>
-				</barPlot>
-			</barChart>
 			<frame>
 				<reportElement mode="Opaque" x="-11" y="-20" width="821" height="60" backcolor="#F2F2F2" uuid="395c0df7-61b7-491a-8c8a-dcf52da9b099"/>
 				<box>
@@ -267,7 +152,7 @@
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement mode="Transparent" x="351" y="80" width="100" height="50" backcolor="#F2F2F2" uuid="1d50903a-d787-4545-b369-c9d163ddafbf">
+				<reportElement mode="Transparent" x="709" y="80" width="100" height="50" backcolor="#F2F2F2" uuid="1d50903a-d787-4545-b369-c9d163ddafbf">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
@@ -327,7 +212,7 @@ Personas]]></text>
 			</frame>
 			<pieChart>
 				<chart evaluationTime="Report">
-					<reportElement x="-11" y="80" width="411" height="119" uuid="230a62de-bfbe-4a91-bc0f-778c822c1ea9">
+					<reportElement x="-10" y="80" width="819" height="119" uuid="752090d1-4446-4fc4-af9f-051591a90bb8">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<chartTitle/>
@@ -336,13 +221,13 @@ Personas]]></text>
 				</chart>
 				<pieDataset>
 					<dataset>
-						<datasetRun subDataset="ChartDataset" uuid="4c703426-80a0-4f8a-99eb-134a6ff5bd64">
+						<datasetRun subDataset="ChartDataset" uuid="880e0239-4183-4009-99cc-6127f76d705e">
 							<dataSourceExpression><![CDATA[$P{chartPieGlobalDataset}]]></dataSourceExpression>
 						</datasetRun>
 					</dataset>
 					<keyExpression><![CDATA[$F{nombre}]]></keyExpression>
 					<valueExpression><![CDATA[$F{valor}]]></valueExpression>
-					<labelExpression><![CDATA[ Math.round(($F{valor})*10.0)/10.0  + "h" + " / " + Math.round(($F{valor} /$F{horasPorMes})*10.0)/10.0 + "p"]]></labelExpression>
+					<labelExpression><![CDATA[Math.round(($F{valor})*10.0)/10.0  + "h" + " / " + Math.round(($F{valor} /$F{horasPorMes})*10.0)/10.0 + "p"]]></labelExpression>
 				</pieDataset>
 				<piePlot>
 					<plot backgroundAlpha="1.0" foregroundAlpha="1.0">
@@ -359,16 +244,6 @@ Personas]]></text>
 					<itemLabel/>
 				</piePlot>
 			</pieChart>
-			<staticText>
-				<reportElement style="Table_TD" mode="Transparent" x="400" y="60" width="410" height="20" forecolor="#787878" backcolor="#E6E6E6" uuid="b6197650-5c10-49ab-90c9-36dd3ceba1ea"/>
-				<box>
-					<pen lineWidth="0.0"/>
-				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="false"/>
-				</textElement>
-				<text><![CDATA[Horas y personal requerido por dependencia]]></text>
-			</staticText>
 		</band>
 	</detail>
 </jasperReport>

@@ -19,6 +19,9 @@ public interface TipologiaDAO extends JpaRepository<TipologiaEntity, Long>, JpaS
                     "where t2.idTipologiaSiguiente is null")
     TipologiaEntity findFirstTipology();
 
+    @Query(value = "select t from TipologiaEntity t where t.esDependencia = '1'")
+    TipologiaEntity findDependencyTipology();
+
     @Modifying
     @Query(value = "update TipologiaEntity t set t.idTipologiaSiguiente =:idTipologiaSiguiente, t.nombre =:nombre,  t.claseIcono = :claseIcono, " + 
                     "t.nombreColor =:nombreColor, t.esDependencia =:esDependencia,  t.fechaCambio = :fechaCambio, " + 

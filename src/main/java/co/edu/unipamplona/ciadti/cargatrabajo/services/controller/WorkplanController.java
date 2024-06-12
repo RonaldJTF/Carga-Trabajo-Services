@@ -15,6 +15,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PlanTrabajo
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.SeguimientoService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TareaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.WorkplanReportExcel;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,10 +23,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,6 +52,7 @@ public class WorkplanController {
     private final TareaService tareaService;
     private final SeguimientoService seguimientoService;
     private final ConfigurationMediator configurationMediator;
+    private final WorkplanReportExcel workplanReportExcel;
 
     @Operation(
         summary = "Obtener o listar los planes de trabajo",
@@ -59,16 +67,20 @@ public class WorkplanController {
         PlanTrabajoEntity filter = (PlanTrabajoEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         List<PlanTrabajoEntity> result = planTrabajoService.findAllFilteredBy(filter);
-        Map<Long, Double> advances = planTrabajoService.getAllAvances();
-
+        //Map<Long, Double> advances = planTrabajoService.getAllAvances();
         result.forEach(planTrabajo -> {
-            Double avance = advances.get(planTrabajo.getId());
+            //Double avance = advances.get(planTrabajo.getId());
+            List<EtapaEntity> stages = configurationMediator.findAllStagesByIdWorkplan(planTrabajo.getId());
+            Double avance = 0.0;
+            for (EtapaEntity e : stages){
+                avance += (e.getAvance() != null ? e.getAvance() : 0) / stages.size();
+            }
             planTrabajo.setAvance(avance);
         });
         return Methods.getResponseAccordingToId(id, result);
     }
 
-
+   
     @Operation(
         summary="Crear un plan de trabajo",
         description = "Crea un plan de trabajo. " + 
@@ -292,4 +304,47 @@ public class WorkplanController {
         configurationMediator.deleteFollowUp(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/report")
+    public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type,
+                                                 @RequestParam(name = "stageIds", required = false) String stageIdsString,
+                                                 @RequestParam(name = "idWorkplan", required = false) Long idWorkplan) throws CiadtiException{         
+        List<Long> stageIds = null;
+        if(stageIdsString != null){
+            stageIdsString = stageIdsString.replaceAll("\\[|\\]|\\s", "");
+            if (!stageIdsString.isEmpty()) {
+                stageIds = new ArrayList<>();
+                String[] parts = stageIdsString.split(",");
+                for (String part : parts) {
+                    stageIds.add(Long.parseLong(part));
+                }
+            }     
+        }
+           
+        byte[] fileBytes = null;
+        String extension = null;
+        String mediaType = null;
+
+        if(type == null || "EXCEL".equals(type.toUpperCase())){
+            extension = "xlsx";
+            mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            fileBytes = workplanReportExcel.generate(stageIds, idWorkplan);
+        }
+
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+        String fileName = String.format("reporte_%s.%s", currentDateTime, extension);
+
+        if (fileBytes != null) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+            headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition, Content-Type");
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.parseMediaType(mediaType))
+                    .body(fileBytes);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }    
 }

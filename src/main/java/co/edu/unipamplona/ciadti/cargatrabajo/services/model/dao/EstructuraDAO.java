@@ -16,7 +16,7 @@ public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, Jp
 
     @Modifying
     @Query(value =  "update EstructuraEntity e set e.nombre = :nombre, e.descripcion = :descripcion, e.idPadre = :idPadre, " +
-                    "e.idTipologia = :idTipologia, e.icono = :icono, e.mimetype = :mimetype,  e.fechaCambio = :fechaCambio, " + 
+                    "e.idTipologia = :idTipologia, e.icono = :icono, e.mimetype = :mimetype, e.orden =:orden,  e.fechaCambio = :fechaCambio, " + 
                     "e.registradoPor = :registradoPor where e.id = :id")
     int update( @Param("nombre") String nombre,
                 @Param("descripcion") String descripcion,
@@ -24,6 +24,7 @@ public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, Jp
                 @Param("idTipologia") Long idTipologia,
                 @Param("icono") byte[] icono,
                 @Param("mimetype") String mimetype,
+                @Param("orden") Long orden,
                 @Param("fechaCambio") Date fechaCambio,
                 @Param("registradoPor") String registradoPor,
                 @Param("id") Long id);
@@ -59,4 +60,28 @@ public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, Jp
 
     @Query(value = "select e from EstructuraEntity e where e.id in :structureIds")
     List<EstructuraEntity> findAllFilteredByIds(@Param("structureIds") List<Long> structureIds);
+
+    @Query(value = "select Max(e.orden) from EstructuraEntity e where e.idPadre = :idPadre")
+    Long findLastOrderByIdPadre(@Param("idPadre") Long idPadre);
+
+    @Modifying
+    @Query(value = "update EstructuraEntity e set e.orden = e.orden + :increment where e.idPadre = :idPadre and e.orden >= :orden and e.id != :id")
+    int updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(@Param("idPadre") Long idPadre, 
+                                                        @Param("orden") Long orden, 
+                                                        @Param("id") Long id, 
+                                                        @Param("increment") int increment);
+
+    @Query(value = "select count(e) > 0 from EstructuraEntity e where e.idPadre = :idPadre and e.orden = :orden and e.id != :id")
+    boolean existsByIdPadreAndOrdenAndNotId(@Param("idPadre") Long idPadre, 
+                                            @Param("orden") Long orden, 
+                                            @Param("id") Long id);
+
+    @Modifying
+    @Query(value = "update EstructuraEntity e set e.orden = e.orden + :increment where e.idPadre = :idPadre " + 
+                   "and e.orden >= :inferiorOrder and  e.orden <= :superiorOrder and e.id != :id")
+    int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(@Param("idPadre") Long idPadre, 
+                                                    @Param("inferiorOrder") Long inferiorOrder, 
+                                                    @Param("superiorOrder") Long superiorOrder, 
+                                                    @Param("id") Long id, 
+                                                    @Param("increment") int increment);
 }

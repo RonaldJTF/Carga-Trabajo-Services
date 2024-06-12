@@ -45,4 +45,7 @@ public interface PlanTrabajoDAO extends JpaRepository<PlanTrabajoEntity, Long>, 
             "LEFT JOIN AvanceEtapa ae ON pt.pltr_id = ae.pltr_id " +
             "GROUP BY pt.pltr_id", nativeQuery = true)
     List<Object[]> getAllAvances();
+
+    @Query(value = "select distinct (p) from PlanTrabajoEntity as p inner join EtapaEntity e on (p.id = e.idPlanTrabajo) where e.id =:idEtapa")
+    PlanTrabajoEntity findByIdStage(@Param("idEtapa") Long idEtapa);
 }

@@ -63,6 +63,9 @@ public class EstructuraEntity implements Serializable{
     @Column(name = "estr_mimetype")
     private String mimetype;
 
+    @Column(name = "estr_orden")
+    private Long orden;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "estr_fechacambio")
     @Temporal(TemporalType.TIMESTAMP)

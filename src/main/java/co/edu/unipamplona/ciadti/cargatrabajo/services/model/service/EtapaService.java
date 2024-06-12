@@ -10,4 +10,6 @@ public interface EtapaService extends CommonService<EtapaEntity> {
 
     List<EtapaEntity> findAllSubstages(Long id);
 
+    List<EtapaEntity> findAllFilteredByIds(List<Long> stageIds);
+
 }

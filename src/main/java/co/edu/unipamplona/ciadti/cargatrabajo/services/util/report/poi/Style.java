@@ -37,7 +37,6 @@ public class Style implements Cloneable{
     private IndexedColors backgroundColor;
     private int[] colorRGB; 
     private int[] backgroundColorRGB;
-    private BorderStyle border;
     private BorderStyle borderTop;
     private BorderStyle borderRight;
     private BorderStyle borderBottom;
@@ -46,6 +45,7 @@ public class Style implements Cloneable{
     private BorderStyle borderStyle;
     private int[] borderColorRGB;
     private Boolean wrapText;
+    private Short rotation;
     
     public void setCellStyle(SXSSFWorkbook workbook, SXSSFSheet sheet, Cell cell, int rowIdx, int colIdx){
         XSSFCellStyle style = (XSSFCellStyle) workbook.createCellStyle();
@@ -66,25 +66,17 @@ public class Style implements Cloneable{
         if (verticalAlignment != null){
             style.setVerticalAlignment(verticalAlignment);
         }
-        if(border != null){
-            style.setBorderTop(border);
-            style.setBorderRight(border);
-            style.setBorderBottom(border);
-            style.setBorderLeft(border);
+        if(borderStyle != null){
+            style.setBorderTop(borderStyle);
+            style.setBorderRight(borderStyle);
+            style.setBorderBottom(borderStyle);
+            style.setBorderLeft(borderStyle);
         }
         if(borders != null && borderStyle != null){
-            if (borders[0]){
-                style.setBorderTop(borderStyle);
-            }
-            if (borders[1]){
-                style.setBorderRight(borderStyle);
-            }
-            if (borders[2]){
-                style.setBorderBottom(borderStyle);
-            }
-            if (borders[3]){
-                style.setBorderLeft(borderStyle);
-            }
+            style.setBorderTop(borders[0] ? borderStyle : BorderStyle.NONE);
+            style.setBorderRight(borders[1] ? borderStyle : BorderStyle.NONE);
+            style.setBorderBottom(borders[2] ? borderStyle : BorderStyle.NONE);
+            style.setBorderLeft(borders[3] ? borderStyle : BorderStyle.NONE);
         }
         if(borderTop != null){
             style.setBorderTop(borderTop);
@@ -104,6 +96,9 @@ public class Style implements Cloneable{
             style.setRightBorderColor(customColor);
             style.setBottomBorderColor(customColor);
             style.setLeftBorderColor(customColor);
+        }
+        if(rotation != null){
+            style.setRotation(rotation);
         }
         if(wrapText != null){
             style.setWrapText(wrapText);

@@ -72,6 +72,12 @@ public class EtapaEntity implements Serializable{
     @JoinColumn(name = "etap_idpadre", insertable = false, updatable = false)
     private List<EtapaEntity> subEtapas;
 
+    @Transient
+    private Double avance;
+
+    @Transient
+    private Integer level;
+
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;

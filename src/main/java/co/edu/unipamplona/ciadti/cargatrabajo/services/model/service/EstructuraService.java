@@ -11,4 +11,12 @@ public interface EstructuraService extends CommonService<EstructuraEntity>{
 
     List<EstructuraEntity> findAllFilteredByIds(List<Long> structureIds);
 
+    Long findLastOrderByIdPadre(Long idPadre);
+
+    int updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(Long idPadre, Long orden, Long id, int increment);
+
+    boolean existsByIdPadreAndOrdenAndNotId(Long idPadre, Long orden,  Long id);
+
+    int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(Long idPadre, Long inferiorOrder, Long superiorOrder, Long id, int increment);
+
 }

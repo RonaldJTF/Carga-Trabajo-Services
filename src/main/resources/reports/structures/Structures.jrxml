@@ -88,6 +88,12 @@
 	<variable name="TotalHorasCol5Variable" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() > 4 ? $F{tiemposPorNivel}.get(4) : null]]></variableExpression>
 	</variable>
+	<variable name="TotalHorasPorDependenciaCol6Variable" class="java.lang.Double" resetType="Group" resetGroup="StructureGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() > 5 ? $F{tiemposPorNivel}.get(5) : null]]></variableExpression>
+	</variable>
+	<variable name="TotalHorasCol6Variable" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() > 5 ? $F{tiemposPorNivel}.get(5) : null]]></variableExpression>
+	</variable>
 	<group name="StructureGroup">
 		<groupExpression><![CDATA[$F{dependencia}]]></groupExpression>
 		<groupHeader>
@@ -109,7 +115,7 @@
 				<frame>
 					<reportElement stretchType="ElementGroupHeight" mode="Opaque" x="-11" y="0" width="821" height="20" backcolor="#E9FFFD" uuid="93e4ade2-88b3-4255-aa1b-77ddc665d039"/>
 					<staticText>
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="0" y="0" width="621" height="20" backcolor="#FFFFFF" uuid="91a85011-6eac-400b-aea0-c781a5a2d80e">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="0" y="0" width="610" height="20" backcolor="#FFFFFF" uuid="91a85011-6eac-400b-aea0-c781a5a2d80e">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -123,7 +129,7 @@
 						<text><![CDATA[Horas requeridas]]></text>
 					</staticText>
 					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="781" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="2eee2efa-fd41-4246-b4bf-7c5d70fe4d7c">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="778" y="0" width="43" height="20" backcolor="#FFFFFF" uuid="2eee2efa-fd41-4246-b4bf-7c5d70fe4d7c">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -137,9 +143,10 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol5Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="741" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="faa38748-b952-43a2-a037-1904e7df3df1">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="736" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="faa38748-b952-43a2-a037-1904e7df3df1">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						</reportElement>
 						<box>
 							<pen lineWidth="0.25"/>
@@ -151,7 +158,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol4Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="701" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="5c2fdf17-4363-4543-b599-ceb2dc3fdb1d">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="694" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="5c2fdf17-4363-4543-b599-ceb2dc3fdb1d">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -165,7 +172,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol3Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="661" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="ff879c5e-44a8-41fc-b58b-c88907a4aa38">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="652" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="ff879c5e-44a8-41fc-b58b-c88907a4aa38">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -179,9 +186,10 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol2Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="621" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="0c7d2009-3190-4de7-93cf-705de96ca3b4">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="610" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="0c7d2009-3190-4de7-93cf-705de96ca3b4">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						</reportElement>
 						<box>
 							<pen lineWidth="0.25"/>
@@ -196,7 +204,7 @@
 				<frame>
 					<reportElement stretchType="ElementGroupHeight" mode="Opaque" x="-11" y="20" width="821" height="20" backcolor="#E9FFFD" uuid="da52e42f-48a7-45bb-ba76-cad080fd1ea5"/>
 					<staticText>
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="0" width="621" height="20" backcolor="#FFFFFF" uuid="f9b90b43-91a0-4c1b-862d-d7051490696f">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="0" width="610" height="20" backcolor="#FFFFFF" uuid="f9b90b43-91a0-4c1b-862d-d7051490696f">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -210,7 +218,7 @@
 						<text><![CDATA[Personal requerido]]></text>
 					</staticText>
 					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="781" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="ab9be982-ad89-4fa0-8718-731047e1d11f">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="778" y="0" width="43" height="20" backcolor="#FFFFFF" uuid="ab9be982-ad89-4fa0-8718-731047e1d11f">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -224,7 +232,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol5Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="741" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="924ccdb1-bbbd-48dc-be2e-011a6234eee7">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="736" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="924ccdb1-bbbd-48dc-be2e-011a6234eee7">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -238,7 +246,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol4Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="701" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="60f08c5f-5c41-4786-842a-e4ce04a0aee8">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="694" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="60f08c5f-5c41-4786-842a-e4ce04a0aee8">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -252,7 +260,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol3Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="661" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="a135425f-dd06-42d3-b64d-104a31c31662">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="652" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="a135425f-dd06-42d3-b64d-104a31c31662">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -266,7 +274,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol2Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="621" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="ce681a5f-c257-4ab2-9fb6-12ae04cb6fd8">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="610" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="ce681a5f-c257-4ab2-9fb6-12ae04cb6fd8">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -380,7 +388,7 @@
 					<text><![CDATA[NIVEL]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="410" y="0" width="51" height="40" uuid="49ffee18-439b-4c8f-92dc-ad56393e75d0">
+					<reportElement x="410" y="0" width="40" height="40" uuid="49ffee18-439b-4c8f-92dc-ad56393e75d0">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
@@ -392,9 +400,7 @@
 					<text><![CDATA[FREC.]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="461" y="0" width="40" height="40" uuid="70447462-55a2-4092-a3be-97388adc625a">
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
+					<reportElement x="450" y="0" width="40" height="40" uuid="70447462-55a2-4092-a3be-97388adc625a"/>
 					<box>
 						<pen lineWidth="0.25"/>
 					</box>
@@ -404,9 +410,7 @@
 					<text><![CDATA[Tmin]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="501" y="0" width="40" height="40" uuid="73f817c1-38c1-40b4-960e-be297181e2af">
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
+					<reportElement x="490" y="0" width="40" height="40" uuid="73f817c1-38c1-40b4-960e-be297181e2af"/>
 					<box>
 						<pen lineWidth="0.25"/>
 					</box>
@@ -416,9 +420,7 @@
 					<text><![CDATA[Tusual]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="541" y="0" width="40" height="40" uuid="67e9d78a-a440-47aa-b3ff-e13eacc1803d">
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
+					<reportElement x="530" y="0" width="40" height="40" uuid="67e9d78a-a440-47aa-b3ff-e13eacc1803d"/>
 					<box>
 						<pen lineWidth="0.25"/>
 					</box>
@@ -428,9 +430,7 @@
 					<text><![CDATA[Tmáx]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="581" y="0" width="40" height="40" uuid="c31d917b-8800-4614-a625-6142bf54c5c6">
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
+					<reportElement x="570" y="0" width="40" height="40" uuid="c31d917b-8800-4614-a625-6142bf54c5c6"/>
 					<box>
 						<pen lineWidth="0.25"/>
 					</box>
@@ -440,7 +440,7 @@
 					<text><![CDATA[T. E.]]></text>
 				</staticText>
 				<staticText>
-					<reportElement mode="Opaque" x="621" y="0" width="200" height="20" backcolor="#EEF5D0" uuid="bf65a033-9eb3-415a-bd95-99e10ebb34f0">
+					<reportElement mode="Opaque" x="610" y="0" width="211" height="20" backcolor="#EEF5D0" uuid="bf65a033-9eb3-415a-bd95-99e10ebb34f0">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
@@ -452,7 +452,9 @@
 					<text><![CDATA[TIEMPO TOTAL POR TAREA]]></text>
 				</staticText>
 				<textField>
-					<reportElement mode="Opaque" x="621" y="20" width="40" height="20" backcolor="#EEF5D0" uuid="e6a2fef9-7e1f-4d55-9c83-e015c0ce96a0"/>
+					<reportElement mode="Opaque" x="610" y="20" width="42" height="20" backcolor="#EEF5D0" uuid="e6a2fef9-7e1f-4d55-9c83-e015c0ce96a0">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 					<box>
 						<pen lineWidth="0.25"/>
 					</box>
@@ -462,7 +464,7 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 0 ? $P{levels}.get(0) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="661" y="20" width="40" height="20" backcolor="#EEF5D0" uuid="dc674af3-5cc3-4258-82ab-3f04135848f2"/>
+					<reportElement mode="Opaque" x="652" y="20" width="42" height="20" backcolor="#EEF5D0" uuid="dc674af3-5cc3-4258-82ab-3f04135848f2"/>
 					<box>
 						<pen lineWidth="0.25"/>
 					</box>
@@ -472,7 +474,7 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 1 ? $P{levels}.get(1) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="701" y="20" width="40" height="20" backcolor="#EEF5D0" uuid="f0c710fb-2b2a-4084-9d30-6edde97fddb4"/>
+					<reportElement mode="Opaque" x="694" y="20" width="42" height="20" backcolor="#EEF5D0" uuid="f0c710fb-2b2a-4084-9d30-6edde97fddb4"/>
 					<box>
 						<pen lineWidth="0.25"/>
 					</box>
@@ -482,7 +484,7 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 2 ? $P{levels}.get(2) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="741" y="20" width="40" height="20" backcolor="#EEF5D0" uuid="1f8a0d0e-e0d7-4192-a2ec-61df78ee6a93"/>
+					<reportElement mode="Opaque" x="736" y="20" width="42" height="20" backcolor="#EEF5D0" uuid="1f8a0d0e-e0d7-4192-a2ec-61df78ee6a93"/>
 					<box>
 						<pen lineWidth="0.25"/>
 					</box>
@@ -492,7 +494,7 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 3 ? $P{levels}.get(3) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="781" y="20" width="40" height="20" backcolor="#EEF5D0" uuid="e28c2dce-063a-4412-a7f9-ef16d0891915"/>
+					<reportElement mode="Opaque" x="778" y="20" width="43" height="20" backcolor="#EEF5D0" uuid="e28c2dce-063a-4412-a7f9-ef16d0891915"/>
 					<box>
 						<pen lineWidth="0.25"/>
 					</box>
@@ -516,7 +518,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="14" isBold="true"/>
 					</textElement>
-					<text><![CDATA[DEPARTAMENTO ADMINISTRATIVO DE LA FUNCIÓN PÚBLICA]]></text>
+					<text><![CDATA[Universidad Distrital Francisco José de Caldas]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="100" y="22" width="680" height="15" uuid="875218cb-07cf-428d-b9ab-80258cf3d405">
@@ -525,7 +527,7 @@
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<text><![CDATA[TALENTO HUMANO]]></text>
+					<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
 				</staticText>
 				<image vAlign="Middle">
 					<reportElement x="4" y="3" width="190" height="53" uuid="6847f724-5659-4660-b43d-862dd64a417c">
@@ -535,13 +537,13 @@
 					<imageExpression><![CDATA[$P{logo}]]></imageExpression>
 				</image>
 				<staticText>
-					<reportElement x="100" y="37" width="680" height="19" uuid="982a2650-e1ec-4efa-a40d-e08ccebb6195">
+					<reportElement x="100" y="34" width="680" height="19" uuid="982a2650-e1ec-4efa-a40d-e08ccebb6195">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.x" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
 					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<text><![CDATA[MEDICIÓN DE CARGAS DE TRABAJO POR DEPENDENCIA]]></text>
+					<text><![CDATA[Gestión de Tiempos Laborados por Dependencia]]></text>
 				</staticText>
 			</frame>
 		</band>
@@ -592,7 +594,9 @@
 				<textFieldExpression><![CDATA[$F{nivel}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="399" y="0" width="51" height="21" uuid="80915ff6-0b3e-4573-a7b2-1ca43345a88b"/>
+				<reportElement stretchType="ElementGroupHeight" x="399" y="0" width="40" height="21" uuid="80915ff6-0b3e-4573-a7b2-1ca43345a88b">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -603,7 +607,9 @@
 				<textFieldExpression><![CDATA[$F{frecuencia}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="450" y="0" width="40" height="21" uuid="a9f0dfac-9872-4d67-bbbe-57377f6b5a57"/>
+				<reportElement stretchType="ElementGroupHeight" x="439" y="0" width="40" height="21" uuid="a9f0dfac-9872-4d67-bbbe-57377f6b5a57">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -614,7 +620,9 @@
 				<textFieldExpression><![CDATA[$F{tiempoMinimo}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="490" y="0" width="40" height="21" uuid="f6551215-704c-4c3c-99c6-0a946a6d7fdb"/>
+				<reportElement stretchType="ElementGroupHeight" x="479" y="0" width="40" height="21" uuid="f6551215-704c-4c3c-99c6-0a946a6d7fdb">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -625,7 +633,9 @@
 				<textFieldExpression><![CDATA[$F{tiempoPromedio}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="530" y="0" width="40" height="21" uuid="ef3b67d2-e45d-445f-8783-20b1618a3aa1"/>
+				<reportElement stretchType="ElementGroupHeight" x="519" y="0" width="40" height="21" uuid="ef3b67d2-e45d-445f-8783-20b1618a3aa1">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -636,7 +646,9 @@
 				<textFieldExpression><![CDATA[$F{tiempoMaximo}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="570" y="0" width="40" height="21" uuid="1bece485-a5bd-4793-a5c2-fc249014cfe3"/>
+				<reportElement stretchType="ElementGroupHeight" x="559" y="0" width="40" height="21" uuid="1bece485-a5bd-4793-a5c2-fc249014cfe3">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -647,7 +659,9 @@
 				<textFieldExpression><![CDATA[$F{tiempoEstandar}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="610" y="0" width="40" height="21" uuid="25745cf3-3b5e-42a0-93c6-6ea24a4160a7"/>
+				<reportElement stretchType="ElementGroupHeight" x="599" y="0" width="42" height="21" uuid="25745cf3-3b5e-42a0-93c6-6ea24a4160a7">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -658,7 +672,7 @@
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >0 ?   $F{tiemposPorNivel}.get(0) : null]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="650" y="0" width="40" height="21" uuid="f4b5f3f0-a0cf-4b73-ba1f-c2095cbcbdcc"/>
+				<reportElement stretchType="ElementGroupHeight" x="641" y="0" width="42" height="21" uuid="f4b5f3f0-a0cf-4b73-ba1f-c2095cbcbdcc"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -669,7 +683,7 @@
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >1 ?   $F{tiemposPorNivel}.get(1) : null]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="690" y="0" width="40" height="21" uuid="090fda50-aaa0-435a-ad92-82f55d60b56e"/>
+				<reportElement stretchType="ElementGroupHeight" x="683" y="0" width="42" height="21" uuid="090fda50-aaa0-435a-ad92-82f55d60b56e"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -680,7 +694,7 @@
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >2 ?   $F{tiemposPorNivel}.get(2) : null]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="730" y="0" width="40" height="21" uuid="ac380572-66b2-4387-9e3e-480f7f338a95"/>
+				<reportElement stretchType="ElementGroupHeight" x="725" y="0" width="42" height="21" uuid="ac380572-66b2-4387-9e3e-480f7f338a95"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -691,7 +705,7 @@
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >3 ?   $F{tiemposPorNivel}.get(3) : null]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="770" y="0" width="40" height="21" uuid="f6df7963-6e9b-4dc8-a453-17e8dec429a2"/>
+				<reportElement stretchType="ElementGroupHeight" x="767" y="0" width="43" height="21" uuid="f6df7963-6e9b-4dc8-a453-17e8dec429a2"/>
 				<box>
 					<pen lineWidth="0.25"/>
 				</box>
@@ -741,7 +755,7 @@
 			<frame>
 				<reportElement mode="Opaque" x="-11" y="0" width="821" height="20" backcolor="#F5D4D0" uuid="b28d1f79-ecef-4829-9bf3-f4819baf67bd"/>
 				<staticText>
-					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="0" y="0" width="621" height="20" backcolor="#FFFFFF" uuid="d37eb28b-ceb3-47a9-b9a6-50f03bce5d5d">
+					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="0" y="0" width="610" height="20" backcolor="#FFFFFF" uuid="d37eb28b-ceb3-47a9-b9a6-50f03bce5d5d">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>
@@ -755,7 +769,7 @@
 					<text><![CDATA[TOTAL HORAS REQUERIDAS]]></text>
 				</staticText>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="781" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="6ad7123e-488e-4472-8435-3261efd41705">
+					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="778" y="0" width="43" height="20" backcolor="#FFFFFF" uuid="6ad7123e-488e-4472-8435-3261efd41705">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>
@@ -769,7 +783,7 @@
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol5Variable})*10.0)/10.0]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="741" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="be83db7c-819e-4ce3-9347-0d51b573caf5">
+					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="736" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="be83db7c-819e-4ce3-9347-0d51b573caf5">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>
@@ -783,7 +797,7 @@
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol4Variable})*10.0)/10.0]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="701" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="3505639b-6d67-4eb4-85ad-2eef87e27e06">
+					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="694" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="3505639b-6d67-4eb4-85ad-2eef87e27e06">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>
@@ -797,7 +811,7 @@
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol3Variable})*10.0)/10.0]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="661" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="8bcb563b-8cda-4b74-b0d3-3aa6dc811b1a">
+					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="652" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="8bcb563b-8cda-4b74-b0d3-3aa6dc811b1a">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>
@@ -811,7 +825,7 @@
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol2Variable})*10.0)/10.0]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="621" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="d60f0445-c3e6-471c-9d81-d3c78897dda2">
+					<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="610" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="d60f0445-c3e6-471c-9d81-d3c78897dda2">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>
@@ -828,7 +842,7 @@
 			<frame>
 				<reportElement mode="Opaque" x="-11" y="20" width="821" height="20" backcolor="#F5D4D0" uuid="6fac9a47-d1b1-4a62-8fea-2c4892faabd6"/>
 				<staticText>
-					<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="0" width="621" height="20" backcolor="#FFFFFF" uuid="cc66814d-74dc-4121-8836-517ed7b46822">
+					<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="0" width="610" height="20" backcolor="#FFFFFF" uuid="cc66814d-74dc-4121-8836-517ed7b46822">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>
@@ -842,7 +856,7 @@
 					<text><![CDATA[PERSONAL TOTAL REQUERIDO]]></text>
 				</staticText>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement stretchType="ContainerHeight" mode="Transparent" x="781" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="546940e7-a35f-4790-9839-ab72bc22f1f5">
+					<reportElement stretchType="ContainerHeight" mode="Transparent" x="778" y="0" width="43" height="20" backcolor="#FFFFFF" uuid="546940e7-a35f-4790-9839-ab72bc22f1f5">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>
@@ -856,7 +870,7 @@
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol5Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement stretchType="ContainerHeight" mode="Transparent" x="741" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="8a3410a3-4141-498c-bc53-9d0ec3988ecd">
+					<reportElement stretchType="ContainerHeight" mode="Transparent" x="736" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="8a3410a3-4141-498c-bc53-9d0ec3988ecd">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>
@@ -870,7 +884,7 @@
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol4Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement stretchType="ContainerHeight" mode="Transparent" x="701" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="8a002b26-4f1a-4a0c-9fe1-5674aa055a96">
+					<reportElement stretchType="ContainerHeight" mode="Transparent" x="694" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="8a002b26-4f1a-4a0c-9fe1-5674aa055a96">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>
@@ -884,7 +898,7 @@
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol3Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement stretchType="ContainerHeight" mode="Transparent" x="661" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="1a79fab0-c8c4-4cc9-a14f-0996c063b781">
+					<reportElement stretchType="ContainerHeight" mode="Transparent" x="652" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="1a79fab0-c8c4-4cc9-a14f-0996c063b781">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>
@@ -898,7 +912,7 @@
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol2Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 				</textField>
 				<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-					<reportElement stretchType="ContainerHeight" mode="Transparent" x="621" y="0" width="40" height="20" backcolor="#FFFFFF" uuid="3f1927e3-9ed7-47f1-8f86-2747e234434e">
+					<reportElement stretchType="ContainerHeight" mode="Transparent" x="610" y="0" width="42" height="20" backcolor="#FFFFFF" uuid="3f1927e3-9ed7-47f1-8f86-2747e234434e">
 						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					</reportElement>

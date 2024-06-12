@@ -13,6 +13,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.Orde
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.EtapaDAO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EtapaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EtapaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;
@@ -143,6 +144,7 @@ public class EtapaServiceImpl implements EtapaService{
         Collections.sort(stages, multiPropertyComparator);
     }
 
+
     private void orderStages(List<EtapaEntity> stages) {
         orderSubstages(stages);
         for (EtapaEntity obj : stages) {
@@ -151,4 +153,14 @@ public class EtapaServiceImpl implements EtapaService{
             }
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EtapaEntity> findAllFilteredByIds(List<Long> stageIds) {
+        List<EtapaEntity> results = etapaDAO.findAllFilteredByIds(stageIds);
+        results = this.filter(results);
+        this.orderStages(results);
+        return results;
+    }
+
 }

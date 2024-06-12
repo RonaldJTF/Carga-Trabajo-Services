@@ -91,6 +91,9 @@ public class TareaEntity implements Serializable{
     @OneToMany(mappedBy = "tarea")
     private List<SeguimientoEntity> seguimientos;
     
+    @Transient
+    private Double avance;
+
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;

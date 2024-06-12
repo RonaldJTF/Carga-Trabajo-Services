@@ -23,6 +23,16 @@ public class PropertyComparator<T> implements Comparator<T> {
             Object value1 = field.get(obj1);
             Object value2 = field.get(obj2);
 
+            if (value1 == null && value2 == null) {
+                return 0;
+            }
+            if (value1 == null) {
+                return ascending ? -1 : 1;
+            }
+            if (value2 == null) {
+                return ascending ? 1 : -1;
+            }
+
             @SuppressWarnings("unchecked")
             Comparable<Object> comparableValue1 = (Comparable<Object>) value1;
 

@@ -30,4 +30,7 @@ public interface EtapaDAO extends JpaRepository<EtapaEntity, Long>, JpaSpecifica
     List<EtapaEntity> findAllByIdPlanTrabajo(Long idPlanTrabajo);
 
     List<EtapaEntity> findAllByIdPadre(Long id);
+
+    @Query(value = "select e from EtapaEntity e where e.id in :stageIds")
+    List<EtapaEntity> findAllFilteredByIds(@Param("stageIds") List<Long> stageIds);
 }

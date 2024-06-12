@@ -85,4 +85,10 @@ public class PlanTrabajoServiceImpl implements PlanTrabajoService{
         }
         return avancesMap;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PlanTrabajoEntity findByIdStage(Long idStage) {
+       return planTrabajoDAO.findByIdStage(idStage);
+    }
 }

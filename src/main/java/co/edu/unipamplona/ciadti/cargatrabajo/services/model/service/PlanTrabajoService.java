@@ -6,4 +6,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PlanTrabajoE
 
 public interface PlanTrabajoService extends CommonService<PlanTrabajoEntity>{
     Map<Long, Double> getAllAvances();
+
+    PlanTrabajoEntity findByIdStage(Long idStage);
 }

@@ -40,6 +40,7 @@ public class ReportPOI {
     }
 
     public void createSheet(String sheetName){
+        reset();
         sheet = workbook.createSheet(sheetName);
     }
 
@@ -61,9 +62,17 @@ public class ReportPOI {
      * @return byte[]
      * @throws CiadtiException
      */
-    public byte[] generate() throws CiadtiException{
+    public void builtSheetContent() throws CiadtiException{
         ajustTitle();
         assignValues();
+    }
+
+    /** 
+     * Genera el contenido en un arreglo de bytes del libro.
+     * @return byte[]
+     * @throws CiadtiException
+     */
+    public byte[] generateBytes() throws CiadtiException{
         byte[] workbookBytes = null;
         ByteArrayOutputStream outputStream;
         try {
@@ -76,6 +85,11 @@ public class ReportPOI {
             throw new CiadtiException("Ha ocurrido un error al generar archivo", 500);
         }
         return workbookBytes;
+    }
+
+    private void reset(){
+        items = new ArrayList<>();
+        styleRegistry_ = new HashMap<>();
     }
 
     /**
@@ -299,7 +313,7 @@ public class ReportPOI {
 
             /*Se define si queremos extender o hacer merge con las celdas vecinas, esto para ajustarla con la misma profundidad del bloque, 
               Nota: Se entiende por extender cuando la celda no tiene celdas hijas pero se quiere ajustar en filas o en colunma, por ejemplo, la celta Item 1.
-              CELDA NO ESTENDIDA
+              CELDA NO EXTENDIDA
                 |-----------|-----------|-----------| 
                 |  Item  1  |           |           |
                 |-----------|-----------|-----------|
@@ -307,7 +321,7 @@ public class ReportPOI {
                 |  Item  2  |-----------|-----------|
                 |           | Item 2.2  |Item 2.2.1 |
                 |-----------|-----------|-----------|
-              CELDA ESTENDIDA
+              CELDA EXTENDIDA
                 |-----------------------------------|
                 |  Item  1                          |
                 |-----------|-----------|-----------|

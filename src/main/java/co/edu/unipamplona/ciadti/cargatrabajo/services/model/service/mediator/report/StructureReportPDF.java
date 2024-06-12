@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +24,9 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEnt
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jasperReport.ReportJR;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.CellPOI;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -50,7 +52,8 @@ public class StructureReportPDF {
 
         byte[] logo = getImageBytes();
         String filePath = "reports/structures/Structures.jrxml";
-        String filePathDependency = "reports/structures/Charts.jrxml";
+        String filePathChart = "reports/structures/Charts.jrxml";
+        String filePathBlobalChart = "reports/structures/GlobalCharts.jrxml";
 
         List<NivelEntity> levels = nivelService.findAll();
         registry.put("levels", levels);
@@ -71,13 +74,12 @@ public class StructureReportPDF {
         Map<String, Object> chartParameters = new HashMap<String, Object>(); 
         JRBeanCollectionDataSource structureDataSource = new JRBeanCollectionDataSource(structureData);
         chartParameters.put("chartPieDataset",  new JRBeanCollectionDataSource(getChartPieData(structureData)));
+        chartParameters.put("chartPieGlobalDataset",  new JRBeanCollectionDataSource(getChartPieGlobalData(structureData)));
         chartParameters.put("chartBarHoursDataset",  new JRBeanCollectionDataSource(getChartBarData(structureData)));
         chartParameters.put("chartBarPeopleDataset",  new JRBeanCollectionDataSource(getChartBarData(structureData)));
         chartParameters.put("logo", new ByteArrayInputStream(logo));
 
-        System.out.println("********************************************");
-        System.out.println(getClass().getClassLoader().getResourceAsStream(filePath));
-        JasperReport chartReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(filePathDependency));
+        JasperReport chartReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(structureIds != null && structureIds.size() > 0 ? filePathChart : filePathBlobalChart));
 
         parameters.put("chartReport", chartReport);
         parameters.put("chartParameter", chartParameters);
@@ -87,17 +89,18 @@ public class StructureReportPDF {
         parameters.put("logo", new ByteArrayInputStream(getImageBytes()));
         parameters.put("entity", "Universidad Distrital Francisco José de Caldas".toUpperCase());
 
-        parameters.put("levels", levels.stream().map(e -> e.getDescripcion().substring(0, 3).toUpperCase()).toList());
+        parameters.put("levels", levels.stream().map(e -> getLevelNomenclature(e.getDescripcion())).toList());
 
         return reportJR.converterToPDF(parameters, structureDataSource, filePath);
     }
 
     private List<ReportChartDTO> getChartPieData(List<ReportStructureDTO> structureData) {
+        List<ReportStructureDTO> structureDataCopy = new ArrayList<>(structureData);
+        Collections.sort(structureDataCopy, new PropertyComparator<>("dependencia", true));
         List<ReportChartDTO> list = new ArrayList<>();
         String structureName = null;
-        
         ReportChartDTO  reportChartDTO = null;
-        for (ReportStructureDTO e : structureData) {
+        for (ReportStructureDTO e : structureDataCopy) {
             if (!e.getDependencia().equals(structureName)){
                 structureName = e.getDependencia();
                 reportChartDTO = ReportChartDTO.builder().nombre(structureName).valor(0.0).horasPorMes(HOURS_PER_MONTH).build();
@@ -112,13 +115,39 @@ public class StructureReportPDF {
         return list;
     }
 
+    private List<ReportChartDTO> getChartPieGlobalData(List<ReportStructureDTO> structureData) {
+        List<ReportStructureDTO> structureDataCopy = new ArrayList<>(structureData);
+        Collections.sort(structureDataCopy, new PropertyComparator<>("nivel", true));
+        List<ReportChartDTO> list = new ArrayList<>();
+        String nivelName = null;
+        ReportChartDTO  reportChartDTO = null;
+        for (ReportStructureDTO e : structureDataCopy) {
+            if (e.getNivel() != null && !e.getNivel().isEmpty()){
+                if (!e.getNivel().equals(nivelName)){
+                    nivelName = e.getNivel();
+                    reportChartDTO = ReportChartDTO.builder().nombre(nivelName).valor(0.0).horasPorMes(HOURS_PER_MONTH).build();
+                    list.add(reportChartDTO);
+                }
+                reportChartDTO.setValor( reportChartDTO.getValor() + (
+                    e.getTiemposPorNivel() != null && !e.getTiemposPorNivel().isEmpty() 
+                            ? e.getTiemposPorNivel().stream().reduce(0.0, (subtotal, elemento) -> subtotal + (elemento != null ? elemento : 0.0)) 
+                            : 0.0
+                ));
+            }
+        }
+        return list;
+    }
+
 
     private List<ReportChartDTO> getChartBarData(List<ReportStructureDTO> structureData) {
+        List<ReportStructureDTO> structureDataCopy = new ArrayList<>(structureData);
+        Collections.sort(structureDataCopy, new PropertyComparator<>("dependencia", true));
+
         List<NivelEntity> levels = (List<NivelEntity>)registry.get("levels");
         List<ReportChartDTO> list = new ArrayList<>();
         String structureName = null;
         List<ReportChartDTO>  group = null;
-        for (ReportStructureDTO e : structureData) {
+        for (ReportStructureDTO e : structureDataCopy) {
             if (!e.getDependencia().equals(structureName)){
                 structureName = e.getDependencia();
                 group = new ArrayList<>();
@@ -168,8 +197,8 @@ public class StructureReportPDF {
 
                 if (structure.getActividad() != null){
                     List<NivelEntity> levels = (List<NivelEntity>)registry.get("levels");
-                    levelNomenclature = structure.getActividad().getNivel().getDescripcion().substring(0, 3).toUpperCase();
-                    levl = String.format("%s (%s)", structure.getActividad().getNivel().getDescripcion(), levelNomenclature) ;
+                    levelNomenclature = getLevelNomenclature(structure.getActividad().getNivel().getDescripcion());
+                    levl = String.format("%s (%s)", structure.getActividad().getNivel().getDescripcion(), levelNomenclature);
                     frecuency = structure.getActividad().getFrecuencia();
                     minTime = (double) Math.round((structure.getActividad().getTiempoMinimo() / 60.0)*100)/100;
                     meanTime = (double) Math.round((structure.getActividad().getTiempoPromedio() / 60.0)*100)/100;
@@ -184,7 +213,7 @@ public class StructureReportPDF {
                 .proceso(level >= 1 ? tipologyStructures[1] : "")
                 .procedimiento(level >= 2 ? tipologyStructures[2] : "")
                 .actividad(level >= 3 ? tipologyStructures[3] : "")
-                .nivel(levl)
+                .nivel(levl != null ? levl : "")
                 .frecuencia(frecuency)
                 .tiempoMinimo(minTime)
                 .tiempoPromedio(meanTime)
@@ -199,7 +228,6 @@ public class StructureReportPDF {
 
     private void filterStructureData(List<ReportStructureDTO> list){
         String procedimiento = null;
-
         for (ReportStructureDTO reportDTO  : list){
             if (reportDTO.getProcedimiento().equals(procedimiento)){
                 reportDTO.setProcedimiento("");
@@ -227,6 +255,20 @@ public class StructureReportPDF {
                     .filter(o -> o.getTipologia().getId() != idTypology)
                     .collect(Collectors.toList())
             );
+        }
+    }
+
+    private String getLevelNomenclature(String str) {
+        if (str == null || str.isEmpty()) {
+            return "";
+        }
+        String[] words = str.split(" ");
+        if (words.length == 1) {
+            return words[0].substring(0, Math.min(3, words[0].length())).toUpperCase();
+        } else {
+            String firstPart = words[0].substring(0, Math.min(3, words[0].length())).toUpperCase();
+            String secondPart = words[1].substring(0, 1).toUpperCase();
+            return firstPart + ". " + secondPart + ".";
         }
     }
 }
