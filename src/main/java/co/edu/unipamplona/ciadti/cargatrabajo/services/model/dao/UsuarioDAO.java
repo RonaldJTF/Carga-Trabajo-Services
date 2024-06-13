@@ -16,12 +16,13 @@ public interface UsuarioDAO extends JpaRepository<UsuarioEntity, Long>, JpaSpeci
     Optional<UsuarioEntity> findByUsername (String username);
 
     @Modifying
-    @Query(value = "update UsuarioEntity u set u.idPersona = :idPersona, u.username = :username, u.password = :password, " + 
-                    "u.activo = :activo, u.fechaCambio = :fechaCambio, u.registradoPor = :registradoPor where u.id = :id ")
+    @Query(value = "update UsuarioEntity u set u.idPersona = :idPersona, u.username = :username, u.password = :password, " +
+                    "u.activo = :activo, u.tokenPassword = :tokenPassword, u.fechaCambio = :fechaCambio, u.registradoPor = :registradoPor where u.id = :id ")
     int update(@Param("idPersona") Long idPersona,
                @Param("username") String username,
                @Param("password") String password,
                @Param("activo") String activo,
+               @Param("tokenPassword") String tokenPassword,
                @Param("fechaCambio") Date fechaCambio,
                @Param("registradoPor") String registradoPor,
                @Param("id") Long id);
@@ -32,4 +33,15 @@ public interface UsuarioDAO extends JpaRepository<UsuarioEntity, Long>, JpaSpeci
     UsuarioEntity findByIdPersona(Long idPersona);
 
     Optional<UsuarioEntity> findByIdAndActivo(Long id, String activated);
+
+    @Query("SELECT U FROM UsuarioEntity U INNER JOIN U.persona P WHERE (U.username = :username OR LOWER(P.correo) = :correo) AND U.activo = :activo")
+    Optional<UsuarioEntity>findByUsernameOrEmail(@Param("username") String username, @Param("correo") String correo, @Param("activo") String activo);
+
+    Optional<UsuarioEntity>getByTokenPassword(String tokenPassword);
+
+    @Modifying
+    @Query(value = "update UsuarioEntity u set u.tokenPassword = :tokenPassword, u.fechaCambio = :fechaCambio where u.id = :id ")
+    int updateTokenPassword(@Param("id") Long id,
+                            @Param("tokenPassword")  String tokenPassword,
+                            @Param("fechaCambio")  Date fechaCambio);
 }

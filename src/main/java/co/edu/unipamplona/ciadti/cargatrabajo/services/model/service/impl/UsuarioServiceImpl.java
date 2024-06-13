@@ -1,5 +1,6 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ChangePasswordDTO;
 import lombok.RequiredArgsConstructor;
 
 import org.hibernate.Session;
@@ -16,8 +17,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Acti
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -49,10 +49,11 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuarioDAO.update(
                 entity.getIdPersona(), 
                 entity.getUsername(), 
-                entity.getPassword(), 
-                entity.getActivo(), 
-                entity.getFechaCambio(), 
-                entity.getRegistradoPor(), 
+                entity.getPassword(),
+                entity.getActivo(),
+                entity.getTokenPassword(),
+                entity.getFechaCambio(),
+                entity.getRegistradoPor(),
                 entity.getId());
             return entity;
         }
@@ -100,5 +101,28 @@ public class UsuarioServiceImpl implements UsuarioService {
         Session session = entityManager.unwrap(Session.class);
         session.evict(entity);
         return entity;
+    }
+
+    @Override
+    public Optional<UsuarioEntity> findByUsernameOrEmail(String username, String correo, String activo) {
+        return usuarioDAO.findByUsernameOrEmail(username, correo, activo);
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public CiadtiException changePassword(ChangePasswordDTO data)throws CiadtiException{
+      Optional<UsuarioEntity> usuarioOpt = usuarioDAO.getByTokenPassword(data.getTokenPassword());
+        if(usuarioOpt.isEmpty())
+            throw new CiadtiException("El usuario no existe");
+        UsuarioEntity usuario = this.usuarioDAO.findById(usuarioOpt.get().getId()).get();
+        usuario.setPassword(data.getPassword());
+        usuario.setTokenPassword(null);
+        this.usuarioDAO.save(usuario);
+        return new CiadtiException("Contraseña actualizada", 200);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public int updateTokenPassword(UsuarioEntity usuario) {
+        return usuarioDAO.updateTokenPassword(usuario.getId(), usuario.getTokenPassword(), new Date());
     }
 }

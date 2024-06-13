@@ -1,14 +1,10 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GeneroEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.RolEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipoDocumentoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GeneroService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
@@ -21,9 +17,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.RequiredArgsConstructor;
 
@@ -90,6 +83,14 @@ public class BasicInformationController {
         EstructuraEntity filter = (EstructuraEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         return new ResponseEntity<>(estructuraService.statisticsDependence(filter), HttpStatus.OK);
+    }
+
+    @PostMapping("/send-email")
+    public ResponseEntity<?> sendEmail(@RequestBody(required = false) Long id, HttpServletRequest request) throws CiadtiException{
+        ParameterConverter parameterConverter = new ParameterConverter(PersonaEntity.class);
+        PersonaEntity filter = (PersonaEntity) parameterConverter.converter(request.getParameterMap());
+        System.out.println(filter);
+        return Methods.getResponseAccordingToId(id, null);
     }
 
 }
