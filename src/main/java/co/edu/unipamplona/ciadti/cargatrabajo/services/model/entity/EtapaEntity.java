@@ -76,6 +76,9 @@ public class EtapaEntity implements Serializable{
     private Double avance;
 
     @Transient
+    private Integer totalTareas;
+
+    @Transient
     private Integer level;
 
     @JsonIgnore

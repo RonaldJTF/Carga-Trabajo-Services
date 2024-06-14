@@ -1,17 +1,16 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.auth;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ChangePasswordDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PersonaEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,11 +32,17 @@ public class AuthenticationController {
 
     @PostMapping("/recover-password")
     public ResponseEntity<?> recoverPassword(@RequestBody PersonaEntity data) throws CiadtiException{
-        return new ResponseEntity<>(service.recoverPassword(data), HttpStatus.OK);
+        service.recoverPassword(data);
+        Map<String, String> response = new HashMap<String, String>();
+        response.put("message", "Te hemos enviado un correo");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDTO data) throws CiadtiException{
-        return new ResponseEntity<>(service.changePassword(data), HttpStatus.OK);
+        service.changePassword(data);
+        Map<String, String> response = new HashMap<String, String>();
+        response.put("message", "Contraseña actualizada");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

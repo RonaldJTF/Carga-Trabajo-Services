@@ -2,7 +2,9 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -462,7 +464,7 @@ public class ConfigurationMediator {
     public List<EtapaEntity> findAllStagesByIds(List<Long> stageIds) {
         List<EtapaEntity> stages = etapaService.findAllFilteredByIds(stageIds);
         stages.forEach(e -> {
-            assignAdvance(e);
+            assignInformation(e);
         });
         return stages;
     }
@@ -470,16 +472,17 @@ public class ConfigurationMediator {
     public List<EtapaEntity> findAllStagesByIdWorkplan(Long idWorkplan) {
         List<EtapaEntity> stages = etapaService.findAllFilteredBy(EtapaEntity.builder().idPlanTrabajo(idWorkplan).build());
         stages.forEach(e -> {
-            assignAdvance(e);
+            assignInformation(e);
         });
         return stages;
     }
 
-    private Double assignAdvance(EtapaEntity stage){
+    private Map<String, Number> assignInformation(EtapaEntity stage){
         if (stage == null) {
-            return 0.0;
+            return null;
         }
         Double totalAdvance = 0.0;
+        Integer totalTasks = 0;
         int count = 0;
         if (stage.getTareas() != null && !stage.getTareas().isEmpty()) {
             for (TareaEntity task : stage.getTareas()) {
@@ -497,18 +500,28 @@ public class ConfigurationMediator {
                 totalAdvance += task.getAvance();
                 count++;
             }
+            totalTasks += stage.getTareas().size();
         }
         if (stage.getSubEtapas() != null && !stage.getSubEtapas().isEmpty()) {
             for (EtapaEntity subStage : stage.getSubEtapas()) {
-                totalAdvance += assignAdvance(subStage);
+                Map<String, Number> out = assignInformation(subStage);
+                if (out != null){
+                    totalAdvance += (Double) out.get("advance");
+                    totalTasks += (Integer) out.get("totalTasks");
+                }
                 count++;
             }
         }
         if (count == 0) {
-            return 0.0;
+            return null;
         }
         stage.setAvance(Math.round((totalAdvance / count) * 10.0) / 10.0);
-        return Math.round(stage.getAvance() * 10.0) / 10.0;
+        stage.setTotalTareas(totalTasks);
+
+        Map<String, Number> out = new HashMap<String, Number>();
+        out.put("advance", stage.getAvance());
+        out.put("totalTasks", stage.getTotalTareas());
+        return out;
     }
 
 

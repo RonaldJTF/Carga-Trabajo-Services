@@ -72,10 +72,14 @@ public class WorkplanController {
             //Double avance = advances.get(planTrabajo.getId());
             List<EtapaEntity> stages = configurationMediator.findAllStagesByIdWorkplan(planTrabajo.getId());
             Double avance = 0.0;
+            Integer totalTareas = 0;
             for (EtapaEntity e : stages){
                 avance += (e.getAvance() != null ? e.getAvance() : 0) / stages.size();
+                totalTareas += (e.getTotalTareas() != null ? e.getTotalTareas() : 0);
             }
             planTrabajo.setAvance(avance);
+            planTrabajo.setTotalEtapas(stages.size());
+            planTrabajo.setTotalTareas(totalTareas);
         });
         return Methods.getResponseAccordingToId(id, result);
     }

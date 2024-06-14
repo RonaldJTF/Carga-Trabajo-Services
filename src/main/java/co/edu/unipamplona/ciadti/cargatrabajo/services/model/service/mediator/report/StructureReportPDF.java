@@ -48,7 +48,7 @@ public class StructureReportPDF {
 
     public byte[] generate(List<Long> structureIds) throws JRException, CiadtiException{
         registry = new HashMap<>();
-        HOURS_PER_MONTH = 167.0;
+        HOURS_PER_MONTH = 151.3;
 
         byte[] logo = getImageBytes();
         String filePath = "reports/structures/Structures.jrxml";

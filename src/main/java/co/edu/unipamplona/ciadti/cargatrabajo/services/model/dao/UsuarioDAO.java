@@ -44,4 +44,13 @@ public interface UsuarioDAO extends JpaRepository<UsuarioEntity, Long>, JpaSpeci
     int updateTokenPassword(@Param("id") Long id,
                             @Param("tokenPassword")  String tokenPassword,
                             @Param("fechaCambio")  Date fechaCambio);
+
+    @Modifying
+    @Query(value = "update UsuarioEntity u set u.password = :password, u.tokenPassword = :tokenPassword, " +
+                   "u.fechaCambio = :fechaCambio, u.registradoPor = :registradoPor where u.id = :id ")
+    int updatePasswordAndTokenPassword(@Param("id") Long id,
+                                        @Param("password")  String password,
+                                        @Param("tokenPassword")  String tokenPassword,
+                                        @Param("registradoPor")  String registradoPor,
+                                        @Param("fechaCambio")  Date fechaCambio);
 }

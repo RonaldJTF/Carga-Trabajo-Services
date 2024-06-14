@@ -58,7 +58,7 @@ public class StructureReportExcel {
 
     public byte[] generate(List<Long> structureIds) throws CiadtiException{
         registry = new HashMap<>();
-        HOURS_PER_MONTH = 167.0;
+        HOURS_PER_MONTH = 151.3;
 
         BlockPOI titleBlock = buildDependencyReportTitle(Position.builder().x(1).y(1).build());
         Map<String, Position> positions;

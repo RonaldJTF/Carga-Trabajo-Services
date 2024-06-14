@@ -59,6 +59,12 @@ public class PlanTrabajoEntity implements Serializable{
     @Transient
     private Double avance;
 
+    @Transient
+    private Integer totalTareas;
+
+    @Transient
+    private Integer totalEtapas;
+    
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;

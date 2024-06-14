@@ -1,6 +1,5 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ChangePasswordDTO;
 import lombok.RequiredArgsConstructor;
 
 import org.hibernate.Session;
@@ -108,21 +107,26 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioDAO.findByUsernameOrEmail(username, correo, activo);
     }
 
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public CiadtiException changePassword(ChangePasswordDTO data)throws CiadtiException{
-      Optional<UsuarioEntity> usuarioOpt = usuarioDAO.getByTokenPassword(data.getTokenPassword());
-        if(usuarioOpt.isEmpty())
-            throw new CiadtiException("El usuario no existe");
-        UsuarioEntity usuario = this.usuarioDAO.findById(usuarioOpt.get().getId()).get();
-        usuario.setPassword(data.getPassword());
-        usuario.setTokenPassword(null);
-        this.usuarioDAO.save(usuario);
-        return new CiadtiException("Contraseña actualizada", 200);
-    }
-
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public int updateTokenPassword(UsuarioEntity usuario) {
         return usuarioDAO.updateTokenPassword(usuario.getId(), usuario.getTokenPassword(), new Date());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<UsuarioEntity> findByTokenPassword(String tokenPassword) {
+        return usuarioDAO.getByTokenPassword(tokenPassword);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public int updatePasswordAndTokenPassword(UsuarioEntity usuario) {
+        return usuarioDAO.updatePasswordAndTokenPassword(
+            usuario.getId(), 
+            usuario.getPassword(), 
+            usuario.getTokenPassword(),
+            usuario.getRegistradoPor(),
+            new Date());
     }
 }

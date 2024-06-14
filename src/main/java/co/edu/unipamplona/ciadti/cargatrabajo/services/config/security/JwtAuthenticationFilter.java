@@ -37,10 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
 
         if (authHeader == null || !authHeader.startsWith(Metadata.BEARER + " ")) {
-            jwt = request.getParameter("token");
-            if ( jwt != null){
-                this.procesar(request, jwt);
-            }
+            RegistradorDTO registradorDTO = new RegistradorDTO();
+            registradorDTO.setIp(getClientIpAddress(request));
+            RegisterContext.setRegistradorDTO(registradorDTO);
             filterChain.doFilter(request, response);
             return;
         }
@@ -63,9 +62,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
                 //Sección aprovechada para obtener toda información de quien ejecuta la acción a través del token
+                String ip = getClientIpAddress(request);
                 RegistradorDTO registradorDTO = jwtService.extractRegistradorDTO(jwt);
+                registradorDTO.setIp(ip);
                 RegisterContext.setRegistradorDTO(registradorDTO);
             }
         }
+    }
+
+    private String getClientIpAddress(HttpServletRequest request) {
+        String ipAddress = request.getHeader("X-Forwarded-For");
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+        }
+        return ipAddress;
     }
 }
