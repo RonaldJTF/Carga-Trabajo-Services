@@ -510,7 +510,7 @@
 					<pen lineWidth="0.25"/>
 				</box>
 				<staticText>
-					<reportElement x="100" y="4" width="680" height="18" uuid="5a767129-7a0e-45f0-a427-109d50430745">
+					<reportElement x="100" y="12" width="680" height="18" uuid="5a767129-7a0e-45f0-a427-109d50430745">
 						<property name="com.jaspersoft.studio.unit.x" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
@@ -518,15 +518,6 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="14" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Universidad Distrital Francisco José de Caldas]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="100" y="22" width="680" height="15" uuid="875218cb-07cf-428d-b9ab-80258cf3d405">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
 					<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
 				</staticText>
 				<image vAlign="Middle">
@@ -537,7 +528,7 @@
 					<imageExpression><![CDATA[$P{logo}]]></imageExpression>
 				</image>
 				<staticText>
-					<reportElement x="100" y="34" width="680" height="19" uuid="982a2650-e1ec-4efa-a40d-e08ccebb6195">
+					<reportElement x="100" y="27" width="680" height="19" uuid="982a2650-e1ec-4efa-a40d-e08ccebb6195">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.x" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>

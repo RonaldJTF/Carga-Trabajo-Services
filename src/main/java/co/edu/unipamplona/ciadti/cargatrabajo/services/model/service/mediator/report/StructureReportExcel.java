@@ -85,7 +85,8 @@ public class StructureReportExcel {
         TopRightHeadPosition.setY(TopRightHeadPosition.getY() - 1);
         TopRightHeadPosition.setX(TopRightHeadPosition.getX() - 1);
         report.addBlock(buildDependencyReportDate(TopRightHeadPosition, 0));
-        positions = report.addBlock(buildConsolidatedReportStructure(structureIds, positions.get("bottom")));
+        positions = report.addBlock(buildConsolidatedReportBody(structureIds, positions.get("bottom")));
+        positions = report.addBlock(buildConsolidatedReportResume(positions.get("bottom")));
         report.builtSheetContent();
         return report.generateBytes();
     }
@@ -96,10 +97,9 @@ public class StructureReportExcel {
             .style(Style.builder().backgroundColorRGB(GRAY).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.CENTER).verticalAlignment(VerticalAlignment.CENTER).build())
             .items(List.of(
                     CellPOI.builder().value(getImageBytes()).style(Style.builder().width(20).borderStyle(BorderStyle.MEDIUM).build()).build(),
-                    CellPOI.builder().value("Universidad Distrital Francisco José de Caldas").style(Style.builder().font("Arial Black").fontSize(14).borderStyle(BorderStyle.MEDIUM).borders(new Boolean[]{true, true, false, false}).build())
+                    CellPOI.builder().value("Gestión y Desarrollo del Talento Humano").style(Style.builder().font("Arial Black").fontSize(14).borderStyle(BorderStyle.MEDIUM).borders(new Boolean[]{true, true, false, false}).verticalAlignment(VerticalAlignment.BOTTOM).height((short)30).build())
                         .children(CellPOI.createSiblings(List.of(
-                            CellPOI.builder().value("Gestión y Desarrollo del Talento Humano").style(Style.builder().fontSize(12).borders(BORDER_RIGHT).build()).build(),
-                            CellPOI.builder().value("Gestión de Tiempos Laborados por Dependencia").style(Style.builder().borders(new Boolean[]{false, true, true, false}).build()).build()
+                            CellPOI.builder().value("Gestión de Tiempos Laborados por Dependencia").style(Style.builder().fontSize(12).borders(new Boolean[]{false, true, true, false}).verticalAlignment(VerticalAlignment.TOP).height((short)30).build()).build()
                         ))).build())
             ).build();
     }
@@ -330,7 +330,7 @@ public class StructureReportExcel {
         return block;
     }
 
-    private BlockPOI buildConsolidatedReportStructure(List<Long> structureIds, Position position){
+    private BlockPOI buildConsolidatedReportBody(List<Long> structureIds, Position position){
         List<CellPOI> items = new ArrayList<>();
         List<EstructuraEntity> plainedStructures = (List<EstructuraEntity>) registry.get("structures");
         if(plainedStructures != null && plainedStructures.size() > 0){
@@ -345,6 +345,18 @@ public class StructureReportExcel {
             .noExtend(true)
             .style(Style.builder().backgroundColorRGB(WHITE).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER)
                 .borderStyle(BorderStyle.THIN).build())
+            .build();
+    }
+
+    private BlockPOI buildConsolidatedReportResume(Position position){
+        List<CellPOI> items = List.of(
+            createTotalCell("PERSONAL TOTAL REQUERIDO", "totalTime_", null, HOURS_PER_MONTH, PINK, true)
+        );
+        return BlockPOI.builder()
+            .showInColumn(true)
+            .position(position)
+            .items(items)
+            .style(Style.builder().patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER).borderStyle(BorderStyle.THIN).bold(true).build())
             .build();
     }
 

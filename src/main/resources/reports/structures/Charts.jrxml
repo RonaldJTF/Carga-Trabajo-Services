@@ -172,7 +172,7 @@
 			</staticText>
 			<barChart>
 				<chart evaluationTime="Report">
-					<reportElement x="-12" y="363" width="822" height="120" uuid="029b3751-9691-464d-be8b-a41a7005faf6">
+					<reportElement x="-12" y="363" width="822" height="120" uuid="14be4eab-bc9e-494f-85bb-0482b0a8fdc9">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<chartTitle/>
@@ -181,7 +181,7 @@
 				</chart>
 				<categoryDataset>
 					<dataset>
-						<datasetRun subDataset="ChartDataset" uuid="e11bd36e-3460-4785-be73-d138eda142fb">
+						<datasetRun subDataset="ChartDataset" uuid="598d7d1e-a9ec-4a44-b79f-21afae17473a">
 							<dataSourceExpression><![CDATA[$P{chartBarPeopleDataset}]]></dataSourceExpression>
 						</datasetRun>
 					</dataset>
@@ -189,7 +189,7 @@
 						<seriesExpression><![CDATA[$F{nivel}]]></seriesExpression>
 						<categoryExpression><![CDATA[$F{nombre}]]></categoryExpression>
 						<valueExpression><![CDATA[Math.round(($F{valor} / $F{horasPorMes})*10.0)/10.0]]></valueExpression>
-						<labelExpression><![CDATA[$F{valor} > 0 ? Math.round(($F{valor} /167)*10.0)/10.0 + ""  : ""]]></labelExpression>
+						<labelExpression><![CDATA[$F{valor} > 0 ? Math.round(($F{valor} /$F{horasPorMes})*10.0)/10.0 + ""  : ""]]></labelExpression>
 					</categorySeries>
 				</categoryDataset>
 				<barPlot isShowLabels="true">
@@ -230,7 +230,7 @@
 					<pen lineWidth="0.25"/>
 				</box>
 				<staticText>
-					<reportElement x="100" y="4" width="680" height="18" uuid="0b0e81b6-a540-4a26-a7be-b84cfb8b371d">
+					<reportElement x="100" y="13" width="680" height="18" uuid="0b0e81b6-a540-4a26-a7be-b84cfb8b371d">
 						<property name="com.jaspersoft.studio.unit.x" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
@@ -238,15 +238,6 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="14" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Universidad Distrital Francisco José de Caldas]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="100" y="22" width="680" height="15" uuid="5fb393cc-4606-4ef0-bfcd-f34cf6ffec39">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
 					<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
 				</staticText>
 				<image vAlign="Middle">
@@ -257,7 +248,7 @@
 					<imageExpression><![CDATA[$P{logo}]]></imageExpression>
 				</image>
 				<staticText>
-					<reportElement x="100" y="34" width="680" height="19" uuid="8e1f71a5-b6f7-41f4-aeae-bd254ca80f08">
+					<reportElement x="100" y="28" width="680" height="19" uuid="8e1f71a5-b6f7-41f4-aeae-bd254ca80f08">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.x" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
@@ -342,7 +333,7 @@ Personas]]></text>
 					</dataset>
 					<keyExpression><![CDATA[$F{nombre}]]></keyExpression>
 					<valueExpression><![CDATA[$F{valor}]]></valueExpression>
-					<labelExpression><![CDATA[ Math.round(($F{valor})*10.0)/10.0  + "h" + " / " + Math.round(($F{valor} /$F{horasPorMes})*10.0)/10.0 + "p"]]></labelExpression>
+					<labelExpression><![CDATA[Math.round(($F{valor})*10.0)/10.0  + "h" + " / " + Math.round(($F{valor} /$F{horasPorMes})*10.0)/10.0 + "p"]]></labelExpression>
 				</pieDataset>
 				<piePlot>
 					<plot backgroundAlpha="1.0" foregroundAlpha="1.0">

@@ -351,4 +351,15 @@ public class WorkplanController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }    
+
+
+    @Operation(
+        summary = "Obtener la información del avance de un plan de trabajo en función del tiempo.",
+        description = "Obtiene la información del avance de un plan de trabajo en función del tiempo (por días, semana o mes). " + 
+            "Args: id: identificador del plan de trabajo. " + 
+            "type: tipo de tiempo por el que se realiza el consolidado (day, month, week)")
+    @GetMapping("/consolidated/{id}")
+    private ResponseEntity<?> getConsolidatedByTime(@PathVariable("id") Long id, @RequestParam(name = "timeType", required = false) String timeType) throws CiadtiException{
+        return new ResponseEntity<>(configurationMediator.getConsolidatedByTime(id, timeType), HttpStatus.OK);
+    }
 }

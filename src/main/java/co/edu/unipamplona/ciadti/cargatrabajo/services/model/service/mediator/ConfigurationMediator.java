@@ -1,11 +1,18 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -14,12 +21,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO.DateAdvance;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ArchivoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EtapaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.FotoPersonaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PersonaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PlanTrabajoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.RolEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.SeguimientoArchivoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.SeguimientoEntity;
@@ -524,5 +534,207 @@ public class ConfigurationMediator {
         return out;
     }
 
+    public Object getConsolidatedByTime(Long idWorkplan, String dateType) throws CiadtiException {
+        PlanTrabajoEntity workplan = planTrabajoService.findById(idWorkplan);
+        List<EtapaEntity> stages = etapaService.findAllFilteredBy(EtapaEntity.builder().idPlanTrabajo(idWorkplan).build());
 
+        ConsolidatedOfWorkplanDTO consolidated = new ConsolidatedOfWorkplanDTO();
+        consolidated.setPlanTrabajo(workplan);
+        List<DateAdvance> dateAdvances = new ArrayList<DateAdvance>(); 
+
+        Double advance;
+        Double idealAdvance;
+        Date init = new Date(Long.MAX_VALUE);
+        Date end = new Date(Long.MIN_VALUE);
+        Map<String, Date> scheduleDates = new HashMap<>();
+        scheduleDates.put("start", init);
+        scheduleDates.put("end", end);
+        scheduleDates = getDates(stages, scheduleDates);
+        if(scheduleDates.get("start") == init || scheduleDates.get("end") == end){
+            scheduleDates.put("start", null);
+            scheduleDates.put("end", null);
+        }
+
+        Date todayDate = new Date();
+        Date endDate = null;
+        Date lastFollowUpDate = getLastFollowUpDate(stages, end);
+
+        System.out.println(lastFollowUpDate);
+        System.out.println( scheduleDates.get("end"));
+
+        if (lastFollowUpDate == end){ lastFollowUpDate = null;}
+
+        if (lastFollowUpDate != null  && scheduleDates.get("end") != null){
+            if (lastFollowUpDate.before(scheduleDates.get("end"))){
+                endDate = todayDate.before(scheduleDates.get("end")) ? todayDate : scheduleDates.get("end");
+            }else{
+                endDate = lastFollowUpDate;
+            }
+        }
+
+        if (scheduleDates.get("start") != null  && endDate != null){
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            Calendar endCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            calendar.setTime(scheduleDates.get("start"));
+            endCalendar.setTime(endDate);
+            endCalendar.set(Calendar.HOUR_OF_DAY, 23);
+            endCalendar.set(Calendar.MINUTE, 59);
+            endCalendar.set(Calendar.SECOND, 59);
+            endCalendar.set(Calendar.MILLISECOND, 0);
+
+            switch ((dateType != null? dateType : "").toUpperCase()) {
+                case "DAY":
+                    while (!calendar.getTime().after(endCalendar.getTime())) {
+                        advance = 0.0;
+                        idealAdvance = 0.0;
+                        calendar.set(Calendar.HOUR_OF_DAY, 23);
+                        calendar.set(Calendar.MINUTE, 59);
+                        calendar.set(Calendar.SECOND, 59);
+                        calendar.set(Calendar.MILLISECOND, 0);
+                        for (EtapaEntity e : stages){
+                            assignInformation(e, calendar.getTime());
+                            advance += (e.getAvance() != null ? e.getAvance() : 0.0) / stages.size() ;
+                            idealAdvance += (e.getIdealAvance() != null ? e.getIdealAvance() : 0.0) / stages.size() ;
+                        }
+                        dateAdvances.add(DateAdvance.builder().date(calendar.getTime()).advance(advance).idealAdvance(idealAdvance).build());
+                        calendar.add(Calendar.DAY_OF_MONTH, 1);
+                    }
+                    break;
+                case "WEEK":
+                    endCalendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                    while (!calendar.getTime().after(endCalendar.getTime())) {
+                        advance = 0.0;
+                        idealAdvance = 0.0;
+                        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                        calendar.set(Calendar.HOUR_OF_DAY, 23);
+                        calendar.set(Calendar.MINUTE, 59);
+                        calendar.set(Calendar.SECOND, 59);
+                        calendar.set(Calendar.MILLISECOND, 0);
+                        for (EtapaEntity e : stages){
+                            assignInformation(e, calendar.getTime());
+                            advance += (e.getAvance() != null ? e.getAvance() : 0.0) / stages.size() ;
+                            idealAdvance += (e.getIdealAvance() != null ? e.getIdealAvance() : 0.0) / stages.size() ;
+                        }
+                        dateAdvances.add(DateAdvance.builder().date(calendar.getTime()).advance(advance).idealAdvance(idealAdvance).build());
+                        calendar.add(Calendar.DAY_OF_MONTH, 7);
+                    }
+                    break;
+                case "MONTH":
+                    endCalendar.set(Calendar.DAY_OF_MONTH, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+                    while (!calendar.getTime().after(endCalendar.getTime())) {
+                        advance = 0.0;
+                        idealAdvance = 0.0;
+                        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+                        calendar.set(Calendar.HOUR_OF_DAY, 23);
+                        calendar.set(Calendar.MINUTE, 59);
+                        calendar.set(Calendar.SECOND, 59);
+                        calendar.set(Calendar.MILLISECOND, 0);
+                        for (EtapaEntity e : stages){
+                            assignInformation(e, calendar.getTime());
+                            advance += (e.getAvance() != null ? e.getAvance() : 0.0) / stages.size() ;
+                            idealAdvance += (e.getIdealAvance() != null ? e.getIdealAvance() : 0.0) / stages.size() ;
+                        }
+                        dateAdvances.add(DateAdvance.builder().date(calendar.getTime()).advance(advance).idealAdvance(idealAdvance).format("MMMM").build());
+                        calendar.add(Calendar.MONTH, 1);
+                    }
+                    break;
+                default:
+                    break;
+            }    
+        }
+        consolidated.setDateAdvances(dateAdvances);
+        return consolidated;
+    }
+
+    private Map<String, Date> getDates(List<EtapaEntity> stages, Map<String, Date> limitDates){
+        for (EtapaEntity stage : stages) {
+            if(stage.getSubEtapas() != null && stage.getSubEtapas().size() > 0){
+                limitDates = getDates(stage.getSubEtapas(), limitDates);
+            }
+            if (stage.getTareas() != null && stage.getTareas().size() > 0){
+                Date tempStartDate = Collections.min(stage.getTareas().stream().map(e -> e.getFechaInicio()).toList());
+                Date tempEndDate = Collections.max(stage.getTareas().stream().map(e -> e.getFechaFin()).toList());
+
+                if (tempStartDate.before(limitDates.get("start"))){
+                    limitDates.put("start", tempStartDate);
+                }
+                if (tempEndDate.after(limitDates.get("end"))){
+                    limitDates.put("end", tempEndDate);
+                }
+            }
+        }
+        return limitDates;
+    }
+
+
+    private Map<String, Double> assignInformation(EtapaEntity stage, Date date){
+        if (stage == null) {
+            return null;
+        }
+        Double totalAdvance = 0.0;
+        Double totalIdealAdvance = 0.0;
+        int count = 0;
+        if (stage.getTareas() != null && !stage.getTareas().isEmpty()) {
+            for (TareaEntity task : stage.getTareas()) {
+                if (task.getSeguimientos() != null && !task.getSeguimientos().isEmpty()) {
+                    Optional<SeguimientoEntity> seguimientoOpt = task.getSeguimientos().stream()
+                    .filter(seguimiento -> !seguimiento.getFecha().after(date))
+                    .max(Comparator.comparing(SeguimientoEntity::getFecha));
+    
+                    SeguimientoEntity seguimiento = seguimientoOpt.orElse(null);
+
+                    if (seguimiento != null) {
+                        task.setAvance(seguimiento.getPorcentajeAvance());
+                    }
+                }
+                totalAdvance += task.getAvance() != null ?  task.getAvance() : 0.0;
+                totalIdealAdvance += task.getFechaFin().before(date) ?  100.0 : 0.0;
+                count++;
+            }
+        }
+        if (stage.getSubEtapas() != null && !stage.getSubEtapas().isEmpty()) {
+            for (EtapaEntity subStage : stage.getSubEtapas()) {
+                Map<String, Double> out =  assignInformation(subStage, date);
+                if (out != null){
+                    totalAdvance += out.get("totalAdvance");
+                    totalIdealAdvance += out.get("totalIdealAdvance");
+                }
+                count++;
+            }
+        }
+        if (count == 0) {
+            return null;
+        }
+        stage.setAvance(Math.round((totalAdvance / count) * 10.0) / 10.0);
+        stage.setIdealAvance(Math.round((totalIdealAdvance / count) * 10.0) / 10.0);
+
+        Map<String, Double> out = new HashMap<String, Double>();
+        out.put ("totalAdvance", stage.getAvance());
+        out.put ("totalIdealAdvance", stage.getIdealAvance());
+        return out;
+    }
+
+    private Date getLastFollowUpDate(List<EtapaEntity> stages, Date lastDate){
+        for (EtapaEntity stage : stages) {
+            if(stage.getSubEtapas() != null && stage.getSubEtapas().size() > 0){
+                lastDate = getLastFollowUpDate(stage.getSubEtapas(), lastDate);
+            }
+            if (stage.getTareas() != null && stage.getTareas().size() > 0){
+                for (TareaEntity task : stage.getTareas()) {
+                    if (task.getSeguimientos() != null && !task.getSeguimientos().isEmpty()) {
+                        SeguimientoEntity lastFollowUp = task.getSeguimientos().stream()
+                            .max((f1, f2) -> f1.getFecha().compareTo(f2.getFecha()))
+                            .orElse(null);
+    
+                        if (lastFollowUp != null) {
+                            if (lastDate.before(lastFollowUp.getFecha())){
+                                lastDate = lastFollowUp.getFecha();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return lastDate;
+    }
 }

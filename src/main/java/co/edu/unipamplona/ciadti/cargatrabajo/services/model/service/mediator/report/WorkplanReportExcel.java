@@ -143,11 +143,9 @@ public class WorkplanReportExcel {
             .style(Style.builder().backgroundColorRGB(GRAY).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.CENTER).verticalAlignment(VerticalAlignment.CENTER).build())
             .items(List.of(
                     CellPOI.builder().value(getImageBytes()).style(Style.builder().width(20).borderStyle(BorderStyle.MEDIUM).build()).build(),
-                    CellPOI.builder().value(workplan.getNombre()).style(Style.builder().font("Arial Black").fontSize(14).borderStyle(BorderStyle.MEDIUM).borders(new Boolean[]{true, true, false, false}).build())
+                    CellPOI.builder().value(workplan.getNombre()).style(Style.builder().font("Arial Black").fontSize(14).borderStyle(BorderStyle.MEDIUM).borders(new Boolean[]{true, true, false, false}).verticalAlignment(VerticalAlignment.BOTTOM).height((short)30).build())
                         .children(CellPOI.createSiblings(List.of(
-                            CellPOI.builder().value(description).style(Style.builder().fontSize(10).borders(BORDER_RIGHT).build()).build(),
-                            CellPOI.builder().value("Universidad Distrital Francisco José de Caldas").style(Style.builder().fontSize(10).borders(new Boolean[]{false, true, true, false}).build()).build()
-                        ))).build())
+                            CellPOI.builder().value(description).style(Style.builder().fontSize(10).borders(new Boolean[]{false, true, true, false}).verticalAlignment(VerticalAlignment.TOP).height((short)30).build()).build()))).build())
             ).build();
     }
 
@@ -393,7 +391,6 @@ public class WorkplanReportExcel {
      */
     private Map<Integer, Map<Month, List<Integer>>> getDaysByYearAndMonth(List<YearMonth> months) {
         Map<Integer, Map<Month, List<Integer>>> daysByYearAndMonth = new LinkedHashMap<>();
-
         for (YearMonth yearMonth : months) {
             int year = yearMonth.getYear();
             Month month = yearMonth.getMonth();
@@ -403,7 +400,6 @@ public class WorkplanReportExcel {
                 .computeIfAbsent(year, k -> new LinkedHashMap<>())
                 .put(month, days);
         }
-
         return daysByYearAndMonth;
     }
 
