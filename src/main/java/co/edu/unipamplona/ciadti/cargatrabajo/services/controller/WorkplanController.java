@@ -352,7 +352,6 @@ public class WorkplanController {
         }
     }    
 
-
     @Operation(
         summary = "Obtener la información del avance de un plan de trabajo en función del tiempo.",
         description = "Obtiene la información del avance de un plan de trabajo en función del tiempo (por días, semana o mes). " + 

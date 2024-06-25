@@ -559,9 +559,6 @@ public class ConfigurationMediator {
         Date endDate = null;
         Date lastFollowUpDate = getLastFollowUpDate(stages, end);
 
-        System.out.println(lastFollowUpDate);
-        System.out.println( scheduleDates.get("end"));
-
         if (lastFollowUpDate == end){ lastFollowUpDate = null;}
 
         if (lastFollowUpDate != null  && scheduleDates.get("end") != null){
@@ -601,6 +598,7 @@ public class ConfigurationMediator {
                     }
                     break;
                 case "WEEK":
+                    endCalendar.setFirstDayOfWeek(Calendar.MONDAY);
                     endCalendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
                     while (!calendar.getTime().after(endCalendar.getTime())) {
                         advance = 0.0;
@@ -667,51 +665,42 @@ public class ConfigurationMediator {
     }
 
 
-    private Map<String, Double> assignInformation(EtapaEntity stage, Date date){
-        if (stage == null) {
-            return null;
-        }
+    private void assignInformation(EtapaEntity stage, Date date){
         Double totalAdvance = 0.0;
         Double totalIdealAdvance = 0.0;
         int count = 0;
-        if (stage.getTareas() != null && !stage.getTareas().isEmpty()) {
-            for (TareaEntity task : stage.getTareas()) {
-                if (task.getSeguimientos() != null && !task.getSeguimientos().isEmpty()) {
-                    Optional<SeguimientoEntity> seguimientoOpt = task.getSeguimientos().stream()
-                    .filter(seguimiento -> !seguimiento.getFecha().after(date))
-                    .max(Comparator.comparing(SeguimientoEntity::getFecha));
+        if (stage != null){
+            if (stage.getTareas() != null) {
+                for (TareaEntity task : stage.getTareas()) {
+                    if (task.getSeguimientos() != null && !task.getSeguimientos().isEmpty()) {
+                        Optional<SeguimientoEntity> seguimientoOpt = task.getSeguimientos().stream()
+                        .filter(seguimiento -> !seguimiento.getFecha().after(date))
+                        .max(Comparator.comparing(SeguimientoEntity::getFecha));
+        
+                        SeguimientoEntity seguimiento = seguimientoOpt.orElse(null);
     
-                    SeguimientoEntity seguimiento = seguimientoOpt.orElse(null);
-
-                    if (seguimiento != null) {
-                        task.setAvance(seguimiento.getPorcentajeAvance());
+                        if (seguimiento != null) {
+                            task.setAvance(seguimiento.getPorcentajeAvance());
+                        }
                     }
+                    totalAdvance += task.getAvance() != null ?  task.getAvance() : 0.0;
+                    totalIdealAdvance += task.getFechaFin().before(date) ?  100.0 : 0.0;
+                    count++;
                 }
-                totalAdvance += task.getAvance() != null ?  task.getAvance() : 0.0;
-                totalIdealAdvance += task.getFechaFin().before(date) ?  100.0 : 0.0;
-                count++;
+            }
+            if (stage.getSubEtapas() != null) {
+                for (EtapaEntity subStage : stage.getSubEtapas()) {
+                    assignInformation(subStage, date);
+                    totalAdvance += subStage.getAvance() != null ? subStage.getAvance() : 0.0;
+                    totalIdealAdvance += subStage.getIdealAvance() != null ? subStage.getIdealAvance() : 0.0;
+                    count++;
+                }
+            }
+            if (count != 0) {
+                stage.setAvance(Math.round((totalAdvance / count) * 10.0) / 10.0);
+                stage.setIdealAvance(Math.round((totalIdealAdvance / count) * 10.0) / 10.0);
             }
         }
-        if (stage.getSubEtapas() != null && !stage.getSubEtapas().isEmpty()) {
-            for (EtapaEntity subStage : stage.getSubEtapas()) {
-                Map<String, Double> out =  assignInformation(subStage, date);
-                if (out != null){
-                    totalAdvance += out.get("totalAdvance");
-                    totalIdealAdvance += out.get("totalIdealAdvance");
-                }
-                count++;
-            }
-        }
-        if (count == 0) {
-            return null;
-        }
-        stage.setAvance(Math.round((totalAdvance / count) * 10.0) / 10.0);
-        stage.setIdealAvance(Math.round((totalIdealAdvance / count) * 10.0) / 10.0);
-
-        Map<String, Double> out = new HashMap<String, Double>();
-        out.put ("totalAdvance", stage.getAvance());
-        out.put ("totalIdealAdvance", stage.getIdealAvance());
-        return out;
     }
 
     private Date getLastFollowUpDate(List<EtapaEntity> stages, Date lastDate){
