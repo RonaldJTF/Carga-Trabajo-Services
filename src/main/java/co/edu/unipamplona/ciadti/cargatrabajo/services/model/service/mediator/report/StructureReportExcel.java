@@ -21,7 +21,9 @@ import org.springframework.stereotype.Service;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EtapaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PlanTrabajoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
@@ -59,6 +61,7 @@ public class StructureReportExcel {
     public byte[] generate(List<Long> structureIds) throws CiadtiException{
         registry = new HashMap<>();
         HOURS_PER_MONTH = 151.3;
+        generateDataset(structureIds);
 
         BlockPOI titleBlock = buildDependencyReportTitle(Position.builder().x(1).y(1).build());
         Map<String, Position> positions;
@@ -91,6 +94,22 @@ public class StructureReportExcel {
         return report.generateBytes();
     }
 
+    private void generateDataset(List<Long> structureIds) throws CiadtiException{
+        List<TipologiaEntity> typologies = tipologiaService.findAllManagement(); 
+        List<NivelEntity> levels = nivelService.findAll();
+        TipologiaEntity tipologiaEntity = tipologiaService.findFirstTipology();
+        List<EstructuraEntity> structures = structureIds != null && structureIds.size() > 0 
+                                            ? estructuraService.findAllFilteredByIds(structureIds) 
+                                            : estructuraService.findAllFilteredBy(EstructuraEntity.builder().nombre("").build());
+        List<EstructuraEntity> plainedStructures = new ArrayList<>();
+        filterAndPlainByIdTypology(structures, plainedStructures, tipologiaEntity.getId());
+        filterDistinctOfIdTypology(plainedStructures, tipologiaEntity.getId());
+
+        registry.put("plainedStructures", plainedStructures);
+        registry.put("levels", levels);
+        registry.put("typologies", typologies);
+    }
+
     private BlockPOI buildDependencyReportTitle(Position position) throws CiadtiException{
         return BlockPOI.builder()
             .position(position)
@@ -116,7 +135,6 @@ public class StructureReportExcel {
         return null;
     }
 
-
     private BlockPOI buildDependencyReportDate(Position position, int aditionalCeld){
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         String date = dateFormat.format(new Date());
@@ -131,19 +149,32 @@ public class StructureReportExcel {
 
     private BlockPOI buildDependencyReportHead(Position position){
         List<CellPOI> items = new ArrayList<>();
-        List<TipologiaEntity> typologies = tipologiaService.findAllManagement(); 
-        List<NivelEntity> levels = nivelService.findAll();
-        registry.put("levels", levels);
-        registry.put("typologies", typologies);
-        registry.put("totalColumns", typologies.size() + levels.size() + 7);
-        registry.put("startColumn", typologies.size() + 7);
+        List<TipologiaEntity> typologies = (List<TipologiaEntity>)registry.get("typologies");
+        List<NivelEntity> levels = (List<NivelEntity>)registry.get("levels");
+        List<EstructuraEntity> plainedStructures = (List<EstructuraEntity>)registry.get("plainedStructures");
 
-        for (TipologiaEntity e : typologies){ items.add(CellPOI.builder().value(e.getNombre()).build());}
+        int totalDeep = 0;
+        List<CellPOI> subItemHeads = null;
+        for (TipologiaEntity e : typologies){
+            int deep = getMaxDeepOfTipology(plainedStructures, e.getId(), 0, 0);
+            if (deep > 0){
+                totalDeep += deep;
+                subItemHeads = new ArrayList<>();
+                for (int i = 0; i < deep + 1; i++){
+                    subItemHeads.add(CellPOI.builder().value("").build());
+                }
+            }
+            items.add(CellPOI.builder().value(e.getNombre().toUpperCase()).children(subItemHeads).build());
+        }
 
         List<CellPOI> levelHeads = new ArrayList<>();
         for (NivelEntity e : levels){
             levelHeads.add(CellPOI.builder().value(getLevelNomenclature(e.getDescripcion())).build());
         }
+
+        registry.put("totalColumns", typologies.size() + levels.size() + 7 + totalDeep);
+        registry.put("startColumn", typologies.size() + 7 + totalDeep);
+        registry.put("tipologyTotalColumn", typologies.size() + totalDeep);
 
         items.add(CellPOI.builder().value("NIVEL").style(Style.builder().width(15).backgroundColorRGB(GREEN).build()).build());
         items.add(CellPOI.builder().value("EXTRAE NIVEL").style(Style.builder().width(15).build()).build());
@@ -164,20 +195,23 @@ public class StructureReportExcel {
         return block;
     }
 
+    private int getMaxDeepOfTipology(List<EstructuraEntity> structures, Long idTipology, int deep, int max) {
+        for (EstructuraEntity e : structures){
+            if(e.getIdTipologia() == idTipology && e.getSubEstructuras() != null && e.getSubEstructuras().stream().anyMatch(obj -> obj.getIdTipologia() == idTipology)){
+                deep += 1;
+            }else{deep = 0;}
+            if (e.getSubEstructuras() != null){
+                max = Math.max(getMaxDeepOfTipology(e.getSubEstructuras(), idTipology, deep, max), deep);
+            }
+        }
+        return max;
+    }
+
     private BlockPOI buildDependencyReportStructure(List<Long> structureIds, Position position){
         List<CellPOI> items = new ArrayList<>();
-        List<TipologiaEntity> typologies = (List<TipologiaEntity>)registry.get("typologies");
-        TipologiaEntity tipologiaEntity = tipologiaService.findFirstTipology();
-        List<EstructuraEntity> structures = structureIds != null && structureIds.size() > 0 
-                                            ? estructuraService.findAllFilteredByIds(structureIds) 
-                                            : estructuraService.findAllFilteredBy(EstructuraEntity.builder().nombre("").build());
-        List<EstructuraEntity> plainedStructures = new ArrayList<>();
-        filterAndPlainByIdTypology(structures, plainedStructures, tipologiaEntity.getId());
-        filterDistinctOfIdTypology(plainedStructures, tipologiaEntity.getId());
-        addItem(items, plainedStructures, 0, typologies.size());
-
-        registry.put("structures", plainedStructures);
-
+        List<EstructuraEntity> plainedStructures = (List<EstructuraEntity>)registry.get("plainedStructures");
+        int tipologyTotalColumn = (int) registry.get("tipologyTotalColumn");
+        addItem(items, plainedStructures, 0, tipologyTotalColumn);
         return BlockPOI.builder()
             .position(position)
             .items(items)
@@ -202,75 +236,77 @@ public class StructureReportExcel {
     }
 
     private void addItem (List<CellPOI> items,  List<EstructuraEntity> structures, int deep, int maxDeep){
-        if(structures != null && structures.size() > 0){
-            for (EstructuraEntity structure : structures){
-                CellPOI cell = CellPOI.builder().value(structure.getNombre()).children(new ArrayList<>()).build();
-                items.add(cell);
-                if (maxDeep - deep - 1 > 0){
-                    addItem(cell.getChildren(), structure.getSubEstructuras(), deep + 1, maxDeep);
-                    if ("1".equals(structure.getTipologia().getEsDependencia())){
-                        items.add(createTotalCell("Horas requeridas", "temporalTotalTimePerDependency_", null, 1, AQUA, false));
-                        items.add(createTotalCell("Personal requerido", "temporalTotalTimePerDependency_", null, HOURS_PER_MONTH, AQUA, false));
-                        List<NivelEntity> levels = (List<NivelEntity>)registry.get("levels");
-                        for (NivelEntity e : levels){
-                            registry.put("totalTimePerDependency_" + structure.getId() + e.getId(),  registry.get("temporalTotalTimePerDependency_" + e.getId()));
-                            registry.put("temporalTotalTimePerDependency_" + e.getId(), null);
-                        }
-                    }
-                }else{
-                    if (structure.getActividad() != null){
-                        List<NivelEntity> levels = (List<NivelEntity>)registry.get("levels");
+        for (EstructuraEntity structure : structures){
+            CellPOI cell = CellPOI.builder().value(structure.getNombre()).children(new ArrayList<>()).build();
+            items.add(cell);
 
-                        String levl = structure.getActividad().getNivel().getDescripcion();
-                        String levelNomenclature = getLevelNomenclature(structure.getActividad().getNivel().getDescripcion());
-                        Double frecuency = structure.getActividad().getFrecuencia();
-                        Double minTime = (double) Math.round((structure.getActividad().getTiempoMinimo() / 60.0)*100.0)/100.0;
-                        Double meanTime = (double) Math.round((structure.getActividad().getTiempoPromedio() / 60.0)*100.0)/100.0;
-                        Double maxTime = (double) Math.round((structure.getActividad().getTiempoMaximo() / 60.0)*100.0)/100.0;
-                        Double standarTime = (double) Math.round((1.07*(minTime + 4*meanTime + maxTime)/6)*100.0) /100.0;
-
-                        List<CellPOI> timeResume = new ArrayList<>();
-                        for (NivelEntity e : levels){
-                            timeResume.add(CellPOI.builder().value(e.getId() == structure.getActividad().getIdNivel() ? String.valueOf(Math.round((frecuency * standarTime)*100.0)/100.0) : "").build());
-                             
-                            Double acc = (Double)registry.get("totalTime_"+e.getId());  
-                            if (e.getId() == structure.getActividad().getIdNivel()){
-                                if (acc == null){
-                                   acc = 0.0;
-                                } 
-                                acc += frecuency * standarTime;
-                                registry.put("totalTime_"+e.getId(), acc);
-                            }
-                           
-                            Double accPerDependency = (Double)registry.get("temporalTotalTimePerDependency_" + e.getId());  
-                            if (e.getId() == structure.getActividad().getIdNivel()){
-                                if (accPerDependency == null){
-                                    accPerDependency = 0.0;
-                                } 
-                                accPerDependency += frecuency * standarTime;
-                                registry.put("temporalTotalTimePerDependency_" + e.getId(), accPerDependency);
-                            }
-                        }
-
-                        CellPOI cellStandarTime = CellPOI.builder().value(standarTime).build();
-                        cellStandarTime.addSiblings(timeResume);
-                        cell.addSiblings(List.of(
-                            CellPOI.builder().value(levl).build(),
-                            CellPOI.builder().value(levelNomenclature).build(),
-                            CellPOI.builder().value(frecuency).build(),
-                            CellPOI.builder().value(minTime).build(),
-                            CellPOI.builder().value(meanTime).build(),
-                            CellPOI.builder().value(maxTime).build(),
-                            cellStandarTime
-                        ));
-                    }
+            if(structure.getSubEstructuras() != null && !structure.getSubEstructuras().isEmpty()){
+                addItem(cell.getChildren(), structure.getSubEstructuras(), deep + 1, maxDeep);
+            }
+                
+            if ("1".equals(structure.getTipologia().getEsDependencia())){
+                items.add(createTotalCell("Horas requeridas", "temporalTotalTimePerDependency_", null, 1, AQUA, false));
+                items.add(createTotalCell("Personal requerido", "temporalTotalTimePerDependency_", null, HOURS_PER_MONTH, AQUA, false));
+                List<NivelEntity> levels = (List<NivelEntity>)registry.get("levels");
+                for (NivelEntity e : levels){
+                    registry.put("totalTimePerDependency_" + structure.getId() + e.getId(),  registry.get("temporalTotalTimePerDependency_" + e.getId()));
+                    registry.put("temporalTotalTimePerDependency_" + e.getId(), null);
                 }
             }
-        }else{
-            if (maxDeep - deep > 0){
-                CellPOI cell = CellPOI.builder().value("").children(new ArrayList<>()).build();
-                items.add(cell);
-                addItem(cell.getChildren(), null, deep + 1, maxDeep);
+
+            if (structure.getActividad() != null){
+                int copy = deep + 1;
+                while (maxDeep - copy > 0){
+                    List<CellPOI> children = cell.getChildren();
+                    cell = CellPOI.builder().value("").children(new ArrayList<>()).build();
+                    children.add(cell);
+                    copy += 1;
+                } 
+
+                List<NivelEntity> levels = (List<NivelEntity>)registry.get("levels");
+
+                String levl = structure.getActividad().getNivel().getDescripcion();
+                String levelNomenclature = getLevelNomenclature(structure.getActividad().getNivel().getDescripcion());
+                Double frecuency = structure.getActividad().getFrecuencia();
+                Double minTime = (double) Math.round((structure.getActividad().getTiempoMinimo() / 60.0)*100.0)/100.0;
+                Double meanTime = (double) Math.round((structure.getActividad().getTiempoPromedio() / 60.0)*100.0)/100.0;
+                Double maxTime = (double) Math.round((structure.getActividad().getTiempoMaximo() / 60.0)*100.0)/100.0;
+                Double standarTime = (double) Math.round((1.07*(minTime + 4*meanTime + maxTime)/6)*100.0) /100.0;
+
+                List<CellPOI> timeResume = new ArrayList<>();
+                for (NivelEntity e : levels){
+                    timeResume.add(CellPOI.builder().value(e.getId() == structure.getActividad().getIdNivel() ? String.valueOf(Math.round((frecuency * standarTime)*100.0)/100.0) : "").build());
+                        
+                    Double acc = (Double)registry.get("totalTime_"+e.getId());  
+                    if (e.getId() == structure.getActividad().getIdNivel()){
+                        if (acc == null){
+                            acc = 0.0;
+                        } 
+                        acc += frecuency * standarTime;
+                        registry.put("totalTime_"+e.getId(), acc);
+                    }
+                    
+                    Double accPerDependency = (Double)registry.get("temporalTotalTimePerDependency_" + e.getId());  
+                    if (e.getId() == structure.getActividad().getIdNivel()){
+                        if (accPerDependency == null){
+                            accPerDependency = 0.0;
+                        } 
+                        accPerDependency += frecuency * standarTime;
+                        registry.put("temporalTotalTimePerDependency_" + e.getId(), accPerDependency);
+                    }
+                }
+
+                CellPOI cellStandarTime = CellPOI.builder().value(standarTime).build();
+                cellStandarTime.addSiblings(timeResume);
+                cell.addSiblings(List.of(
+                    CellPOI.builder().value(levl).build(),
+                    CellPOI.builder().value(levelNomenclature).build(),
+                    CellPOI.builder().value(frecuency).build(),
+                    CellPOI.builder().value(minTime).build(),
+                    CellPOI.builder().value(meanTime).build(),
+                    CellPOI.builder().value(maxTime).build(),
+                    cellStandarTime
+                ));
             }
         }
     }
@@ -332,7 +368,7 @@ public class StructureReportExcel {
 
     private BlockPOI buildConsolidatedReportBody(List<Long> structureIds, Position position){
         List<CellPOI> items = new ArrayList<>();
-        List<EstructuraEntity> plainedStructures = (List<EstructuraEntity>) registry.get("structures");
+        List<EstructuraEntity> plainedStructures = (List<EstructuraEntity>) registry.get("plainedStructures");
         if(plainedStructures != null && plainedStructures.size() > 0){
             for (EstructuraEntity e : plainedStructures){
                 items.add(createTotalCell(e.getNombre(), "totalTimePerDependency_", e.getId(), HOURS_PER_MONTH, AQUA, true));

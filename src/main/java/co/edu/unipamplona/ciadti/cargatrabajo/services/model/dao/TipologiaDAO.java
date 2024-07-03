@@ -42,10 +42,12 @@ public interface TipologiaDAO extends JpaRepository<TipologiaEntity, Long>, JpaS
                     "inner join EstructuraEntity e on (t.id = e.idTipologia) order by t.id desc")
     List<TipologiaEntity> findAllManagement();
 
-    @Query(value = "SELECT t.tipo_nombre AS nombre, t.tipo_claseicono AS claseIcono, t.tipo_nombrecolor AS nombreColor, COUNT(e.estr_id) AS cantidad " +
-                    "FROM fortalecimiento.tipologia t " +
-                    "JOIN fortalecimiento.estructura e ON t.tipo_id = e.tipo_id " +
-                    "GROUP BY t.tipo_id , t.tipo_nombre, t.tipo_claseicono, t.tipo_nombrecolor " +
-                    "ORDER BY t.tipo_id DESC", nativeQuery = true)
+    @Query(value = "SELECT t.tipo_nombre AS nombre, t.tipo_claseicono AS claseIcono, t.tipo_nombrecolor AS nombreColor, COUNT(e.estr_id) AS cantidad " + 
+                   "FROM fortalecimiento.tipologia t " + 
+                   "JOIN fortalecimiento.estructura e ON t.tipo_id = e.tipo_id " + 
+                   "WHERE (t.tipo_esdependencia  = '1') OR  NOT EXISTS (" +
+                   "SELECT 1 FROM fortalecimiento.estructura e2 WHERE e2.tipo_id = e.tipo_id AND e2.estr_idpadre  = e.estr_id) " + 
+                   "GROUP BY t.tipo_id, t.tipo_nombre, t.tipo_claseicono, t.tipo_nombrecolor " + 
+                   "ORDER BY t.tipo_id DESC;", nativeQuery = true)
     List<InventarioTipologiaDTO> findInventarioTipologia();
 }

@@ -90,6 +90,10 @@ public class EstructuraEntity implements Serializable{
     @Transient
     private String srcIcono;
 
+    /*Almacena que tan profundo es la relación de estructura padre e hijo con este objeto como nodo raiz para una misma tipología*/
+    @Transient
+    private Integer subItemsDeep;
+
     @JsonGetter("srcIcono")
     public String getSrcFoto() {
         return  srcIcono != null ? srcIcono :
