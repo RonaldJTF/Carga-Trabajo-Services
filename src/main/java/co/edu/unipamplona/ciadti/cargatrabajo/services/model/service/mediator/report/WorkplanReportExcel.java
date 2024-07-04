@@ -39,6 +39,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.Seguimiento
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TareaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.BlockPOI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.CellPOI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.Position;
@@ -157,6 +158,7 @@ public class WorkplanReportExcel {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
+            Trace.logError(this.getClass().getName(), Methods.getCurrentMethodName(this.getClass()), e);
         }
         return null;
     }

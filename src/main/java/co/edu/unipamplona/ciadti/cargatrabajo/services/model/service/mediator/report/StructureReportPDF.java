@@ -24,7 +24,8 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEnt
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jasperReport.ReportJR;
 import lombok.RequiredArgsConstructor;
@@ -56,12 +57,20 @@ public class StructureReportPDF {
         String filePathBlobalChart = "reports/structures/GlobalCharts.jrxml";
 
         List<NivelEntity> levels = nivelService.findAll();
-        registry.put("levels", levels);
-
         TipologiaEntity tipologiaEntity = tipologiaService.findFirstTipology();
         List<EstructuraEntity> structures = structureIds != null && structureIds.size() > 0 
                                             ? estructuraService.findAllFilteredByIds(structureIds) 
                                             : estructuraService.findAllFilteredBy(EstructuraEntity.builder().nombre("").build());
+        registry.put("levels", levels);
+        registry.put("structures", structures.stream().map(e -> {
+            try {
+                return e.clone();
+            } catch (CloneNotSupportedException ex) {
+                Trace.logError(this.getClass().getName(), Methods.getCurrentMethodName(this.getClass()), ex);
+                return null;
+            }
+        }).toList());
+
         List<EstructuraEntity> plainedStructures = new ArrayList<>();
         filterAndPlainByIdTypology(structures, plainedStructures, tipologiaEntity.getId());
         filterDistinctOfIdTypology(plainedStructures, tipologiaEntity.getId());
@@ -85,10 +94,8 @@ public class StructureReportPDF {
         parameters.put("chartParameter", chartParameters);
         parameters.put("logo", new ByteArrayInputStream(logo));
         parameters.put("hoursPerMonth", HOURS_PER_MONTH);
-
         parameters.put("logo", new ByteArrayInputStream(getImageBytes()));
         parameters.put("entity", "Universidad Distrital Francisco José de Caldas".toUpperCase());
-
         parameters.put("levels", levels.stream().map(e -> getLevelNomenclature(e.getDescripcion())).toList());
 
         return reportJR.converterToPDF(parameters, structureDataSource, filePath);
@@ -142,7 +149,6 @@ public class StructureReportPDF {
     private List<ReportChartDTO> getChartBarData(List<ReportStructureDTO> structureData) {
         List<ReportStructureDTO> structureDataCopy = new ArrayList<>(structureData);
         Collections.sort(structureDataCopy, new PropertyComparator<>("dependencia", true));
-
         List<NivelEntity> levels = (List<NivelEntity>)registry.get("levels");
         List<ReportChartDTO> list = new ArrayList<>();
         String structureName = null;
@@ -176,15 +182,56 @@ public class StructureReportPDF {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
+            Trace.logError(this.getClass().getName(), Methods.getCurrentMethodName(this.getClass()), e);
+        }
+        return null;
+    }
+
+    private String getInformation(EstructuraEntity structure){
+        if (structure.getSubEstructuras() != null && !structure.getSubEstructuras().isEmpty()){
+            boolean onlyHasChildrenOfSameType = !structure.getSubEstructuras().stream().anyMatch(e -> e.getIdTipologia() != structure.getIdTipologia());
+            if (onlyHasChildrenOfSameType){
+                return null;
+            }
+        }
+        return getNameRecursive(structure);
+    }
+
+    private String getNameRecursive(EstructuraEntity structure){
+        List<EstructuraEntity> structures = (List<EstructuraEntity>)registry.get("structures"); 
+        EstructuraEntity parent = findStructure(structure.getIdPadre(), structures);
+        if(parent != null && parent.getIdTipologia() == structure.getIdTipologia()){
+            return getNameRecursive(parent) + " - " + structure.getNombre();
+        }
+        return structure.getNombre();
+    }
+
+    private EstructuraEntity findStructure(Long id, List<EstructuraEntity> structures){
+        if (structures != null){
+            for (EstructuraEntity e : structures){
+                if(e.getId().equals(id)){ 
+                    return e; 
+                }else{
+                    EstructuraEntity obj = findStructure(id, e.getSubEstructuras());
+                    if (obj != null){
+                        return obj;
+                    }
+                }
+            }
         }
         return null;
     }
 
     private void buildStructureData(List<EstructuraEntity> structures, String[] tipologyStructures, int level, List<ReportStructureDTO>  results){
         for (EstructuraEntity structure : structures){
-            tipologyStructures[level] = structure.getNombre();
+            tipologyStructures[level] =  getInformation(structure);
             if (structure.getSubEstructuras() != null && !structure.getSubEstructuras().isEmpty()){
-                buildStructureData(structure.getSubEstructuras(), tipologyStructures, level+1, results);
+                boolean onlyHasChildrenOfSameType = !structure.getSubEstructuras().stream().anyMatch(e -> e.getIdTipologia() != structure.getIdTipologia());
+                if(onlyHasChildrenOfSameType){
+                    buildStructureData(structure.getSubEstructuras(), tipologyStructures, level, results);
+                }else{
+                    buildStructureData(structure.getSubEstructuras(), tipologyStructures, level + 1, results);
+                }
             }else{
                 String levl = null;
                 String levelNomenclature = null;

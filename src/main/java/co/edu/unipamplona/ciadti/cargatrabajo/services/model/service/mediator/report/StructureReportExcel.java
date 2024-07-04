@@ -28,6 +28,8 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEnt
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.BlockPOI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.CellPOI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.Position;
@@ -131,6 +133,7 @@ public class StructureReportExcel {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
+            Trace.logError(this.getClass().getName(), Methods.getCurrentMethodName(this.getClass()), e);
         }
         return null;
     }
