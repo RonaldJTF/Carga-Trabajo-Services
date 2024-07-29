@@ -1,7 +1,6 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -46,8 +45,10 @@ public class Style implements Cloneable{
     private int[] borderColorRGB;
     private Boolean wrapText;
     private Short rotation;
-    
-    public void setCellStyle(SXSSFWorkbook workbook, SXSSFSheet sheet, Cell cell, int rowIdx, int colIdx){
+    private int rowIdx_;
+    private int colIdx_;
+
+    public XSSFCellStyle catchCellStyle(SXSSFWorkbook workbook, SXSSFSheet sheet){
         XSSFCellStyle style = (XSSFCellStyle) workbook.createCellStyle();
         XSSFFont font_ = (XSSFFont) workbook.createFont();
         if (backgroundColor != null){
@@ -104,10 +105,10 @@ public class Style implements Cloneable{
             style.setWrapText(wrapText);
         }
         if(width > 0){
-            setWidthSize(sheet, colIdx, width);
+            setWidthSize(sheet, width);
         }
         if(height > 0){
-            setHeightSize(sheet, rowIdx, height);
+            setHeightSize(sheet, height);
         }
         if (fontSize > 0){
             font_.setFontHeightInPoints((short) fontSize); 
@@ -133,17 +134,17 @@ public class Style implements Cloneable{
         }
 
         style.setFont(font_);
-        cell.setCellStyle(style);
+        return style;
     }
 
-    private void setWidthSize(SXSSFSheet sheet, int colIdx, int width) {
-        sheet.setColumnWidth(colIdx, width * 256);
+    private void setWidthSize(SXSSFSheet sheet, int width) {
+        sheet.setColumnWidth(colIdx_, width * 256);
     }
 
-    private void setHeightSize(SXSSFSheet sheet, int rowIdx, short height) {
-        Row row = sheet.getRow(rowIdx);
+    private void setHeightSize(SXSSFSheet sheet, short height) {
+        Row row = sheet.getRow(rowIdx_);
         if (row == null)
-            row = sheet.createRow(rowIdx);
+            row = sheet.createRow(rowIdx_);
         row.setHeightInPoints(height);
     }
 

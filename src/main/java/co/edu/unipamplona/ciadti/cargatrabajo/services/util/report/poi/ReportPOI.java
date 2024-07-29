@@ -17,6 +17,7 @@ import org.apache.poi.xssf.streaming.SXSSFDrawing;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
@@ -28,6 +29,7 @@ public class ReportPOI {
     private BlockPOI titleBlock;
     private boolean showInColumn;
     private Map<String, List<CellPOI>> styleRegistry_ = new HashMap<>();
+    private Map<Style, XSSFCellStyle> cellStyles_ = new HashMap();
 
     public ReportPOI (){
         workbook = new SXSSFWorkbook(1);
@@ -90,6 +92,7 @@ public class ReportPOI {
     private void reset(){
         items = new ArrayList<>();
         styleRegistry_ = new HashMap<>();
+        this.cellStyles_ = new HashMap();
     }
 
     /**
@@ -406,7 +409,15 @@ public class ReportPOI {
         if (style != null){
             SXSSFRow row = getOrCreateRow(rowIdx);
 		    SXSSFCell cell = getOrCreateCell(row, colIdx);
-            style.setCellStyle(workbook, sheet, cell, rowIdx, colIdx);
+            //style.setCellStyle(workbook, sheet, cell, rowIdx, colIdx);
+            style.setColIdx_(colIdx);
+            style.setRowIdx_(rowIdx);
+            XSSFCellStyle xSSFCellStyle = (XSSFCellStyle)this.cellStyles_.get(style);
+            if (xSSFCellStyle == null) {
+                xSSFCellStyle = style.catchCellStyle(this.workbook, this.sheet);
+                this.cellStyles_.put(style, xSSFCellStyle);
+            }
+            cell.setCellStyle(xSSFCellStyle);
         }
     }
     

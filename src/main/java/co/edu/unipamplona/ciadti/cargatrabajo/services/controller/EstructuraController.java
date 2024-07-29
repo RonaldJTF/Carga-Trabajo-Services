@@ -5,9 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -72,6 +70,26 @@ public class EstructuraController {
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, estructuraService.findAllFilteredBy(filter));
     }
+
+    @Operation(
+        summary = "Obtener las dependencias junto a sus subdependencias",
+        description = "Obtiene las dependencias que existen junto a sus subdependencias."
+    )
+    @GetMapping({"/dependencies"})
+    public ResponseEntity<?> getDependencies() {
+        List<EstructuraEntity> dependencies = this.configurationMediator.getDependencies();
+        return new ResponseEntity(dependencies, HttpStatus.OK);
+    }
+
+    @Operation(
+        summary = "Obtener la dependencia con la información de los procesos por su id (O estructuras de la tipologia que lo sigue) junto a sus subdependencias, pero si los procesos para esas subdependencias. ",
+        description = "Obtiene la dependencia con la información de los procesos por el id (O estructuras de la tipologia que lo sigue) junto a sus subdependencias, pero si los procesos para esas subdependencias. "
+    )
+    @GetMapping({"/dependency/{idDependency}"})
+    public ResponseEntity<?> getDependencyInformation(@PathVariable(required = true) Long idDependency) throws CiadtiException {
+        return new ResponseEntity(this.configurationMediator.getDependencyInformation(idDependency), HttpStatus.OK);
+    }
+
     
     @Operation(
         summary="Crear una estructura junto a sus subestructuras",
@@ -248,13 +266,5 @@ public class EstructuraController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
-
-    @Operation(
-            summary = "Obtener la lista de las dependencias",
-            description = "Obtener lista de dependencias con sus dependencias hijas.")
-    @GetMapping("/dependencies")
-    public ResponseEntity<?> getDependencies() throws CiadtiException {
-        return new ResponseEntity<>(estructuraService.findAllDependencies(), HttpStatus.OK);
     }
 }

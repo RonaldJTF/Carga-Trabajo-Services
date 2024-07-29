@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
+import java.util.Iterator;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.*;
@@ -27,6 +28,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO.DateAdvance;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Routes;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Active;
 import lombok.RequiredArgsConstructor;
@@ -938,6 +940,41 @@ public class ConfigurationMediator {
         for (Long id : actionIds) {
             deleteAction(id);
         }
+    }
+
+    public List<EstructuraEntity> getDependencies() {
+        List<EstructuraEntity> dependencies = this.estructuraService.findAllFilteredBy(EstructuraEntity.builder().tipologia(TipologiaEntity.builder().esDependencia("1").build()).build());
+        this.filterByOnlyDependencies(dependencies);
+        return dependencies;
+    }
+
+    private void filterByOnlyDependencies(List<EstructuraEntity> structures) {
+        if (structures != null) {
+            Iterator<EstructuraEntity> iterator = structures.iterator();
+            while(iterator.hasNext()) {
+                EstructuraEntity e = (EstructuraEntity)iterator.next();
+                if (!Methods.convertToBoolean(e.getTipologia().getEsDependencia())) {
+                iterator.remove();
+                } else {
+                this.filterByOnlyDependencies(e.getSubEstructuras());
+                }
+            }
+        }
+    }
+
+    public EstructuraEntity getDependencyInformation(Long idDependency) throws CiadtiException {
+        EstructuraEntity dependency = (EstructuraEntity)this.estructuraService.findById(idDependency);
+        if (dependency.getSubEstructuras() != null) {
+            Iterator<EstructuraEntity> iterator = dependency.getSubEstructuras().iterator();
+            while(iterator.hasNext()) {
+                EstructuraEntity e = (EstructuraEntity)iterator.next();
+                if (Methods.convertToBoolean(e.getTipologia().getEsDependencia())) {
+                    this.filterByOnlyDependencies(e.getSubEstructuras());
+                }
+            }
+        }
+
+        return dependency;
     }
 
 }

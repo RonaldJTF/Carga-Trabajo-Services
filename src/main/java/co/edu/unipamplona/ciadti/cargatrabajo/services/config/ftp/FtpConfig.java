@@ -32,7 +32,7 @@ public class FtpConfig {
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
-    @Bean
+    /*@Bean
     public Map<String, FTPClient> ftpClient() throws IOException {
         File[] files = this.getAllFtpFiles();
         Map<String, FTPClient> resolvedFtps= new HashMap<>();
@@ -66,7 +66,7 @@ public class FtpConfig {
             }
         }
         return resolvedFtps;
-    }
+    }*/
 
     private File[] getAllFtpFiles() throws IOException {
         Resource resource = resourceLoader.getResource("classpath:" + activeProfile + "/allFTPs");
