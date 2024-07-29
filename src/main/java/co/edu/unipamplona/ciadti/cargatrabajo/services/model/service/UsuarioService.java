@@ -13,4 +13,5 @@ public interface UsuarioService extends CommonService<UsuarioEntity> {
     int updateTokenPassword(UsuarioEntity usuario);
     int updatePasswordAndTokenPassword(UsuarioEntity usuario);
     Optional<UsuarioEntity> findByTokenPassword(String tokenPassword);
+    int updatePassword(UsuarioEntity usuario);
 }

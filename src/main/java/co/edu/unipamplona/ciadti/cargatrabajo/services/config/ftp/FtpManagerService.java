@@ -22,6 +22,9 @@ public class FtpManagerService {
 
     public void uploadFile(FileInputStream fileInputStream, String remotePath) throws Exception {
         FTPClient ftpClient = ftpClients.get(this.getNameFTP());
+        System.out.println();
+        System.out.println(ftpClient);
+        System.out.println();
         try {
             boolean uploadFile =  ftpClient.storeFile(remotePath, fileInputStream);
             System.out.printf("[uploadFile][%d] Is success to upload file : %s -> %b", System.currentTimeMillis(), remotePath, uploadFile);

@@ -129,4 +129,10 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuario.getRegistradoPor(),
             new Date());
     }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public int updatePassword(UsuarioEntity usuario) {
+        return usuarioDAO.updatePassword(usuario.getId(), usuario.getPassword(), usuario.getRegistradoPor(), new Date());
+    }
 }

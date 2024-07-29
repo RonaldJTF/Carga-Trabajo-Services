@@ -68,6 +68,7 @@ public class EstructuraController {
     public ResponseEntity<?> get (@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
         ParameterConverter parameterConverter = new ParameterConverter(EstructuraEntity.class);
         EstructuraEntity filter = (EstructuraEntity) parameterConverter.converter(request.getParameterMap());
+        System.out.println(filter);
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, estructuraService.findAllFilteredBy(filter));
     }
@@ -247,5 +248,13 @@ public class EstructuraController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }    
+    }
+
+    @Operation(
+            summary = "Obtener la lista de las dependencias",
+            description = "Obtener lista de dependencias con sus dependencias hijas.")
+    @GetMapping("/dependencies")
+    public ResponseEntity<?> getDependencies() throws CiadtiException {
+        return new ResponseEntity<>(estructuraService.findAllDependencies(), HttpStatus.OK);
+    }
 }

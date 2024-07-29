@@ -430,5 +430,18 @@ public class Methods {
         return new int[]{r, g, b};
     }
 
+    /**
+     * Capitalizar la primera letra de una cadena y eliminar los espacios al inicio y al final
+     * Así, la cadena " hola mundo" se convierte en "Hola mundo".
+     * @param str, cadena a modificar
+     * @return cadena modificado
+     */
+    public static String capitalizeFirstLetter(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        str = str.trim(); // Eliminar los espacios al inicio y al final
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
 
 }

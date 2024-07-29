@@ -84,4 +84,8 @@ public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, Jp
                                                     @Param("superiorOrder") Long superiorOrder, 
                                                     @Param("id") Long id, 
                                                     @Param("increment") int increment);
+
+    @Query(value = "SELECT E FROM EstructuraEntity E WHERE E.idTipologia = (SELECT T.id FROM TipologiaEntity T WHERE T.nombre = 'Dependencia' )")
+   //@Query(value = "SELECT estructura.* FROM fortalecimiento.estructura WHERE tipo_id = (SELECT tipo_id FROM fortalecimiento.tipologia WHERE tipo_nombre = 'Dependencia')", nativeQuery = true)
+    List<EstructuraEntity> findAllDependencies();
 }

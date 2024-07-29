@@ -5,6 +5,7 @@ import java.util.*;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ActividadOutDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.ActividadDTO;
+import net.sf.jasperreports.engine.util.JRStyledText;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -86,7 +87,6 @@ public class EstructuraServiceImpl implements EstructuraService {
         this.orderStructures(results);
         return results;
     }
-    
 
     @Override
     @Transactional(readOnly = true)
@@ -153,7 +153,10 @@ public class EstructuraServiceImpl implements EstructuraService {
     }
 
     /**
-     * LPR: Creado 25 de abril del 2024
+     * Método que para consultar la información de las actividades por nivel de ocupación
+     * para una dependencia
+     * @param entity, objeto con el identificador único de la dependencia
+     * @return list, objeto con información para la dependencia consultada
      */
     @Override
     @Transactional(readOnly = true)
@@ -239,5 +242,14 @@ public class EstructuraServiceImpl implements EstructuraService {
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(Long idPadre, Long inferiorOrder, Long superiorOrder, Long id, int increment) {
         return estructuraDAO.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(idPadre, inferiorOrder, superiorOrder, id, increment);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public List<EstructuraEntity> findAllDependencies() {
+        List<EstructuraEntity> results = estructuraDAO.findAllDependencies();
+        results = this.filter(results);
+        this.orderStructures(results);
+        return results;
     }
 }

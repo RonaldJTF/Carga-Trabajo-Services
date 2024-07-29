@@ -26,7 +26,7 @@ import java.util.Properties;
 @Configuration
 public class FtpConfig {
 
-    /*@Autowired
+    @Autowired
     private ResourceLoader resourceLoader;
 
     @Value("${spring.profiles.active}")
@@ -72,6 +72,6 @@ public class FtpConfig {
         Resource resource = resourceLoader.getResource("classpath:" + activeProfile + "/allFTPs");
         File tenantDirectory = resource.getFile();
         return tenantDirectory.listFiles();
-    }*/
+    }
 }
 

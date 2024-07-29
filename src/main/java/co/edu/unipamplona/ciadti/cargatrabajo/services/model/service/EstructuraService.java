@@ -19,4 +19,6 @@ public interface EstructuraService extends CommonService<EstructuraEntity>{
 
     int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(Long idPadre, Long inferiorOrder, Long superiorOrder, Long id, int increment);
 
+    List<EstructuraEntity> findAllDependencies();
+
 }

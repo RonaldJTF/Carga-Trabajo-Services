@@ -1,7 +1,10 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ChangePasswordDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,11 +55,11 @@ public class UsuarioController {
 
     @Operation(
         summary="Crear un usuario junto a los roles si estos son definidos",
-        description = "Crea un usuario junto a los roles si estos son definidos" + 
+        description = "Crea un usuario junto a los roles si estos son definidos" +
             "Args: usuarioEntity: objeto con información del usuario. " +
             "Returns: Objeto con la información asociada.")
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody UsuarioEntity usuarioEntity) throws CloneNotSupportedException{
+    public ResponseEntity<?> create(@Valid @RequestBody UsuarioEntity usuarioEntity) throws CloneNotSupportedException, CiadtiException{
         String password = cipherService.decryptCredential(usuarioEntity.getPassword());
         usuarioEntity.setPassword(passwordEncoder.encode(password));
         return new ResponseEntity<>(configurationMediator.createUser(usuarioEntity), HttpStatus.CREATED);
@@ -64,9 +67,9 @@ public class UsuarioController {
 
     @Operation(
         summary="Actualizar un usuario junto a los roles si estos son definidos",
-        description = "Actualiza un usuario junto a los roles si estos son definidos" + 
+        description = "Actualiza un usuario junto a los roles si estos son definidos" +
             "Args: usuarioEntity: objeto con información del usuario. " +
-            "id: identificador del usuario. " + 
+            "id: identificador del usuario. " +
             "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@Valid @RequestBody UsuarioEntity usuarioEntity, @PathVariable Long id) throws CiadtiException, CloneNotSupportedException{
@@ -79,11 +82,35 @@ public class UsuarioController {
 
     @Operation(
         summary = "Eliminar usuario por el id junto a su relación con los roles",
-        description = "Elimina un usuario por su id junto a su relación con los roles. " + 
+        description = "Elimina un usuario por su id junto a su relación con los roles. " +
             "Args: id: identificador del usuario a eliminar. ")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id){
         configurationMediator.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @Operation(
+            summary = "Valida que la contraseña sea correcta para el usuario",
+            description = "Valida que la contraseña sea correcta para el usuario." +
+                    "Args: usuarioEntity: objeto con información del usuario. " +
+                    "Returns: Objeto con la información asociada.")
+    @PostMapping(value = {"/validate-password"})
+    public ResponseEntity<?> validatePasswordUser(@Valid @RequestBody UsuarioEntity usuarioEntity) throws CiadtiException{
+        return new ResponseEntity<>(configurationMediator.validatePassword(usuarioEntity), HttpStatus.OK);
+    }
+
+    @Operation(
+            summary="Actualizar la nueva contraseña del usuario",
+            description = "Actualizar la nueva contraseña del usuario" +
+                    "Args: usuarioEntity: objeto con información del usuario. " +
+                    "Returns: Objeto con la información asociada.")
+    @PostMapping("/new-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody UsuarioEntity data) throws CiadtiException{
+        configurationMediator.changePassword(data);
+        Map<String, String> response = new HashMap<String, String>();
+        response.put("message", "Contraseña actualizada");
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
 }

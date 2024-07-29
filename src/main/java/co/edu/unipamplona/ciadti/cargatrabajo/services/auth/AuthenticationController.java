@@ -39,7 +39,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDTO data) throws CiadtiException{
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDTO data) throws CiadtiException {
         service.changePassword(data);
         Map<String, String> response = new HashMap<String, String>();
         response.put("message", "Contraseña actualizada");
