@@ -58,10 +58,10 @@ public class ConfigurationMediator {
     private final TipologiaService tipologiaService;
     private final FtpService ftpService;
     private final AccionService accionService;
+    private final TipologiaAccionService tipologiaAccionService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
-     *
      * @param structure
      * @return
      */
@@ -77,7 +77,6 @@ public class ConfigurationMediator {
 
     /**
      * Actualiza una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
-     *
      * @param structure
      * @return
      */
@@ -101,7 +100,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina una estructura por su id y todas sus subestructuras en cascada.
-     *
      * @param id: Identificador de la estructura a eliminar
      * @throws CiadtiException
      */
@@ -123,7 +121,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina todas las estructuras pasadas en el parámetro structureIds
-     *
      * @param structureIds: Contiene los identificadores de las estructuras a eliminar
      * @throws CiadtiException
      */
@@ -137,7 +134,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina una estructura y sus subestructuras de manera recursiva
-     *
      * @param id:                identificador de la estructura a eliminar
      * @param deletedStructures: almacena las estructuras que se han eliminado, esto para evitar tratar
      *                           de eliminar una estructura que ha sido eliminada en el mismo proceso
@@ -164,7 +160,6 @@ public class ConfigurationMediator {
 
     /**
      * Crea o actualiza la información de una persona con su respectiva foto de perfil
-     *
      * @param personaEntity
      * @param photoFile
      * @return PersonaEntity
@@ -200,7 +195,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina todas las estructuras pasadas en el parámetro structureIds
-     *
      * @param personIds: Contiene los identificadores de las estructuras a eliminar
      * @throws CiadtiException
      */
@@ -213,7 +207,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina una Persona junto a su objeto FotoPersona si tiene relacionada una foto de perfil
-     *
      * @param id
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -231,7 +224,6 @@ public class ConfigurationMediator {
 
     /**
      * Crea la información de un usuario junto a sus roles.
-     *
      * @param usuarioEntity: Objeto con información del usuario a crear o actualizar
      * @return
      * @throws CloneNotSupportedException
@@ -268,7 +260,6 @@ public class ConfigurationMediator {
      * Actualiza la información de un usuario junto a sus roles.
      * Nota: Si en la lista de los nuevos roles no se encuentra un
      * rol que ya existía en la base de datos, entonces se procede a eliminarlo.
-     *
      * @param usuarioEntity: Objeto con información del usuario a crear o actualizar
      * @return
      * @throws CloneNotSupportedException
@@ -306,7 +297,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina un usuario junto a su relación con los roles que tiene.
-     *
      * @param id: Identificador del usuario
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -320,7 +310,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina un plan de trabajo junto a sus etapas.
-     *
      * @param id: Identificador del plan de trabajo
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -334,7 +323,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina una etapa junto a sus tareas
-     *
      * @param id: identificador de la etapa
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -352,7 +340,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina una tarea junto a los seguimientos realizados
-     *
      * @param id: Identificador de la tarea
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -366,7 +353,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina un seguimiento junto a los archivos soportes cargados
-     *
      * @param id: Identificador del seguimiento
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -383,7 +369,6 @@ public class ConfigurationMediator {
     /**
      * Crea o actualiza un seguimiento junto a los nuevos archivos soportes.
      * Nota: En el atributo archivos del objeto de la clase SeguimientoEntity se definen los archivos que no ha sido removidos en la actualización.
-     *
      * @param seguimientoEntity: Objeto con información del seguimiento
      * @param files:             Lista de nuevos archivos soportes
      * @return: SeguimientoEntity
@@ -431,7 +416,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina todos los planes de trabajos pasados en el parámetro workplanIds
-     *
      * @param workplanIds: Contiene los identificadores de los planes de trabajo a eliminar
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -443,7 +427,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina todas las etapas pasadas en el parámetro stageIds
-     *
      * @param stageIds: Contiene los identificadores de las etapas a eliminar
      * @throws CiadtiException
      */
@@ -457,7 +440,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina una etapa y sus subetapas de manera recursiva
-     *
      * @param id:                identificador de la etapa a eliminar
      * @param deletedStructures: almacena las etapas que se han eliminado, esto para evitar tratar
      *                           de eliminar una etapa que ha sido eliminada en el mismo proceso
@@ -479,7 +461,6 @@ public class ConfigurationMediator {
 
     /**
      * Elimina las tareas con sus seguimientos
-     *
      * @param taskIds: Lista de tareas a eliminar
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -749,7 +730,6 @@ public class ConfigurationMediator {
 
     /**
      * Método para validar si la contraseña es correcta para el usuario
-     *
      * @param usuarioEntity, objeto con los parámetros a validar
      * @return UsuarioEntity, objeto con la coincidencia encontrada
      */
@@ -763,7 +743,6 @@ public class ConfigurationMediator {
 
     /**
      * Método para actualizar la contraseña de un usuario
-     *
      * @param data, objeto con la información del usuario a actualizar
      */
     public void changePassword(UsuarioEntity data) throws CiadtiException {
@@ -778,8 +757,7 @@ public class ConfigurationMediator {
 
     /**
      * Eliminar un rol
-     *
-     * @param roleId, identificador unico del rol que se desea eliminar
+     * @param roleId, identificador único del rol que se desea eliminar
      * @throws CiadtiException
      */
     public void deleteRole(Long roleId) throws CiadtiException {
@@ -791,8 +769,7 @@ public class ConfigurationMediator {
 
     /**
      * Elimina lista de roles
-     *
-     * @param roleIds, lista de identificadores de los roles
+     * @param roleIds, lista de identificadores de roles a eliminar
      * @throws CiadtiException
      */
     public void deleteRoles(List<Long> roleIds) throws CiadtiException {
@@ -803,7 +780,6 @@ public class ConfigurationMediator {
 
     /**
      * Eliminar un género
-     *
      * @param genderId, identificador único del género que se desea eliminar
      * @throws CiadtiException
      */
@@ -816,8 +792,7 @@ public class ConfigurationMediator {
 
     /**
      * Elimina lista de géneros
-     *
-     * @param genderIds, lista de identificadores de los generos
+     * @param genderIds, lista de identificadores de géneros a eliminar
      * @throws CiadtiException
      */
     public void deleteGenders(List<Long> genderIds) throws CiadtiException {
@@ -827,9 +802,8 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Eliminar un género
-     *
-     * @param levelId, identificador único del género que se desea eliminar
+     * Eliminar un nivel de ocupación
+     * @param levelId, identificador único del nivel de ocupación que se desea eliminar
      * @throws CiadtiException
      */
     public void deleteLevel(Long levelId) throws CiadtiException {
@@ -841,8 +815,7 @@ public class ConfigurationMediator {
 
     /**
      * Elimina lista de niveles
-     *
-     * @param levelIds, lista de identificadores de los niveles
+     * @param levelIds, lista de identificadores de los niveles a eliminar
      * @throws CiadtiException
      */
     public void deleteLevels(List<Long> levelIds) throws CiadtiException {
@@ -853,7 +826,6 @@ public class ConfigurationMediator {
 
     /**
      * Eliminar un tipo de documento
-     *
      * @param documentTypeId, identificador único del tipo de documento que se desea eliminar
      * @throws CiadtiException
      */
@@ -866,8 +838,7 @@ public class ConfigurationMediator {
 
     /**
      * Elimina lista de tipos de documentos
-     *
-     * @param documentTypeIds, lista de identificadores de los tipos de documentos
+     * @param documentTypeIds, lista de identificadores de los tipos de documentos a eliminar
      * @throws CiadtiException
      */
     public void deleteDocumentTypes(List<Long> documentTypeIds) throws CiadtiException {
@@ -877,9 +848,8 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Eliminar un tipologia
-     *
-     * @param typologyId, identificador único del tipologia que se desea eliminar
+     * Eliminar una tipología
+     * @param typologyId, identificador único de la tipología que se desea eliminar
      * @throws CiadtiException
      */
     public void deleteTypology(Long typologyId) throws CiadtiException {
@@ -888,8 +858,7 @@ public class ConfigurationMediator {
 
     /**
      * Elimina lista de tipologías
-     *
-     * @param typologiesIds, lista de identificadores de las tipologías
+     * @param typologiesIds, lista de identificadores de las tipologías a eliminar
      * @throws CiadtiException
      */
     public void deleteTypoligies(List<Long> typologiesIds) throws CiadtiException {
@@ -899,19 +868,17 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Eliminar un género
-     *
-     * @param ftpId, identificador único del género que se desea eliminar
+     * Eliminar un FTP
+     * @param ftpId, identificador único del FTP que se desea eliminar
      * @throws CiadtiException
      */
-    public void deleteFtp(Long ftpId) throws CiadtiException{
+    public void deleteFtp(Long ftpId) throws CiadtiException {
         ftpService.deleteByProcedure(ftpId, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
 
     /**
-     * Elimina lista de FTPs
-     *
-     * @param ftpIds, lista de identificadores de los FTPs
+     * Elimina lista de FTP's
+     * @param ftpIds, lista de identificadores de los FTP's
      * @throws CiadtiException
      */
     public void deleteFtps(List<Long> ftpIds) throws CiadtiException {
@@ -921,24 +888,59 @@ public class ConfigurationMediator {
     }
 
     /**
+     * Guardar una acción
+     * @param actionEntity, Objeto con la información de la acción a guardar
+     * @return, Objeto con el id de la acción guardada
+     * @throws CiadtiException
+     */
+    public AccionEntity saveActionProcedure(AccionEntity actionEntity) throws CiadtiException {
+        return accionService.saveActionProcedure(actionEntity);
+    }
+
+    /**
      * Eliminar una acción
-     *
      * @param actionId, identificador único de la acción que se desea eliminar
      * @throws CiadtiException
      */
-    public void deleteAction(Long actionId) throws CiadtiException{
+    public void deleteAction(Long actionId) throws CiadtiException {
         accionService.deleteByProcedure(actionId, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
 
     /**
      * Elimina lista de acciones
-     *
-     * @param actionIds, lista de identificadores de las acciones
+     * @param actionIds, lista de identificadores de las acciones a eliminar
      * @throws CiadtiException
      */
     public void deleteActions(List<Long> actionIds) throws CiadtiException {
         for (Long id : actionIds) {
             deleteAction(id);
+        }
+    }
+
+    /**
+     * Elimina relación Tipología-Acción
+     * @param tipologiaAccionEntity, Objeto con información utilizada para la eliminación del registro
+     * @throws CiadtiException
+     */
+    public void deleteTypologyAction(TipologiaAccionEntity tipologiaAccionEntity) throws CiadtiException{
+        List<TipologiaAccionEntity> taDB = tipologiaAccionService.findAllFilteredBy(tipologiaAccionEntity);
+        for (TipologiaAccionEntity ta : taDB) {
+            tipologiaAccionService.deleteByProcedure(ta.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Eliminar lista de relaciones Tipología-Acción
+     * @param idTypology, identificador único de la tipología
+     * @param actionIds, lista de ids de las acciones relacionadas con la tipología
+     * @throws CiadtiException
+     */
+    public void deleteTypologyActions(Long idTypology, List<Long> actionIds) throws CiadtiException {
+        for (Long id : actionIds) {
+            TipologiaAccionEntity tipologiaAccion = new TipologiaAccionEntity();
+            tipologiaAccion.setIdAccion(id);
+            tipologiaAccion.setIdTipologia(idTypology);
+            deleteTypologyAction(tipologiaAccion);
         }
     }
 

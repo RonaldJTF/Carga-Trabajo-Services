@@ -34,6 +34,9 @@ public class TipologiaAccionServiceImpl implements TipologiaAccionService{
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public TipologiaAccionEntity save(TipologiaAccionEntity entity) {
+        System.out.println();
+        System.out.println(entity.toString());
+        System.out.println();
         if (entity.getId() != null){
             entity.onUpdate();
             tipologiaAccionDAO.update(

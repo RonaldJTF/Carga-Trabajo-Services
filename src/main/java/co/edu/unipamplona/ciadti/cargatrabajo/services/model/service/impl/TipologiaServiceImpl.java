@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class TipologiaServiceImpl implements TipologiaService{
-    
+
     private final TipologiaDAO tipologiaDAO;
 
     @Override
@@ -38,12 +38,12 @@ public class TipologiaServiceImpl implements TipologiaService{
     public TipologiaEntity save(TipologiaEntity entity) {
         if (entity.getId() != null){
             tipologiaDAO.update(entity.getIdTipologiaSiguiente(),
-                                entity.getNombre(), 
-                                entity.getClaseIcono(), 
-                                entity.getNombreColor(), 
-                                entity.getEsDependencia(), 
-                                entity.getFechaCambio(), 
-                                entity.getRegistradoPor(), 
+                                entity.getNombre(),
+                                entity.getClaseIcono(),
+                                entity.getNombreColor(),
+                                entity.getEsDependencia(),
+                                entity.getFechaCambio(),
+                                entity.getRegistradoPor(),
                                 entity.getId());
             return entity;
         }
@@ -87,7 +87,7 @@ public class TipologiaServiceImpl implements TipologiaService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<InventarioTipologiaDTO> findInventarioTipologia() {
+    public List<InventarioTipologiaDTO> findInventarioTipologia(){
         List<InventarioTipologiaDTO> inventarioList = tipologiaDAO.findInventarioTipologia();
         return inventarioList;
     }

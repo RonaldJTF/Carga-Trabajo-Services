@@ -33,15 +33,16 @@ public class BasicInformationController {
     private final ConfigurationMediator configurationMediator;
     private final FtpService ftpService;
     private final AccionService accionService;
+    private final TipologiaAccionService tipologiaAccionService;
 
 
     @Operation(
             summary = "Obtener o listar los tipos de documentos",
-            description = "Obtiene o lista los tipos de documentos de acuerdo a ciertas variables o parámetros. " +
-                    "Args: id: identificador del tipo de documento. " +
-                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase TipoDocumnetoEntity). " +
+            description = "Obtiene o lista los tipos de documentos de acuerdo a ciertas variables o parámetros." +
+                    "Args: id: identificador del tipo de documento." +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase TipoDocumnetoEntity)." +
                     "Returns: Objeto o lista de objetos con información de la persona. " +
-                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"document-type", "document-type/{id}"})
     public ResponseEntity<?> getDocumentType(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(TipoDocumentoEntity.class);
@@ -50,7 +51,13 @@ public class BasicInformationController {
         return Methods.getResponseAccordingToId(id, tipoDocumentoService.findAllFilteredBy(filter));
     }
 
-
+    @Operation(
+            summary = "Obtener o listar los géneros",
+            description = "Obtiene  lista de géneros de a cuerdo a ciertas variables o parámetros" +
+                    "Args: id: identificador del género. " +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase GeneroEntity)." +
+                    "Returns: Objeto o lista de objetos con información de los géneros. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"gender", "gender/{id}"})
     public ResponseEntity<?> getGender(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(GeneroEntity.class);
@@ -59,6 +66,13 @@ public class BasicInformationController {
         return Methods.getResponseAccordingToId(id, generoService.findAllFilteredBy(filter));
     }
 
+    @Operation(
+            summary = "Obtener o listar los niveles de ocupación",
+            description = "Obtiene lista de los niveles de ocupación de a cuerdo a ciertas variables o parámetros" +
+                    "Args: id: identificador del nivel de ocupación. " +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase NivelEntity). " +
+                    "Returns: Objeto o lista de objetos con información de los niveles. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"level", "level/{id}"})
     public ResponseEntity<?> getLevel(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(NivelEntity.class);
@@ -67,6 +81,13 @@ public class BasicInformationController {
         return Methods.getResponseAccordingToId(id, nivelService.findAllFilteredBy(filter));
     }
 
+    @Operation(
+            summary = "Obtener o listar los roles",
+            description = "Obtiene lista de roles de acuerdo a ciertas variables o parámetros" +
+                    "Args: id: identificador del rol. " +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase RolEntity). " +
+                    "Returns: Objeto o lista de objetos con información de los roles. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"role", "role/{id}"})
     public ResponseEntity<?> getRole(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(RolEntity.class);
@@ -75,11 +96,22 @@ public class BasicInformationController {
         return Methods.getResponseAccordingToId(id, rolService.findAllFilteredBy(filter));
     }
 
+    @Operation(
+            summary = "Obtener las tipologías con la cantidad de relaciones en la tabla estructura",
+            description = "Obtiene lista de tipología registradas en la base de datos con las cantidad de relaciones en la tabla estructura" +
+                    "Args: id: identificador de la tipología. " +
+                    "Returns: Lista de objetos (InventarioTipologiaDTO) con información de las tipologías y la cantidad de registros en la tabla estructura.")
     @GetMapping(value = {"inventory", "inventory/{id}"})
-    public ResponseEntity<?> getInventory(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+    public ResponseEntity<?> getInventory(@PathVariable(required = false) Long id) throws CiadtiException {
         return Methods.getResponseAccordingToId(id, tipologiaService.findInventarioTipologia());
     }
 
+    @Operation(
+            summary = "Obtener información de las actividades por nivel de ocupación de una dependencia",
+            description = "Obtiene la información de las actividades por nivel de ocupación de una dependencia" +
+                    "Args: id: identificador de la dependencia." +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase EstructuraEntity)." +
+                    "Returns: Lista de objetos (ActividadOutDTO) con las estadísticas de la dependencia.")
     @GetMapping(value = {"statistics", "statistics/{id}"})
     public ResponseEntity<?> getStatistics(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(EstructuraEntity.class);
@@ -91,6 +123,13 @@ public class BasicInformationController {
 
     //LPR: 18 de julio de 2024
 
+    @Operation(
+            summary = "Obtener o listar las tipologías",
+            description = "Obtiene o lista las tipologías de acuerdo a ciertas variables o parámetros." +
+                    "Args: id: identificador de la tipología." +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase TipologiaEntity)." +
+                    "Returns: Objeto o lista de objetos con información de las tipologías." +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"typology", "typology/{id}"})
     public ResponseEntity<?> getTypology(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(TipologiaEntity.class);
@@ -99,6 +138,13 @@ public class BasicInformationController {
         return Methods.getResponseAccordingToId(id, tipologiaService.findAllFilteredBy(filter));
     }
 
+    @Operation(
+            summary = "Obtener o listar los ftp",
+            description = "Obtiene o lista los ftp de acuerdo a ciertas variables o parámetros." +
+                    "Args: id: identificador del ftp." +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase FtpEntity)." +
+                    "Returns: Objeto o lista de objetos con información de los ftp." +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"ftp", "ftp/{id}"})
     public ResponseEntity<?> getFtp(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(FtpEntity.class);
@@ -107,6 +153,13 @@ public class BasicInformationController {
         return Methods.getResponseAccordingToId(id, ftpService.findAllFilteredBy(filter));
     }
 
+    @Operation(
+            summary = "Obtener o listar las acciones",
+            description = "Obtiene o lista las acciones de acuerdo a ciertas variables o parámetros." +
+                    "Args: id: identificador del la acción." +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase AccionEntity)." +
+                    "Returns: Objeto o lista de objetos con información de las acciones." +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"action", "action/{id}"})
     public ResponseEntity<?> getAction(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(AccionEntity.class);
@@ -128,6 +181,12 @@ public class BasicInformationController {
         return new ResponseEntity<>(rolService.save(rolNew), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Actualizar un rol",
+            description = "Actualiza un rol. " +
+                    "Args: rolEntity: objeto con información del rol." +
+                    "id: identificador del rol." +
+                    "Returns: Objeto con la información asociada.")
     @PutMapping("/role/{id}")
     public ResponseEntity<?> updateRole(@Valid @RequestBody RolEntity rolEntity, @PathVariable Long id) throws CiadtiException {
         RolEntity rolDB = rolService.findById(id);
@@ -136,23 +195,30 @@ public class BasicInformationController {
         return new ResponseEntity<>(rolService.save(rolDB), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Eliminar rol por el id",
+            description = "Elimina un rol por su id." +
+                    "Args: id: identificador del rol a eliminar.")
     @DeleteMapping("/role/{id}")
     public ResponseEntity<?> deleteRole(@PathVariable Long id) throws CiadtiException {
         configurationMediator.deleteRole(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(
+            summary = "Eliminar lista de roles por el id",
+            description = "Elimina una lista de roles por su id." +
+                    "Args: roleIds: identificadores de los roles a eliminar.")
     @DeleteMapping("/role")
     public ResponseEntity<?> deleteRoles(@RequestBody List<Long> roleIds) throws CiadtiException {
         configurationMediator.deleteRoles(roleIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     @Operation(
             summary = "Crear un género",
             description = "Crea un género" +
-                    "Args: generoEntity: objeto con información del genero a registrar. " +
+                    "Args: generoEntity: objeto con información del genero a registrar." +
                     "Returns: Objeto con la información asociada.")
     @PostMapping("/gender")
     public ResponseEntity<?> createGender(@Valid @RequestBody GeneroEntity generoEntity) {
@@ -161,6 +227,12 @@ public class BasicInformationController {
         return new ResponseEntity<>(generoService.save(genderNew), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Actualizar un genero",
+            description = "Actualiza un genero. " +
+                    "Args: generoEntity: objeto con información del genero." +
+                    "id: identificador del genero." +
+                    "Returns: Objeto con la información asociada.")
     @PutMapping("/gender/{id}")
     public ResponseEntity<?> updateGender(@Valid @RequestBody GeneroEntity generoEntity, @PathVariable Long id) throws CiadtiException {
         GeneroEntity generoDB = generoService.findById(id);
@@ -168,23 +240,30 @@ public class BasicInformationController {
         return new ResponseEntity<>(generoService.save(generoDB), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Eliminar genero por el id",
+            description = "Elimina un genero por su id." +
+                    "Args: id: identificador del genero a eliminar.")
     @DeleteMapping("/gender/{id}")
     public ResponseEntity<?> deleteGender(@PathVariable Long id) throws CiadtiException {
         configurationMediator.deleteGender(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(
+            summary = "Eliminar lista de géneros por el id",
+            description = "Elimina una lista de géneros por su id." +
+                    "Args: roleIds: identificadores de los géneros a eliminar.")
     @DeleteMapping("/gender")
     public ResponseEntity<?> deleteGenders(@RequestBody List<Long> genderIds) throws CiadtiException {
         configurationMediator.deleteGenders(genderIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     @Operation(
             summary = "Crear un nivel ocupacional",
             description = "Crea un nivel ocupacional" +
-                    "Args: generoEntity: objeto con información del genero a registrar. " +
+                    "Args: nivelEntity: objeto con información del nivel ocupacional a registrar." +
                     "Returns: Objeto con la información asociada.")
     @PostMapping("/level")
     public ResponseEntity<?> createLevel(@Valid @RequestBody NivelEntity nivelEntity) {
@@ -193,6 +272,12 @@ public class BasicInformationController {
         return new ResponseEntity<>(nivelService.save(nivelNew), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Actualizar un nivel de ocupación",
+            description = "Actualiza un nivel de ocupación. " +
+                    "Args: nivelEntity: objeto con información del nivel." +
+                    "id: identificador del nivel." +
+                    "Returns: Objeto con la información asociada.")
     @PutMapping("/level/{id}")
     public ResponseEntity<?> updateLevel(@Valid @RequestBody NivelEntity nivelEntity, @PathVariable Long id) throws CiadtiException {
         NivelEntity nivelDB = nivelService.findById(id);
@@ -200,32 +285,45 @@ public class BasicInformationController {
         return new ResponseEntity<>(nivelService.save(nivelDB), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Eliminar nivel de ocupación por el id",
+            description = "Elimina un nivel de ocupación por su id." +
+                    "Args: id: identificador del nivel a eliminar.")
     @DeleteMapping("/level/{id}")
     public ResponseEntity<?> deleteLevel(@PathVariable Long id) throws CiadtiException {
         configurationMediator.deleteLevel(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(
+            summary = "Eliminar lista de niveles de ocupación por el id",
+            description = "Elimina una lista de niveles de ocupación por su id." +
+                    "Args: levelIds: identificadores de los niveles a eliminar.")
     @DeleteMapping("/level")
     public ResponseEntity<?> deleteLevels(@RequestBody List<Long> levelIds) throws CiadtiException {
         configurationMediator.deleteLevels(levelIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     @Operation(
             summary = "Crear un tipo de documento",
             description = "Crea un tipo de documento" +
-                    "Args: generoEntity: objeto con información del genero a registrar. " +
+                    "Args: tipoDocumentoEntity: objeto con información del tipo de documento a registrar. " +
                     "Returns: Objeto con la información asociada.")
     @PostMapping("/document-type")
-    public ResponseEntity<?> createDocumentType(@Valid @RequestBody TipoDocumentoEntity tipoDocumentoEntity){
+    public ResponseEntity<?> createDocumentType(@Valid @RequestBody TipoDocumentoEntity tipoDocumentoEntity) {
         TipoDocumentoEntity tipoDocumentoNew = new TipoDocumentoEntity();
         tipoDocumentoNew.setDescripcion(Methods.capitalizeFirstLetter(tipoDocumentoEntity.getDescripcion()));
         tipoDocumentoNew.setAbreviatura(tipoDocumentoEntity.getAbreviatura().toUpperCase());
         return new ResponseEntity<>(tipoDocumentoService.save(tipoDocumentoNew), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Actualizar un tipo de documento",
+            description = "Actualiza un tipo de documento." +
+                    "Args: tipoDocumentoEntity: objeto con información del tipo de documento." +
+                    "id: identificador del tipo de documento." +
+                    "Returns: Objeto con la información asociada.")
     @PutMapping("/document-type/{id}")
     public ResponseEntity<?> updateDocumentType(@Valid @RequestBody TipoDocumentoEntity tipoDocumentoEntity, @PathVariable Long id) throws CiadtiException {
         TipoDocumentoEntity tipoDocumentoDB = tipoDocumentoService.findById(id);
@@ -234,26 +332,33 @@ public class BasicInformationController {
         return new ResponseEntity<>(tipoDocumentoService.save(tipoDocumentoDB), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Eliminar tipo de documento por el id",
+            description = "Elimina un tipo de documento por su id." +
+                    "Args: id: identificador del tipo de documento a eliminar.")
     @DeleteMapping("/document-type/{id}")
     public ResponseEntity<?> deleteDocumentType(@PathVariable Long id) throws CiadtiException {
         configurationMediator.deleteDocumentType(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(
+            summary = "Eliminar tipos de documentos por el id",
+            description = "Elimina lista de tipos de documentos por su id." +
+                    "Args: documentTypeIds: identificadores de los tipos de documentos a eliminar.")
     @DeleteMapping("/document-type")
     public ResponseEntity<?> deleteDocumentTypes(@RequestBody List<Long> documentTypeIds) throws CiadtiException {
         configurationMediator.deleteDocumentTypes(documentTypeIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     @Operation(
-            summary = "Crear una tipologia",
-            description = "Crea una tipologia" +
-                    "Args: generoEntity: objeto con información del genero a registrar. " +
+            summary = "Crear una tipología",
+            description = "Crea una tipología" +
+                    "Args: tipologiaEntity: objeto con información de la tipología a registrar." +
                     "Returns: Objeto con la información asociada.")
     @PostMapping("/typology")
-    public ResponseEntity<?> createTypology(@Valid @RequestBody TipologiaEntity tipologiaEntity){
+    public ResponseEntity<?> createTypology(@Valid @RequestBody TipologiaEntity tipologiaEntity) {
         TipologiaEntity tipologiaNew = new TipologiaEntity();
         tipologiaNew.setNombre(tipologiaEntity.getNombre());
         tipologiaNew.setClaseIcono(tipologiaEntity.getClaseIcono());
@@ -263,6 +368,12 @@ public class BasicInformationController {
         return new ResponseEntity<>(tipologiaService.save(tipologiaNew), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Actualizar una tipología",
+            description = "Actualiza una tipología." +
+                    "Args: tipologiaEntity: objeto con información de la tipología." +
+                    "id: identificador del tipo de documento." +
+                    "Returns: Objeto con la información asociada.")
     @PutMapping("/typology/{id}")
     public ResponseEntity<?> updateTypology(@Valid @RequestBody TipologiaEntity tipologiaEntity, @PathVariable Long id) throws CiadtiException {
         TipologiaEntity tipologiaDB = tipologiaService.findById(id);
@@ -274,26 +385,33 @@ public class BasicInformationController {
         return new ResponseEntity<>(tipologiaService.save(tipologiaDB), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Eliminar tipología por el id",
+            description = "Elimina una tipología por su id." +
+                    "Args: id: identificador de la tipología a eliminar.")
     @DeleteMapping("/typology/{id}")
     public ResponseEntity<?> deleteTypology(@PathVariable Long id) throws CiadtiException {
         configurationMediator.deleteTypology(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(
+            summary = "Eliminar tipologías por el id",
+            description = "Elimina una tipología por su id." +
+                    "Args: typologyIds: identificadores de las tipologías a eliminar.")
     @DeleteMapping("/typology")
     public ResponseEntity<?> deleteTypologies(@RequestBody List<Long> typologyIds) throws CiadtiException {
         configurationMediator.deleteTypoligies(typologyIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     @Operation(
             summary = "Crear un servidor FTP",
-            description = "Crea un servior FTP." +
-                    "Args: generoEntity: objeto con información del genero a registrar. " +
+            description = "Crea un servidor FTP." +
+                    "Args: ftpEntity: objeto con información del ftp a registrar. " +
                     "Returns: Objeto con la información asociada.")
     @PostMapping("/ftp")
-    public ResponseEntity<?> createFtp(@Valid @RequestBody FtpEntity ftpEntity){
+    public ResponseEntity<?> createFtp(@Valid @RequestBody FtpEntity ftpEntity) {
         FtpEntity ftpNew = new FtpEntity();
         ftpNew.setNombre(ftpEntity.getNombre());
         ftpNew.setDescripcion(ftpEntity.getDescripcion());
@@ -302,6 +420,12 @@ public class BasicInformationController {
         return new ResponseEntity<>(ftpService.save(ftpNew), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Actualizar un servidor FTP",
+            description = "Actualiza un servidor FTP." +
+                    "Args: ftpEntity: objeto con información del servidor FTP." +
+                    "id: identificador del FTP." +
+                    "Returns: Objeto con la información asociada.")
     @PutMapping("/ftp/{id}")
     public ResponseEntity<?> updateFtp(@Valid @RequestBody FtpEntity ftpEntity, @PathVariable Long id) throws CiadtiException {
         FtpEntity ftpDB = ftpService.findById(id);
@@ -312,34 +436,42 @@ public class BasicInformationController {
         return new ResponseEntity<>(ftpService.save(ftpDB), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Eliminar servidor FTP por el id",
+            description = "Elimina un servidor FTP por su id." +
+                    "Args: id: identificador de la tipología a eliminar.")
     @DeleteMapping("/ftp/{id}")
     public ResponseEntity<?> deleteFtp(@PathVariable Long id) throws CiadtiException {
         configurationMediator.deleteFtp(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(
+            summary = "Eliminar FTP's por el id",
+            description = "Elimina FTP's por su id." +
+                    "Args: ftpIds: identificadores de los FTP's a eliminar.")
     @DeleteMapping("/ftp")
     public ResponseEntity<?> deleteFtps(@RequestBody List<Long> ftpIds) throws CiadtiException {
         configurationMediator.deleteFtps(ftpIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     @Operation(
-            summary = "Crear un servidor FTP",
-            description = "Crea un servior FTP." +
-                    "Args: generoEntity: objeto con información del genero a registrar. " +
+            summary = "Crear una acción",
+            description = "Crea una acción." +
+                    "Args: accionEntity: objeto con información de la acción a registrar. " +
                     "Returns: Objeto con la información asociada.")
     @PostMapping("/action")
-    public ResponseEntity<?> createAction(@Valid @RequestBody AccionEntity accionEntity){
-        AccionEntity accionNew = new AccionEntity();
-        accionNew.setNombre(accionEntity.getNombre());
-        accionNew.setClaseIcono(accionEntity.getClaseIcono());
-        accionNew.setClaseEstado(accionEntity.getClaseEstado());
-        accionNew.setPath(accionEntity.getPath());
-        return new ResponseEntity<>(accionService.save(accionNew), HttpStatus.CREATED);
+    public ResponseEntity<?> createAction(@Valid @RequestBody AccionEntity accionEntity) throws CiadtiException {
+        return new ResponseEntity<>(configurationMediator.saveActionProcedure(accionEntity), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Actualizar una acción",
+            description = "Actualiza una acción." +
+                    "Args: accionEntity: objeto con información de la acción." +
+                    "id: identificador de la acción." +
+                    "Returns: Objeto con la información asociada.")
     @PutMapping("/action/{id}")
     public ResponseEntity<?> updateAction(@Valid @RequestBody AccionEntity accionEntity, @PathVariable Long id) throws CiadtiException {
         AccionEntity accionDB = accionService.findById(id);
@@ -350,16 +482,57 @@ public class BasicInformationController {
         return new ResponseEntity<>(accionService.save(accionDB), HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Eliminar acción por el id",
+            description = "Elimina una acción por su id." +
+                    "Args: id: identificador de la acción a eliminar.")
     @DeleteMapping("/action/{id}")
     public ResponseEntity<?> deleteAction(@PathVariable Long id) throws CiadtiException {
         configurationMediator.deleteAction(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(
+            summary = "Eliminar acciones por el id",
+            description = "Elimina acciones por su id." +
+                    "Args: acctionIds: identificadores de las acciones a eliminar.")
     @DeleteMapping("/action")
     public ResponseEntity<?> deleteActions(@RequestBody List<Long> acctionIds) throws CiadtiException {
         configurationMediator.deleteActions(acctionIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(
+            summary = "Crear la relación entre una tipología y una acción",
+            description = "Crea una acción." +
+                    "Args: accionEntity: objeto con información de la acción a relacionar. " +
+                    "id: identificador de la tipología a relacionar con la acción" +
+                    "Returns: Objeto con la información asociada.")
+    @PostMapping("/typology-action/{id}")
+    public ResponseEntity<?> createTypologyAction(@Valid @RequestBody AccionEntity accionEntity, @PathVariable Long id) throws CiadtiException {
+        TipologiaAccionEntity taNew = new TipologiaAccionEntity();
+        taNew.setIdTipologia(id);
+        if (accionEntity.getId() != null) {
+            taNew.setIdAccion(accionEntity.getId());
+        } else {
+            taNew.setIdAccion(configurationMediator.saveActionProcedure(accionEntity).getId());
+        }
+        return new ResponseEntity<>(tipologiaAccionService.save(taNew), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Eliminar relación Tipología-Acción por id de la tipología y el id de la acción",
+            description = "Elimina relación Tipología-Acción por id de la tipología y el id de la acción." +
+                    "Args: tipologiaAccionEntity: objeto con los identificadores de las TipologiaAccion a eliminar.")
+    @DeleteMapping("/typology-action")
+    public ResponseEntity<?> deleteTypologyAction(@Valid @RequestBody TipologiaAccionEntity tipologiaAccionEntity) throws CiadtiException {
+        configurationMediator.deleteTypologyAction(tipologiaAccionEntity);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/typology-action/{id}")
+    public ResponseEntity<?> deleteTypologyActions(@Valid @RequestBody List<Long> acctionIds, @PathVariable Long id) throws CiadtiException {
+        configurationMediator.deleteTypologyActions(id, acctionIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

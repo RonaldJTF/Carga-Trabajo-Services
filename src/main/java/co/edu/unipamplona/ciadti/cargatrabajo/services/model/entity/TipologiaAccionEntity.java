@@ -44,12 +44,12 @@ public class TipologiaAccionEntity implements Serializable{
     private Long idAccion;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "tipo_fechacambio", nullable = false)
+    @Column(name = "tiac_fechacambio", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCambio;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "tipo_registradopor", nullable = false, length = 250)
+    @Column(name = "tiac_registradopor", nullable = false, length = 250)
     private String registradoPor;
 
     @JsonIgnore

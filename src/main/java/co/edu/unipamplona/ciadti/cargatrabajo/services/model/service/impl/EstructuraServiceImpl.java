@@ -174,10 +174,10 @@ public class EstructuraServiceImpl implements EstructuraService {
         List<ActividadOutDTO> estadistica = new ArrayList<>();
         Map<String, ActividadOutDTO> estadisticaMap = new HashMap<>();
 
-        List<NivelEntity> niveles = (List<NivelEntity>) nivelService.findAll();
+        List<NivelEntity> niveles = nivelService.findAll();
 
         for (NivelEntity nivel : niveles) {
-            ActividadOutDTO actividad = initActividadOutDTO(nivel);
+            ActividadOutDTO actividad = initializeActividadOutDTO(nivel);
             estadistica.add(actividad);
             estadisticaMap.put(nivel.getDescripcion(), actividad);
         }
@@ -187,8 +187,7 @@ public class EstructuraServiceImpl implements EstructuraService {
             double tiempoTarea = 0.0;
             if (act.getTiempoMaximo() != null && act.getTiempoMaximo() > 0 && act.getTiempoMinimo() != null && act.getTiempoMinimo() > 0 && act.getFrecuencia() != null && act.getFrecuencia() > 0) {
                 tiempoEstandar = (1.07 * ((act.getTiempoMinimo() + (4.0 * act.getTiempoPromedio()) + act.getTiempoMaximo()) / 6.0));
-                tiempoTarea = Math.round((act.getFrecuencia() * tiempoEstandar)*100.0)/100.0;
-
+                tiempoTarea = Math.round((act.getFrecuencia() * tiempoEstandar) * 100.0) / 100.0;
                 ActividadOutDTO actividadOutDTO = estadisticaMap.get(act.getNivel());
                 actividadOutDTO.setFrecuencia(actividadOutDTO.getFrecuencia() + act.getFrecuencia());
                 actividadOutDTO.setTiempoMaximo(actividadOutDTO.getTiempoMaximo() + act.getTiempoMaximo());
@@ -204,10 +203,11 @@ public class EstructuraServiceImpl implements EstructuraService {
 
     /**
      * Método que permite inicializar un objeto tipo ActividadOutDTO para poder realizar los calculos
+     *
      * @param nivel, objetos con los informacion de los niveles profesionales
      * @return actividad, lista con los valores iniciales del objeto
      */
-    private static ActividadOutDTO initActividadOutDTO(NivelEntity nivel) {
+    private static ActividadOutDTO initializeActividadOutDTO(NivelEntity nivel) {
         ActividadOutDTO actividad = new ActividadOutDTO();
         actividad.setNivel(nivel.getDescripcion());
         actividad.setExtrae(nivel.getDescripcion().substring(0, Math.min(nivel.getDescripcion().length(), 3)).toUpperCase());

@@ -17,8 +17,8 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class AccionServiceImpl implements AccionService{
-    
+public class AccionServiceImpl implements AccionService {
+
     private final AccionDAO accionDAO;
 
     @Override
@@ -36,7 +36,7 @@ public class AccionServiceImpl implements AccionService{
     @Override
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public AccionEntity save(AccionEntity entity) {
-        if (entity.getId() != null){
+        if (entity.getId() != null) {
             entity.onUpdate();
             accionDAO.update(
                     entity.getNombre(),
@@ -46,7 +46,7 @@ public class AccionServiceImpl implements AccionService{
                     entity.getFechaCambio(),
                     entity.getRegistradoPor(),
                     entity.getId());
-            return  entity;
+            return entity;
         }
         return accionDAO.save(entity);
     }
@@ -62,7 +62,7 @@ public class AccionServiceImpl implements AccionService{
     public void deleteByProcedure(Long id, String register) {
         Integer rows = accionDAO.deleteByProcedure(id, register);
         if (1 != rows) {
-            throw new RuntimeException( "Se han afectado " + rows + " filas." );
+            throw new RuntimeException("Se han afectado " + rows + " filas.");
         }
     }
 
@@ -72,5 +72,20 @@ public class AccionServiceImpl implements AccionService{
         OrderBy orderBy = new OrderBy("nombre", true);
         Specification<AccionEntity> specification = new SpecificationCiadti<>(filter, orderBy);
         return accionDAO.findAll(specification);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public AccionEntity saveActionProcedure(AccionEntity accionEntity) {
+        accionEntity.onUpdate();
+        Integer rows = accionDAO.saveActionProcedure(accionEntity.getNombre(),
+                accionEntity.getClaseIcono(),
+                accionEntity.getClaseEstado(),
+                accionEntity.getPath(),
+                accionEntity.getRegistradoPor());
+        if (rows != null) {
+            accionEntity.setId(Long.valueOf(rows));
+        }
+        return accionEntity;
     }
 }

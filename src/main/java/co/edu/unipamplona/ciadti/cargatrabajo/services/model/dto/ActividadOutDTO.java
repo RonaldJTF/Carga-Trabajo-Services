@@ -97,19 +97,4 @@ public class ActividadOutDTO {
     public void setTiempoTotalTarea(Double tiempoTotalTarea) {
         this.tiempoTotalTarea = tiempoTotalTarea;
     }
-
-    @Override
-    public String toString() {
-        return "ActividadOutDTO{" +
-                "nombre='" + nombre + '\'' +
-                ", nivel='" + nivel + '\'' +
-                ", extrae='" + extrae + '\'' +
-                ", frecuencia=" + frecuencia +
-                ", tiempoMaximo=" + tiempoMaximo +
-                ", tiempoMinimo=" + tiempoMinimo +
-                ", tiempoUsual=" + tiempoUsual +
-                ", tiempoEstandar=" + tiempoEstandar +
-                ", tiempoTotalTarea=" + tiempoTotalTarea +
-                '}';
-    }
 }
