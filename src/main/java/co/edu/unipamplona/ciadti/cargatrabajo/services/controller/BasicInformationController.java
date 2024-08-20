@@ -102,7 +102,7 @@ public class BasicInformationController {
                     "Args: id: identificador de la tipología. " +
                     "Returns: Lista de objetos (InventarioTipologiaDTO) con información de las tipologías y la cantidad de registros en la tabla estructura.")
     @GetMapping(value = {"inventory", "inventory/{id}"})
-    public ResponseEntity<?> getInventory(@PathVariable(required = false) Long id) throws CiadtiException {
+    public ResponseEntity<?> getInventory(@PathVariable(required = false) Long id) {
         return Methods.getResponseAccordingToId(id, tipologiaService.findInventarioTipologia());
     }
 

@@ -25,7 +25,9 @@ public class CorsConfig{
                         "Content-Disposition",
                         "Access-Control-Request-Method",
                         "Access-Control-Request-Headers",
-                        "Authorization"));
+                        "Authorization",
+                        "sentry-trace",
+                        "baggage"));
         configuration.setExposedHeaders(
                 Arrays.asList(
                         "Referer",
