@@ -1,37 +1,29 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
-import java.util.Iterator;
-
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO.DateAdvance;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.DependenciaDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.TipologiaDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.*;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.*;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl.TipologiaServiceImpl;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Routes;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Active;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO.DateAdvance;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Routes;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Active;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -59,6 +51,7 @@ public class ConfigurationMediator {
     private final FtpService ftpService;
     private final AccionService accionService;
     private final TipologiaAccionService tipologiaAccionService;
+    private final TipologiaServiceImpl tipologiaServiceImpl;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -944,10 +937,12 @@ public class ConfigurationMediator {
         }
     }
 
-    public List<EstructuraEntity> getDependencies() {
-        List<EstructuraEntity> dependencies = this.estructuraService.findAllFilteredBy(EstructuraEntity.builder().tipologia(TipologiaEntity.builder().esDependencia("1").build()).build());
-        this.filterByOnlyDependencies(dependencies);
-        return dependencies;
+    public List<EstructuraEntity> getDependencies() throws CiadtiException{
+        List<DependenciaDTO> results = this.estructuraService.findAllDependencies();
+        return results != null ? buildDependencies(results) : null;
+        //List<EstructuraEntity> dependencies = this.estructuraService.findAllFilteredBy(EstructuraEntity.builder().tipologia(TipologiaEntity.builder().esDependencia("1").build()).build());
+        //this.filterByOnlyDependencies(dependencies);
+        //return dependencies;
     }
 
     private void filterByOnlyDependencies(List<EstructuraEntity> structures) {
@@ -977,6 +972,61 @@ public class ConfigurationMediator {
         }
 
         return dependency;
+    }
+
+    /**
+     * Método que construye un objeto con las dependencias obtenidas, se construye un mapa con la lista
+     * de las dependencias, cada una con sus subdependencia sin importar la profundidad del objeto
+     * @param dependencias, lista de dependencias obtenidas en la consulta
+     * @return lista de estructuras
+     */
+    private @NonNull List<EstructuraEntity> buildDependencies(List<DependenciaDTO> dependencias) {
+        Map<Long, EstructuraEntity> nodoMap = new HashMap<>();
+        List<EstructuraEntity> estructura = new ArrayList<>();
+
+        TipologiaEntity tipologia = tipologiaService.findDependencyTipology();
+        List<EstructuraEntity> builtStruture = structureBuilder(dependencias, tipologia);
+
+        for (EstructuraEntity nodo : builtStruture) {
+            nodoMap.put(nodo.getId(), nodo);
+        }
+
+        for (EstructuraEntity nodo : builtStruture) {
+            if (nodo.getIdPadre() != null) {
+                EstructuraEntity padre = nodoMap.get(nodo.getIdPadre());
+                if (padre != null) {
+                    if (padre.getSubEstructuras() == null) {
+                        padre.setSubEstructuras(new ArrayList<>());
+                    }
+                    padre.getSubEstructuras().add(nodo);
+                }
+            } else {
+                estructura.add(nodo);
+            }
+        }
+        return estructura;
+    }
+
+    private @NonNull List<EstructuraEntity> structureBuilder(@NonNull List<DependenciaDTO> dependencia, TipologiaEntity tipologia) {
+        List<EstructuraEntity> result = new ArrayList<>();
+        for (DependenciaDTO item : dependencia) {
+            EstructuraEntity estructuraEntity = new EstructuraEntity();
+            estructuraEntity.setId(item.getId());
+            estructuraEntity.setNombre(item.getNombre());
+            estructuraEntity.setDescripcion(item.getDescripcion());
+            estructuraEntity.setIdPadre(item.getIdPadre());
+            estructuraEntity.setRegistradoPor(item.getRegistradoPor());
+            estructuraEntity.setFechaCambio(item.getFechaCambio());
+            estructuraEntity.setIdTipologia(item.getIdTipo());
+            estructuraEntity.setIcono(item.getIcono());
+            estructuraEntity.setMimetype(item.getMimeType());
+            estructuraEntity.setOrden(item.getOrden());
+            if (item.getIdTipo().equals(tipologia.getId())) {
+                estructuraEntity.setTipologia(tipologia);
+            }
+            result.add(estructuraEntity);
+        }
+        return result;
     }
 
 }

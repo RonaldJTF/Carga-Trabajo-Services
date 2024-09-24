@@ -5,10 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import java.util.Arrays;
 
 @Configuration
-public class CorsConfig{
+public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -26,8 +27,9 @@ public class CorsConfig{
                         "Access-Control-Request-Method",
                         "Access-Control-Request-Headers",
                         "Authorization",
-                        "sentry-trace",
-                        "baggage"));
+                        "sentry-trace", // Genera un identificador único para cada solicitud que se haga. Permite que Sentry pueda rastrear la solicitud por diferentes servicios.
+                        "baggage"       // Permite agregar información adicional a la solicitud, por ejemplo, información del usuario o información de contexto, por defecto se accede a la configuración definida arriba.
+                ));
         configuration.setExposedHeaders(
                 Arrays.asList(
                         "Referer",

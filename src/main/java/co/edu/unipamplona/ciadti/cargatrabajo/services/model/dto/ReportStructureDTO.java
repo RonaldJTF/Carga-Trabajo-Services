@@ -23,5 +23,4 @@ public class ReportStructureDTO {
     private Double tiempoMaximo;
     private Double tiempoEstandar;
     private List<Double> tiemposPorNivel;
-
 }

@@ -76,7 +76,7 @@ public class EstructuraController {
         description = "Obtiene las dependencias que existen junto a sus subdependencias."
     )
     @GetMapping({"/dependencies"})
-    public ResponseEntity<?> getDependencies() {
+    public ResponseEntity<?> getDependencies() throws CiadtiException{
         List<EstructuraEntity> dependencies = this.configurationMediator.getDependencies();
         return new ResponseEntity(dependencies, HttpStatus.OK);
     }

@@ -13,19 +13,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.config.jackson.JacksonCIA
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.RegistradorDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Image;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -75,7 +63,7 @@ public class EstructuraEntity implements Serializable, Cloneable{
     @Column(name = "estr_registradopor", nullable =  false, length = 250)
     private String registradoPor;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="estr_idpadre", insertable=false, updatable=false)
     private List<EstructuraEntity> subEstructuras;
 
@@ -83,7 +71,7 @@ public class EstructuraEntity implements Serializable, Cloneable{
     @OneToOne(mappedBy="estructura")
     private ActividadEntity actividad;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_id", insertable = false, updatable = false)
     private TipologiaEntity tipologia;
 

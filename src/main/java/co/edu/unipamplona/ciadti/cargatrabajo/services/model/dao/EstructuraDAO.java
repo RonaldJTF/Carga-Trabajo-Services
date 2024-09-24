@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.ActividadDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.DependenciaDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,22 +13,22 @@ import org.springframework.data.repository.query.Param;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 
-public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, JpaSpecificationExecutor<EstructuraEntity>{
+public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, JpaSpecificationExecutor<EstructuraEntity> {
 
     @Modifying
-    @Query(value =  "update EstructuraEntity e set e.nombre = :nombre, e.descripcion = :descripcion, e.idPadre = :idPadre, " +
-                    "e.idTipologia = :idTipologia, e.icono = :icono, e.mimetype = :mimetype, e.orden =:orden,  e.fechaCambio = :fechaCambio, " + 
-                    "e.registradoPor = :registradoPor where e.id = :id")
-    int update( @Param("nombre") String nombre,
-                @Param("descripcion") String descripcion,
-                @Param("idPadre") Long idPadre,
-                @Param("idTipologia") Long idTipologia,
-                @Param("icono") byte[] icono,
-                @Param("mimetype") String mimetype,
-                @Param("orden") Long orden,
-                @Param("fechaCambio") Date fechaCambio,
-                @Param("registradoPor") String registradoPor,
-                @Param("id") Long id);
+    @Query(value = "update EstructuraEntity e set e.nombre = :nombre, e.descripcion = :descripcion, e.idPadre = :idPadre, " +
+            "e.idTipologia = :idTipologia, e.icono = :icono, e.mimetype = :mimetype, e.orden =:orden,  e.fechaCambio = :fechaCambio, " +
+            "e.registradoPor = :registradoPor where e.id = :id")
+    int update(@Param("nombre") String nombre,
+               @Param("descripcion") String descripcion,
+               @Param("idPadre") Long idPadre,
+               @Param("idTipologia") Long idTipologia,
+               @Param("icono") byte[] icono,
+               @Param("mimetype") String mimetype,
+               @Param("orden") Long orden,
+               @Param("fechaCambio") Date fechaCambio,
+               @Param("registradoPor") String registradoPor,
+               @Param("id") Long id);
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_ESTRUCTURA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
@@ -66,26 +67,38 @@ public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, Jp
 
     @Modifying
     @Query(value = "update EstructuraEntity e set e.orden = e.orden + :increment where e.idPadre = :idPadre and e.orden >= :orden and e.id != :id")
-    int updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(@Param("idPadre") Long idPadre, 
-                                                        @Param("orden") Long orden, 
-                                                        @Param("id") Long id, 
-                                                        @Param("increment") int increment);
+    int updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(@Param("idPadre") Long idPadre,
+                                                         @Param("orden") Long orden,
+                                                         @Param("id") Long id,
+                                                         @Param("increment") int increment);
 
     @Query(value = "select count(e) > 0 from EstructuraEntity e where e.idPadre = :idPadre and e.orden = :orden and e.id != :id")
-    boolean existsByIdPadreAndOrdenAndNotId(@Param("idPadre") Long idPadre, 
-                                            @Param("orden") Long orden, 
+    boolean existsByIdPadreAndOrdenAndNotId(@Param("idPadre") Long idPadre,
+                                            @Param("orden") Long orden,
                                             @Param("id") Long id);
 
     @Modifying
-    @Query(value = "update EstructuraEntity e set e.orden = e.orden + :increment where e.idPadre = :idPadre " + 
-                   "and e.orden >= :inferiorOrder and  e.orden <= :superiorOrder and e.id != :id")
-    int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(@Param("idPadre") Long idPadre, 
-                                                    @Param("inferiorOrder") Long inferiorOrder, 
-                                                    @Param("superiorOrder") Long superiorOrder, 
-                                                    @Param("id") Long id, 
+    @Query(value = "update EstructuraEntity e set e.orden = e.orden + :increment where e.idPadre = :idPadre " +
+            "and e.orden >= :inferiorOrder and  e.orden <= :superiorOrder and e.id != :id")
+    int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(@Param("idPadre") Long idPadre,
+                                                    @Param("inferiorOrder") Long inferiorOrder,
+                                                    @Param("superiorOrder") Long superiorOrder,
+                                                    @Param("id") Long id,
                                                     @Param("increment") int increment);
 
-    @Query(value = "SELECT E FROM EstructuraEntity E WHERE E.idTipologia = (SELECT T.id FROM TipologiaEntity T WHERE T.nombre = 'Dependencia' )")
-   //@Query(value = "SELECT estructura.* FROM fortalecimiento.estructura WHERE tipo_id = (SELECT tipo_id FROM fortalecimiento.tipologia WHERE tipo_nombre = 'Dependencia')", nativeQuery = true)
-    List<EstructuraEntity> findAllDependencies();
+    @Query(value = "SELECT "
+            + "estr_id id, "
+            + "estr_nombre nombre, "
+            + "estr_descripcion descripcion, "
+            + "estr_idpadre idPadre, "
+            + "estr_registradopor registradoPor, "
+            + "estr_fechacambio fechaCambio, "
+            + "e.tipo_id idTipo, "
+            + "estr_icono icono, "
+            + "estr_mimetype mimeType, "
+            + "estr_orden orden "
+            + "FROM fortalecimiento.estructura e "
+            + "LEFT JOIN fortalecimiento.tipologia t ON (e.tipo_id = t.tipo_id) "
+            + "WHERE t.tipo_esdependencia = '1'", nativeQuery = true)
+    List<DependenciaDTO> findAllDependencies();
 }

@@ -1,5 +1,8 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto;
 
+import lombok.Data;
+
+@Data
 public class ActividadOutDTO {
     private String nombre;
     private String nivel;
@@ -26,75 +29,4 @@ public class ActividadOutDTO {
         this.tiempoTotalTarea = tiempoTotalTarea;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getNivel() {
-        return nivel;
-    }
-
-    public void setNivel(String nivel) {
-        this.nivel = nivel;
-    }
-
-    public String getExtrae() {
-        return extrae;
-    }
-
-    public void setExtrae(String extrae) {
-        this.extrae = extrae;
-    }
-
-    public Double getFrecuencia() {
-        return frecuencia;
-    }
-
-    public void setFrecuencia(Double frecuencia) {
-        this.frecuencia = frecuencia;
-    }
-
-    public Double getTiempoMaximo() {
-        return tiempoMaximo;
-    }
-
-    public void setTiempoMaximo(Double tiempoMaximo) {
-        this.tiempoMaximo = tiempoMaximo;
-    }
-
-    public Double getTiempoMinimo() {
-        return tiempoMinimo;
-    }
-
-    public void setTiempoMinimo(Double tiempoMinimo) {
-        this.tiempoMinimo = tiempoMinimo;
-    }
-
-    public Double getTiempoUsual() {
-        return tiempoUsual;
-    }
-
-    public void setTiempoUsual(Double tiempoUsual) {
-        this.tiempoUsual = tiempoUsual;
-    }
-
-    public Double getTiempoEstandar() {
-        return tiempoEstandar;
-    }
-
-    public void setTiempoEstandar(Double tiempoEstandar) {
-        this.tiempoEstandar = tiempoEstandar;
-    }
-
-    public Double getTiempoTotalTarea() {
-        return tiempoTotalTarea;
-    }
-
-    public void setTiempoTotalTarea(Double tiempoTotalTarea) {
-        this.tiempoTotalTarea = tiempoTotalTarea;
-    }
 }

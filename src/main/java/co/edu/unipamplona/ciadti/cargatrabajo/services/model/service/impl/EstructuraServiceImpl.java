@@ -1,11 +1,11 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
-import java.io.File;
 import java.util.*;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ActividadOutDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.ActividadDTO;
-import net.sf.jasperreports.engine.util.JRStyledText;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.DependenciaDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +28,7 @@ public class EstructuraServiceImpl implements EstructuraService {
 
     private final EstructuraDAO estructuraDAO;
     private final NivelService nivelService;
+    private final TipologiaService tipologiaService;
 
     @Override
     @Transactional(readOnly = true)
@@ -155,6 +156,7 @@ public class EstructuraServiceImpl implements EstructuraService {
     /**
      * Método que para consultar la información de las actividades por nivel de ocupación
      * para una dependencia
+     *
      * @param entity, objeto con el identificador único de la dependencia
      * @return list, objeto con información para la dependencia consultada
      */
@@ -167,6 +169,7 @@ public class EstructuraServiceImpl implements EstructuraService {
 
     /**
      * Método para construir estadísticas basadas en lista de actividades para una dependencia
+     *
      * @param actividades, lista de actidades registradas para una dependencia
      * @return estadistica, objeto con la infomacion procesada
      */
@@ -197,7 +200,6 @@ public class EstructuraServiceImpl implements EstructuraService {
                 actividadOutDTO.setTiempoTotalTarea(actividadOutDTO.getTiempoTotalTarea() + tiempoTarea);
             }
         }
-
         return estadistica;
     }
 
@@ -246,10 +248,7 @@ public class EstructuraServiceImpl implements EstructuraService {
 
     @Override
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
-    public List<EstructuraEntity> findAllDependencies() {
-        List<EstructuraEntity> results = estructuraDAO.findAllDependencies();
-        results = this.filter(results);
-        this.orderStructures(results);
-        return results;
+    public List<DependenciaDTO> findAllDependencies() {
+        return estructuraDAO.findAllDependencies();
     }
 }
