@@ -1,19 +1,11 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import lombok.NoArgsConstructor;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;

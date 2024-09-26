@@ -1,18 +1,12 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
@@ -24,6 +18,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEnt
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.StaticResourceMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
@@ -37,21 +32,23 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 @RequiredArgsConstructor
 @Service
 public class StructureReportPDF {
-
     private final EstructuraService estructuraService;
     private final TipologiaService tipologiaService;
     private final ReportJR reportJR;
     private final NivelService nivelService;
-    private final ResourceLoader resourceLoader;
+    private final StaticResourceMediator staticResourceMediator;
 
     private Map<String, Object> registry;
     private Double HOURS_PER_MONTH;
+    private String LOGO_URL = "reports/images/logo.png";
 
     public byte[] generate(List<Long> structureIds) throws JRException, CiadtiException{
         registry = new HashMap<>();
         HOURS_PER_MONTH = 151.3;
 
-        byte[] logo = getImageBytes();
+
+
+        byte[] logo = staticResourceMediator.getResourceBytes(this.LOGO_URL);
         String filePath = "reports/structures/Structures.jrxml";
         String filePathChart = "reports/structures/Charts.jrxml";
         String filePathBlobalChart = "reports/structures/GlobalCharts.jrxml";
@@ -94,7 +91,6 @@ public class StructureReportPDF {
         parameters.put("chartParameter", chartParameters);
         parameters.put("logo", new ByteArrayInputStream(logo));
         parameters.put("hoursPerMonth", HOURS_PER_MONTH);
-        parameters.put("logo", new ByteArrayInputStream(getImageBytes()));
         parameters.put("entity", "Universidad Distrital Francisco José de Caldas".toUpperCase());
         parameters.put("levels", levels.stream().map(e -> getLevelNomenclature(e.getDescripcion())).toList());
 
@@ -172,19 +168,6 @@ public class StructureReportPDF {
             }
         }
         return list;
-    }
-
-    private byte[] getImageBytes(){
-        Resource resource = resourceLoader.getResource("classpath:reports/images/logo.png");
-        InputStream inputStream;
-        try {
-            inputStream = resource.getInputStream();
-            return IOUtils.toByteArray(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Trace.logError(this.getClass().getName(), Methods.getCurrentMethodName(this.getClass()), e);
-        }
-        return null;
     }
 
     private String getInformation(EstructuraEntity structure){

@@ -93,7 +93,7 @@ public class Methods {
 
     public static ResponseEntity<?> handleRapException(CiadtiException e) {
         if (404 == e.getCode()) {
-            return new ResponseEntity(new HashMap(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new HashMap(), HttpStatus.NOT_FOUND);
         } else {
             Map<String, Object> responseError = new HashMap();
             responseError.put("isException", true);
@@ -107,7 +107,7 @@ public class Methods {
         Map<String, String> responseError = new HashMap();
         responseError.put("error", error);
         responseError.put("message", message.concat(" O servicio temporalmente no disponible."));
-        return new ResponseEntity(responseError, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(responseError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
    
@@ -330,7 +330,7 @@ public class Methods {
     }
 
 
-    public static ResponseEntity getResponseAccordingToId(Long id, Object objeto){
+    public static ResponseEntity<?> getResponseAccordingToId(Long id, Object objeto){
         if (id == null) {
             if (((List<?>) objeto).isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);

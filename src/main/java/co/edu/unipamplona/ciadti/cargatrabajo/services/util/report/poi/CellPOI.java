@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CellPOI {
     private Object value;
+    private Object subValue;
     private List<CellPOI> children;
     private Style style;
     private int columnIndex;

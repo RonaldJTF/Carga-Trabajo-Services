@@ -2,8 +2,10 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -79,6 +81,27 @@ public class ActividadEntity implements Serializable{
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;
+
+    @Transient
+    private List<Double> timePerLevel;
+
+    @Transient
+    private Double tiempoEstandar;
+
+    @JsonGetter("tiempoMinimoEnHoras")
+    public Double getTiempoMinimoEnHoras(){
+        return (double) Math.round((tiempoMinimo / 60.0)*100)/100;
+    }
+
+    @JsonGetter("tiempoMaximoEnHoras")
+    public Double getTiempoMaximoEnHoras(){
+        return (double) Math.round((tiempoMaximo / 60.0)*100)/100;
+    }
+
+    @JsonGetter("tiempoPromedioEnHoras")
+    public Double getTiempoPromedioEnHoras(){
+        return (double) Math.round((tiempoPromedio / 60.0)*100)/100;
+    }
 
     @PrePersist
     void onCreate() {

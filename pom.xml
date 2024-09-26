@@ -19,6 +19,7 @@
 		<spring-cloud.version>2022.0.1</spring-cloud.version>
 		<spring-boot-admin.version>3.0.3</spring-boot-admin.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -86,6 +87,14 @@
 		</dependency>
 		<!-- End -->
 
+		<!--JXLS-POI-->
+		<dependency>
+			<groupId>org.jxls</groupId>
+			<artifactId>jxls-poi</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		<!--End-->
+		
 		<!-- GSON -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

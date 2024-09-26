@@ -10,34 +10,38 @@ import java.util.Map;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.streaming.SXSSFCell;
-import org.apache.poi.xssf.streaming.SXSSFDrawing;
-import org.apache.poi.xssf.streaming.SXSSFRow;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
+import org.apache.poi.xssf.usermodel.XSSFDrawing;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 
 public class ReportPOI {
-    SXSSFWorkbook workbook;
-    SXSSFSheet sheet;
+    XSSFWorkbook workbook;
+    XSSFSheet sheet;
     private List<CellPOI> items = new ArrayList<>();
     private BlockPOI titleBlock;
     private boolean showInColumn;
     private Map<String, List<CellPOI>> styleRegistry_ = new HashMap<>();
     private Map<Style, XSSFCellStyle> cellStyles_ = new HashMap();
+    private XSSFFont _subFont;
 
     public ReportPOI (){
-        workbook = new SXSSFWorkbook(1);
+        workbook = new XSSFWorkbook();
         createSheet("Default page");
     }
 
     public ReportPOI (String sheetName){
-        workbook = new SXSSFWorkbook(1);
+        workbook = new XSSFWorkbook();
         createSheet(sheetName);
     }
 
@@ -92,6 +96,7 @@ public class ReportPOI {
     private void reset(){
         items = new ArrayList<>();
         styleRegistry_ = new HashMap<>();
+        System.out.println(cellStyles_.size());
         this.cellStyles_ = new HashMap();
     }
 
@@ -308,6 +313,11 @@ public class ReportPOI {
      */
     private void assignValues(){
         Collections.sort(items, Comparator.comparingInt(CellPOI::getRowIndex));
+        this._subFont = workbook.createFont();;
+        this._subFont.setColor(IndexedColors.GREY_40_PERCENT.getIndex()); 
+        this._subFont.setBold(false);
+        this._subFont.setItalic(true);
+
         for (CellPOI cell : items){
             int col1 = cell.getColumnIndex();
             int col2 = cell.getColumnIndex() + cell.getUsedColumns() - 1;
@@ -333,13 +343,14 @@ public class ReportPOI {
                 |           | Item 2.2  |Item 2.2.1 |
                 |-----------|-----------|-----------|
             */
+            CellRangeAddress region = null;
             if (!cell.isNoExtend_()){
-                mergedCells( row1, row2, col1, col2);
+                region = mergedCells( row1, row2, col1, col2);
             }else{
                 if (cell.isShowInColumn_()){
-                    mergedCells( row1, row2, col1, col1);
+                    region = mergedCells( row1, row2, col1, col1);
                 }else{
-                    mergedCells( row1, row1, col1, col2);
+                    region = mergedCells( row1, row1, col1, col2);
                 }
             }
 
@@ -376,10 +387,10 @@ public class ReportPOI {
             if (cell.getValue() == null){
                 insertValueToCell(cell.getRowIndex(), cell.getColumnIndex(), "");
             }else if (cell.getValue() instanceof String ){
-                insertValueToCell(cell.getRowIndex(), cell.getColumnIndex(), (String)cell.getValue());
+                insertValueToCell(cell.getRowIndex(), cell.getColumnIndex(), (String)cell.getValue(), (String)cell.getSubValue(), region);
             }else if (cell.getValue()  instanceof byte[]) {
                 int inputImage = workbook.addPicture((byte[])cell.getValue() , Workbook.PICTURE_TYPE_PNG);
-                SXSSFDrawing  drawing = (SXSSFDrawing) sheet.createDrawingPatriarch();
+                XSSFDrawing  drawing = (XSSFDrawing) sheet.createDrawingPatriarch();
                 XSSFClientAnchor imageAnchor = new XSSFClientAnchor();
 
                 CellRangeAddress mergedRegion = new CellRangeAddress(cell.getRowIndex(), 
@@ -394,7 +405,11 @@ public class ReportPOI {
                 imageAnchor.setRow2(mergedRegion.getLastRow() + 1);
                 drawing.createPicture(imageAnchor, inputImage);
             }else{
-                insertValueToCell(cell.getRowIndex(), cell.getColumnIndex(), cell.getValue().toString());
+                if (cell.getSubValue() != null){
+                    insertValueToCell(cell.getRowIndex(), cell.getColumnIndex(), cell.getValue().toString(), cell.getSubValue().toString(), region);
+                }else{
+                    insertValueToCell(cell.getRowIndex(), cell.getColumnIndex(), cell.getValue().toString());
+                }
             }
         }
     }
@@ -407,19 +422,27 @@ public class ReportPOI {
      */
     private void insertStyle(int rowIdx, int colIdx, Style style) {
         if (style != null){
-            SXSSFRow row = getOrCreateRow(rowIdx);
-		    SXSSFCell cell = getOrCreateCell(row, colIdx);
-            //style.setCellStyle(workbook, sheet, cell, rowIdx, colIdx);
-            style.setColIdx_(colIdx);
-            style.setRowIdx_(rowIdx);
+            XSSFRow row = getOrCreateRow(rowIdx);
+		    XSSFCell cell = getOrCreateCell(row, colIdx);
+           
             XSSFCellStyle xSSFCellStyle = (XSSFCellStyle)this.cellStyles_.get(style);
             if (xSSFCellStyle == null) {
+                style.setColIdx_(colIdx);
+                style.setRowIdx_(rowIdx);
                 xSSFCellStyle = style.catchCellStyle(this.workbook, this.sheet);
                 this.cellStyles_.put(style, xSSFCellStyle);
+            }else{
+                if(style.getWidth() > 0){
+                    this.sheet.setColumnWidth(colIdx, style.getWidth() * 256);
+                }
+                if (style.getHeight() > 0){
+                    row.setHeightInPoints(style.getHeight());
+                }
             }
             cell.setCellStyle(xSSFCellStyle);
         }
     }
+
     
     /**
      * Hereda o inserta los estilos del bloque a los elementos CellPOI, y estos a los elementos hijos en cascada.
@@ -434,27 +457,51 @@ public class ReportPOI {
     }
 
     private void insertValueToCell(int rowIdx, int colIdx, String value) {
-		SXSSFRow row = getOrCreateRow(rowIdx);
-		SXSSFCell cell = getOrCreateCell(row, colIdx);
+		XSSFRow row = getOrCreateRow(rowIdx);
+		XSSFCell cell = getOrCreateCell(row, colIdx);
 		cell.setCellValue(value);
 	}
+
+    private void insertValueToCell(int rowIdx, int colIdx, String text1, String text2, CellRangeAddress region) {
+		XSSFRow row = getOrCreateRow(rowIdx);
+		XSSFCell cell = getOrCreateCell(row, colIdx);
+
+        text1 = text1 != null ? text1 : "";
+        text2 = text2 != null && !text2.isBlank() ? text2 : "";
+
+       
+        //cell.getCellStyle().setWrapText(true);
+
+        XSSFRichTextString richText = new XSSFRichTextString(text1 + (text2.length() > 0 ? "\n" + text2 : " "));
+        richText.applyFont(text1.length(), text1.length() + text2.length() + 1, this._subFont);
+        cell.setCellValue(richText);
+
+        /*int maxCharsPerLine = this.sheet.getColumnWidth(cell.getColumnIndex())/ 230; //256;
+        int numLinesText1 = (int) Math.ceil((double) (text1).length() / maxCharsPerLine);
+        int numLinesText2 = (int) Math.ceil((double) (text2).length() / maxCharsPerLine);
+        int numLines = numLinesText1 + numLinesText2;*/
+        row.setHeight((short)-1);
+    }
 	
-	private void mergedCells(int row1, int row2, int col1, int col2) {
+	private CellRangeAddress mergedCells(int row1, int row2, int col1, int col2) {
+        CellRangeAddress region = null;
         if (col2 - col1 > 0 || row2 - row1 > 0){
-            this.sheet.addMergedRegion(new CellRangeAddress(row1, row2, col1, col2));
+            region = new CellRangeAddress(row1, row2, col1, col2);
+            this.sheet.addMergedRegion(region);
         }
+        return region;
 	}
 
-	private SXSSFCell getOrCreateCell(SXSSFRow row, int colIdx) {
-		SXSSFCell cell = row.getCell(colIdx);
+	private XSSFCell getOrCreateCell(XSSFRow row, int colIdx) {
+		XSSFCell cell = row.getCell(colIdx);
 		if (cell == null) {
 			cell = row.createCell(colIdx);
 		}
 		return cell;
 	}
 
-	private SXSSFRow getOrCreateRow(int rowIdx) {
-		SXSSFRow row = this.sheet.getRow(rowIdx);
+	private XSSFRow getOrCreateRow(int rowIdx) {
+		XSSFRow row = this.sheet.getRow(rowIdx);
 		if (row == null) {
 			row = sheet.createRow(rowIdx);
 		}

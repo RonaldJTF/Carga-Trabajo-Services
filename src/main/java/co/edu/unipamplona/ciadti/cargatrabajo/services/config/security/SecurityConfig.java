@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .requestMatchers("/doc/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/api/structure//report-jxls").permitAll()//Temporarl
                 //.requestMatchers("/api/**").hasAnyRole("ADMIN")
                 .anyRequest().authenticated()
             .and()

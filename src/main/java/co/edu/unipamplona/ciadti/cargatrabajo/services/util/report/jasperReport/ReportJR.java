@@ -3,9 +3,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jasperReport
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
@@ -25,16 +22,12 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 @RequiredArgsConstructor
 @Service
 public class ReportJR {
-    @Autowired
-    private ResourceLoader resourceLoader;
-
     public byte[] converterToPDF(Map<String, Object> parameters, JRBeanCollectionDataSource dataSource, String filePath) throws CiadtiException {
         JasperReport jasperReport;
         JRPdfExporter exporter;
         ByteArrayOutputStream outputStream;
         byte[] fileBytes = null;
         try {
-            Resource resource = resourceLoader.getResource(filePath);
             jasperReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(filePath));
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource == null ? new JREmptyDataSource() : dataSource);
             exporter = new JRPdfExporter();

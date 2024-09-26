@@ -6,6 +6,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -21,8 +24,12 @@ public class StaticResourceMediator {
             inputStream = resource.getInputStream();
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            Trace.logError(this.getClass().getName(), Methods.getCurrentMethodName(this.getClass()), e);
         }
         return null;
+    }
+
+    public Resource getResource(String url){
+        return resourceLoader.getResource("classpath:" + url);
     }
 }

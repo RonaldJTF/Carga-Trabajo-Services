@@ -21,9 +21,7 @@ import org.springframework.stereotype.Service;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EtapaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PlanTrabajoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
@@ -37,6 +35,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.ReportPOI
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.Style;
 import lombok.RequiredArgsConstructor;
 
+@Deprecated
 @RequiredArgsConstructor
 @Service
 public class StructureReportExcel {
@@ -160,10 +159,10 @@ public class StructureReportExcel {
         List<CellPOI> subItemHeads = null;
         for (TipologiaEntity e : typologies){
             int deep = getMaxDeepOfTipology(plainedStructures, e.getId(), 0, 0);
-            if (deep > 0){
-                totalDeep += deep;
+            if (deep > 1){
+                totalDeep += deep - 1;
                 subItemHeads = new ArrayList<>();
-                for (int i = 0; i < deep + 1; i++){
+                for (int i = 0; i < deep; i++){
                     subItemHeads.add(CellPOI.builder().value("").build());
                 }
             }
@@ -198,17 +197,28 @@ public class StructureReportExcel {
         return block;
     }
 
+    /**
+     * Calcula la máxima profundidad en una jerarquía de estructuras que contiene una tipología específica.
+     * @param structures Una lista de objetos {@code EstructuraEntity} que representan las estructuras a recorrer.
+     * @param idTipology El identificador de la tipología que se busca en las estructuras.
+     * @param deep La profundidad actual en la jerarquía de estructuras.
+     * @param max La profundidad máxima encontrada hasta el momento.
+     * @return La máxima profundidad de estructuras que contienen la tipología especificada.
+     */
     private int getMaxDeepOfTipology(List<EstructuraEntity> structures, Long idTipology, int deep, int max) {
-        for (EstructuraEntity e : structures){
-            if(e.getIdTipologia() == idTipology && e.getSubEstructuras() != null && e.getSubEstructuras().stream().anyMatch(obj -> obj.getIdTipologia() == idTipology)){
-                deep += 1;
-            }else{deep = 0;}
-            if (e.getSubEstructuras() != null){
-                max = Math.max(getMaxDeepOfTipology(e.getSubEstructuras(), idTipology, deep, max), deep);
+        for (EstructuraEntity e : structures) {
+            int currentDeep = deep;
+            if (e.getIdTipologia().equals(idTipology)) {
+                currentDeep += 1;
+                max = Math.max(max, currentDeep);
+            }
+            if (e.getSubEstructuras() != null) {
+                max = Math.max(getMaxDeepOfTipology(e.getSubEstructuras(), idTipology, currentDeep, max), max);
             }
         }
         return max;
     }
+    
 
     private BlockPOI buildDependencyReportStructure(List<Long> structureIds, Position position){
         List<CellPOI> items = new ArrayList<>();
@@ -240,7 +250,7 @@ public class StructureReportExcel {
 
     private void addItem (List<CellPOI> items,  List<EstructuraEntity> structures, int deep, int maxDeep){
         for (EstructuraEntity structure : structures){
-            CellPOI cell = CellPOI.builder().value(structure.getNombre()).children(new ArrayList<>()).build();
+            CellPOI cell = CellPOI.builder().style(Style.builder().wrapText(true).build()).value(structure.getNombre()).subValue(structure.getDescripcion()).children(new ArrayList<>()).build();
             items.add(cell);
 
             if(structure.getSubEstructuras() != null && !structure.getSubEstructuras().isEmpty()){

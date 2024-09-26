@@ -3,6 +3,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -52,6 +53,11 @@ public class NivelEntity implements Serializable{
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;
+
+    @JsonGetter("nomenclatura")
+    public String getNomenclatura() {
+        return  descripcion != null && descripcion.length() >= 3 ? descripcion.substring(0, 3) : null;
+    }
 
     @PrePersist
     void onCreate() {

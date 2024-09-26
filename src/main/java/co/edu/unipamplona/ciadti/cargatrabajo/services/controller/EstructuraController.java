@@ -1,11 +1,15 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Arrays;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,6 +31,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraS
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportExcel;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportExcelJXLS;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportPDF;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
@@ -34,7 +39,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import net.sf.jasperreports.engine.JRException;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,6 +58,7 @@ public class EstructuraController {
     private final ConfigurationMediator configurationMediator;
     private final StructureReportExcel structureReportExcel;
     private final StructureReportPDF structureReportPDF;
+    private final StructureReportExcelJXLS structureReportExcelJXLS;
 
     @Operation(
         summary = "Obtener o listar las estructuras (Dependencia, Procesos, Procedimientos, Actividad, etc.)",
@@ -228,7 +233,7 @@ public class EstructuraController {
 
     @GetMapping("/report")
     public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type,
-                                                 @RequestParam(name = "structureIds", required = false) String structureIdsString) throws CiadtiException, JRException{   
+                                                 @RequestParam(name = "structureIds", required = false) String structureIdsString) throws Exception{   
         structureIdsString = structureIdsString.replaceAll("\\[|\\]|\\s", "");
         List<Long> structureIds = new ArrayList<>();
         if (!structureIdsString.isEmpty()) {
@@ -244,7 +249,8 @@ public class EstructuraController {
         if(type == null || "EXCEL".equals(type.toUpperCase())){
             extension = "xlsx";
             mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            fileBytes = structureReportExcel.generate(structureIds);
+            //fileBytes = structureReportExcel.generate(structureIds);
+            fileBytes = structureReportExcelJXLS.generate(structureIds);
         }else if ("PDF".equals(type.toUpperCase())){
             extension = "pdf";
             mediaType = "application/pdf";

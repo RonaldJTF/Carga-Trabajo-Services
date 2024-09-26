@@ -6,11 +6,11 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,7 +48,7 @@ public class Style implements Cloneable{
     private int rowIdx_;
     private int colIdx_;
 
-    public XSSFCellStyle catchCellStyle(SXSSFWorkbook workbook, SXSSFSheet sheet){
+    public XSSFCellStyle catchCellStyle(XSSFWorkbook workbook, XSSFSheet sheet){
         XSSFCellStyle style = (XSSFCellStyle) workbook.createCellStyle();
         XSSFFont font_ = (XSSFFont) workbook.createFont();
         if (backgroundColor != null){
@@ -137,11 +137,11 @@ public class Style implements Cloneable{
         return style;
     }
 
-    private void setWidthSize(SXSSFSheet sheet, int width) {
+    private void setWidthSize(XSSFSheet sheet, int width) {
         sheet.setColumnWidth(colIdx_, width * 256);
     }
 
-    private void setHeightSize(SXSSFSheet sheet, short height) {
+    private void setHeightSize(XSSFSheet sheet, short height) {
         Row row = sheet.getRow(rowIdx_);
         if (row == null)
             row = sheet.createRow(rowIdx_);
