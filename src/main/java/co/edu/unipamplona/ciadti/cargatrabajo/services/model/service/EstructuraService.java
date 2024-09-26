@@ -3,7 +3,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service;
 import java.util.List;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.EstructuraDAO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ActividadOutDTO;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.DependenciaDTO;

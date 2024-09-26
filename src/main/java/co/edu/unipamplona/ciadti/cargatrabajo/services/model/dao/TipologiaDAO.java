@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.InventarioTipologiaDTO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.TipologiaDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;

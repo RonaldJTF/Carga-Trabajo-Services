@@ -1,7 +1,5 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +43,7 @@ public class StructureReportExcelJXLS {
         registry = new HashMap<>();
         HOURS_PER_MONTH = 151.3;
         generateDataset(structureIds);
-        String filePath = "reports/structures/reporte.xlsx";
+        String filePath = "reports/structures/Structures.xlsx";
         Map<String, Object> contextMap = new HashMap<String, Object>();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");

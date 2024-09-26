@@ -2,7 +2,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto;
 
 import java.util.List;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

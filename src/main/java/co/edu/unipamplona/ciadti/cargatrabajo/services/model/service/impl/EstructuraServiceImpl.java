@@ -5,7 +5,6 @@ import java.util.*;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ActividadOutDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.ActividadDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.DependenciaDTO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +27,6 @@ public class EstructuraServiceImpl implements EstructuraService {
 
     private final EstructuraDAO estructuraDAO;
     private final NivelService nivelService;
-    private final TipologiaService tipologiaService;
 
     @Override
     @Transactional(readOnly = true)

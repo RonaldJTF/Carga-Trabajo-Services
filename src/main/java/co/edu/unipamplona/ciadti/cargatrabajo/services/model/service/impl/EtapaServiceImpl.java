@@ -13,7 +13,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.Orde
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.EtapaDAO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EtapaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EtapaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;

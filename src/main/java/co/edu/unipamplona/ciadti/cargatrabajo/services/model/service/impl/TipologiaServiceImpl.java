@@ -3,7 +3,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 import java.util.Collection;
 import java.util.List;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.TipologiaDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

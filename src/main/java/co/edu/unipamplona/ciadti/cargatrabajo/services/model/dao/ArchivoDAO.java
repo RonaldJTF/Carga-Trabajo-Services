@@ -8,9 +8,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ArchivoEntity;
-import lombok.val;
 
 public interface ArchivoDAO extends JpaRepository<ArchivoEntity, Long>, JpaSpecificationExecutor<ArchivoEntity>{
     
