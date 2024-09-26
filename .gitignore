@@ -57,3 +57,4 @@ build/
 *.zip
 
 !**/src/main/resources/**/*.png
+!**/src/main/resources/**/*.xlsx
