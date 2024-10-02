@@ -16,6 +16,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.Seguimiento
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TareaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.WorkplanReportExcel;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.WorkplanReportExcelJXLS;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,6 +53,7 @@ public class WorkplanController {
     private final SeguimientoService seguimientoService;
     private final ConfigurationMediator configurationMediator;
     private final WorkplanReportExcel workplanReportExcel;
+    private final WorkplanReportExcelJXLS workplanReportExcelJXLS;
 
     @Operation(
         summary = "Obtener o listar los planes de trabajo",
@@ -311,7 +313,7 @@ public class WorkplanController {
     @GetMapping("/report")
     public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type,
                                                  @RequestParam(name = "stageIds", required = false) String stageIdsString,
-                                                 @RequestParam(name = "idWorkplan", required = false) Long idWorkplan) throws CiadtiException{         
+                                                 @RequestParam(name = "idWorkplan", required = false) Long idWorkplan) throws Exception{         
         List<Long> stageIds = null;
         if(stageIdsString != null){
             stageIdsString = stageIdsString.replaceAll("\\[|\\]|\\s", "");
@@ -331,7 +333,7 @@ public class WorkplanController {
         if(type == null || "EXCEL".equals(type.toUpperCase())){
             extension = "xlsx";
             mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            fileBytes = workplanReportExcel.generate(stageIds, idWorkplan);
+            fileBytes = workplanReportExcelJXLS.generate(stageIds, idWorkplan);
         }
 
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");

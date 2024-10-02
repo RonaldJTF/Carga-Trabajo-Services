@@ -305,10 +305,10 @@ public class TreeCommand extends AbstractCommand {
         int maxCharsPerLine = this._sheet.getColumnWidth(cell.getColumnIndex())*nCols / 230; //256;
         int numLinesText1 = (int) Math.ceil((double) (text1).length() / maxCharsPerLine);
         int numLinesText2 = (int) Math.ceil((double) (text2).length() / maxCharsPerLine);
-        int numLines = numLinesText1 + numLinesText2;
-        numLines = nRows >= numLines ? 1 : numLines;
+        int totalNumLines  = numLinesText1 + numLinesText2;
+        totalNumLines  = Math.max(nRows, totalNumLines);
         float oldHeight = row.getHeightInPoints();
-        float newHeight = this._defaultHeightInPointToRowOfTree * numLines;
+        float newHeight = this._defaultHeightInPointToRowOfTree * totalNumLines;
         row.setHeightInPoints(Math.max(oldHeight, newHeight));
     }
 }

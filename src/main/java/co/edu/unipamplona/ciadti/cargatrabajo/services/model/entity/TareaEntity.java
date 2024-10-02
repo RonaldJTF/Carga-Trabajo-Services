@@ -94,6 +94,12 @@ public class TareaEntity implements Serializable{
     @Transient
     private Double avance;
 
+    @Transient
+    private List<Boolean> diasReporte;
+
+    @Transient
+    private String observacionGeneral;
+
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;

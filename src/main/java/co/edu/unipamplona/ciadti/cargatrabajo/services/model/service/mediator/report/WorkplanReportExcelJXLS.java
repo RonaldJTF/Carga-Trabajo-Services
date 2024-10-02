@@ -24,6 +24,9 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.jxls.functions.DoubleSummarizerBuilder;
+import org.jxls.functions.GroupSum;
+import org.jxls.transform.poi.JxlsPoiTemplateFillerBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -38,75 +41,57 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PlanTrabajo
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.SeguimientoService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TareaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.StaticResourceMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.BlockPOI;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.CellPOI;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.Position;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.ReportPOI;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.Style;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.EachMergeCommand;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.HeaderCommand;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.ImageCommand;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.MergeCommand;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.StyleCommand;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.summarizer.IntegerSummarizerBuilder;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-@Deprecated
-public class WorkplanReportExcel {
+public class WorkplanReportExcelJXLS {
     private final PlanTrabajoService planTrabajoService;
-    private final EtapaService etapaService;
-    private final TareaService tareaService;
-    private final SeguimientoService seguimientoService;
     private final ConfigurationMediator configurationMediator;
-    private final ResourceLoader resourceLoader;
-
+    private final StaticResourceMediator staticResourceMediator;
     private Map<String, Object> registry;
 
-    private final int[] GRAY = {242, 242, 242};
-    private final int[] GREEN = {238, 245, 208};
-    private final int[] WHITE = {255, 255, 255};
-    private final int[] BLUE = {208, 224, 245};
-    private final int[] AQUA = {233, 255, 253};
-    private final int[] PINK = {245, 212, 208};
-
-    private final int[][] SUBSTAGE_COLORS = {
-        {245, 182, 172}, // Rosa más oscuro
-        {245, 212, 208}, // Rosa medio
-        {245, 245,  245}  // Rosa más claro
-    };
-    
-    private final Boolean[] BORDER_TOP = {true, false, false, false};
-    private final Boolean[] BORDER_RIGHT = {false, true, false, false};
-    private final Boolean[] BORDER_BOTTOM = {false, false, true, false};
-    private final Boolean[] BORDER_LEFT = {false, false, false, true};
-
-    public byte[] generate(List<Long> stageIds, Long idWorkplan) throws CiadtiException{
+    public byte[] generate(List<Long> stageIds, Long idWorkplan) throws Exception{
         registry = new HashMap<>();
 
         generateDataset(stageIds, idWorkplan);
 
-        BlockPOI titleBlock = buildReportTitle(Position.builder().x(1).y(1).build());
-        Map<String, Position> positions;
-        ReportPOI report = new ReportPOI("Reporte");
-        positions = report.addTitle(titleBlock);
-        Position bottomTitlePosition = positions.get("bottom");
-        bottomTitlePosition.setY(bottomTitlePosition.getY() + 3);
-        positions = report.addBlock(buildReportHead(bottomTitlePosition));
-        Position TopRightHeadPosition = positions.get("top-right");
-        TopRightHeadPosition.setY(TopRightHeadPosition.getY() - 1);
-        TopRightHeadPosition.setX(TopRightHeadPosition.getX() - 1);
-        report.addBlock(buildReportDate(TopRightHeadPosition));
-        
+        String filePath = "reports/workplans/Workplans.xlsx";
+        Map<String, Object> contextMap = new HashMap<String, Object>();
 
-        List<EtapaEntity> stages = (List<EtapaEntity>)registry.get("plainedStages");
-        for (EtapaEntity e : stages) {
-            positions = report.addBlock(buildReportStageBody(positions.get("bottom"), e));
-            if (e.getTareas() != null && e.getTareas().size()>0){
-                positions = report.addBlock(buildReportTaskBody(positions.get("bottom"), e));
-            }
-        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        String reportDate = dateFormat.format(new Date());
 
-        positions = report.addBlock(buildReportResume(positions.get("bottom")));
-        report.builtSheetContent();
-        return report.generateBytes();
+        GroupSum<Integer> g = new GroupSum<Integer>(new IntegerSummarizerBuilder());
+        contextMap.put("G", g);
+        contextMap.put("logo", this.staticResourceMediator.getResourceBytes("reports/images/logo.png"));
+        contextMap.put("reportDate", reportDate);
+        contextMap.put("workplan", registry.get("workplan"));
+        contextMap.put("dates", registry.get("dates"));
+        contextMap.put("stages", registry.get("stages"));
+        contextMap.put("totalDays", registry.get("totalDays"));
+        contextMap.put("workplanAdvance", registry.get("workplanAdvance"));
+        Resource resource = this.staticResourceMediator.getResource(filePath);
+
+        byte[] bytes = JxlsPoiTemplateFillerBuilder
+            .newInstance()
+            .withTemplate(resource.getInputStream())
+            .withCommand("merge", MergeCommand.class)
+            .withCommand("image", ImageCommand.class)
+            .withCommand("style", StyleCommand.class)
+            .withCommand("eachMerge", EachMergeCommand.class)
+            .withCommand("header", HeaderCommand.class)
+            .needsPublicContext(g)
+            .buildAndFill(contextMap);
+        return bytes;
     }
 
     private void generateDataset(List<Long> stageIds, Long idWorkplan) throws CiadtiException{
@@ -121,10 +106,10 @@ public class WorkplanReportExcel {
         }
         orderByStartDate(stages);
 
-        Double advance = 0.0;
+        Double workplanAdvance = 0.0;
         List<EtapaEntity> plainedStages = new ArrayList<>();
         if (stages != null && stages.size() > 0){
-            advance = stages.stream()
+            workplanAdvance = stages.stream()
                             .map(EtapaEntity::getAvance)
                             .filter(avance -> avance != null)
                             .mapToDouble(Double::doubleValue)
@@ -134,97 +119,41 @@ public class WorkplanReportExcel {
         }
         registry.put("plainedStages", plainedStages);
         registry.put("workplan", workplan);
-        registry.put("advance", advance);
+        registry.put("workplanAdvance", workplanAdvance);
+        registry.put("dates", buildReportHead());
+        registry.put("stages", buildReportTaskBody());
     }
 
-    private BlockPOI buildReportTitle(Position position) throws CiadtiException{
-        PlanTrabajoEntity workplan = (PlanTrabajoEntity) registry.get("workplan");
-        String description = workplan.getDescripcion() != null && !workplan.getDescripcion().isEmpty() ? workplan.getDescripcion() : "Plan de trabajo";
-        return BlockPOI.builder()
-            .position(position)
-            .style(Style.builder().backgroundColorRGB(GRAY).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.CENTER).verticalAlignment(VerticalAlignment.CENTER).build())
-            .items(List.of(
-                    CellPOI.builder().value(getImageBytes()).style(Style.builder().width(20).borderStyle(BorderStyle.MEDIUM).build()).build(),
-                    CellPOI.builder().value(workplan.getNombre()).style(Style.builder().font("Arial Black").fontSize(14).borderStyle(BorderStyle.MEDIUM).borders(new Boolean[]{true, true, false, false}).verticalAlignment(VerticalAlignment.BOTTOM).height((short)30).build())
-                        .children(CellPOI.createSiblings(List.of(
-                            CellPOI.builder().value(description).style(Style.builder().fontSize(10).borders(new Boolean[]{false, true, true, false}).verticalAlignment(VerticalAlignment.TOP).height((short)30).build()).build()))).build())
-            ).build();
-    }
-
-    private byte[] getImageBytes(){
-        Resource resource = resourceLoader.getResource("classpath:reports/images/logo.png");
-        InputStream inputStream;
-        try {
-            inputStream = resource.getInputStream();
-            return IOUtils.toByteArray(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Trace.logError(this.getClass().getName(), Methods.getCurrentMethodName(this.getClass()), e);
-        }
-        return null;
-    }
-
-    private BlockPOI buildReportDate(Position position){    
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        String date = dateFormat.format(new Date());
-        return BlockPOI.builder()
-            .position(position)
-            .style(Style.builder().backgroundColorRGB(GRAY).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER).borderStyle(BorderStyle.THIN).wrapText(true).build())
-            .items(List.of(
-                CellPOI.builder().value("Fecha del reporte").build(),
-                CellPOI.builder().value(date).build()
-            )).build();
-    }
-
-    private BlockPOI buildReportHead(Position position){
-        List<CellPOI> items = new ArrayList<>();
+    private List<?> buildReportHead(){
+        List<YearDTO> years = new ArrayList<>();
         List<EtapaEntity> stages = (List<EtapaEntity>) registry.get("plainedStages");
 
         Date start = catchStartDate(stages);
         Date end = catchEndDate(stages);
-
         LocalDate startDate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate endDate = end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
         List<YearMonth> monthsBetween = getMonthsBetween(startDate, endDate);
         Map<Integer, Map<Month, List<Integer>>> daysByYearAndMonth = getDaysByYearAndMonth(monthsBetween);
-        int[] daysNumber = new int[1];
-        List<CellPOI> yearHeads = new ArrayList<>();
-
+       /*En la posición o almacena los días de cada año de acuerdo con los meses establecidos por las fechas, y en la pocisión 1 se almacenan los días totales de todos los años*/
+        int[] dayNumbers = new int[2]; 
+        
         daysByYearAndMonth.forEach((year, months) -> {
-            List<CellPOI> monthHeads =  new ArrayList<>();
-            yearHeads.add(CellPOI.builder().value(year).children(monthHeads).build());
+            List<YearDTO.Month> meses =  new ArrayList<>();
             months.forEach((month, days) -> {
-                List<CellPOI> dayHeads = new ArrayList<>();
                 String monthName = month.getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
-                monthHeads.add(CellPOI.builder().value(monthName.toUpperCase()).children(dayHeads).build());
-                days.forEach(day -> {
-                    dayHeads.add(CellPOI.builder().value(day).style(Style.builder().width(2).rotation((short)90).bold(false).fontSize(6).build()).build());
-                    daysNumber[0] += 1;
-                });
+                meses.add(YearDTO.Month.builder().value(monthName.toUpperCase()).days(days).build());
+                dayNumbers[0] += days.size();
+                dayNumbers[1] += days.size();
             });
+            years.add(YearDTO.builder().value(year).numberOfDays(dayNumbers[0]).months(meses).build());
         });
-        items.add(CellPOI.builder().value("TAREA").build());
-        items.add(CellPOI.builder().value("RESPONSABLE").build());
-        items.add(CellPOI.builder().value("ENTREGABLE").build());
-        items.add(CellPOI.builder().value("FECHA DE REALIZACIÓN").style(Style.builder().backgroundColorRGB(GREEN).build()).children(yearHeads).build());
-        items.add(CellPOI.builder().value("OBSERVACIÓN").build());
-        items.add(CellPOI.builder().value("AVANCE").style(Style.builder().width(20).build()).build());
-
+       
         registry.put("daysByYearAndMonth", daysByYearAndMonth);
-        registry.put("daysNumber", daysNumber[0]);
-
-        BlockPOI block = BlockPOI.builder()
-            .position(position)
-            .items(items)
-            .style(
-                Style.builder().backgroundColorRGB(BLUE).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.CENTER).verticalAlignment(VerticalAlignment.CENTER)
-                    .bold(true).borderStyle(BorderStyle.THIN).wrapText(true).width(40).build())
-            .build();
-        return block;
+        registry.put("totalDays", dayNumbers[1]);
+        return years;
     }
 
-    private BlockPOI buildReportStageBody(Position position, EtapaEntity stage){
+    /*private BlockPOI buildReportStageBody(EtapaEntity stage){
         List<CellPOI> items = new ArrayList<>();
         Integer daysNumber = (Integer) registry.get("daysNumber");
         Double advance = stage.getAvance() != null ? stage.getAvance() : 0.0;
@@ -237,77 +166,62 @@ public class WorkplanReportExcel {
         items.add(CellPOI.builder().aditionalCellsToUse(daysNumber - 1).style(Style.builder().patternType(FillPatternType.THICK_BACKWARD_DIAG).build()).build());
         items.add(CellPOI.builder().style(Style.builder().patternType(FillPatternType.THICK_FORWARD_DIAG).build()).build());  
         items.add(CellPOI.builder().value(advance).style(Style.builder().backgroundColorRGB(advanceColor).build()).build());  
-        return BlockPOI.builder()
-            .position(position)
-            .items(items)
-            .showInColumn(false)
-            .style(Style.builder().backgroundColorRGB(color).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.CENTER).verticalAlignment(VerticalAlignment.CENTER).borderStyle(BorderStyle.THIN).build())
-            .build();
-    }
+        return items;
+    }*/
 
-    private BlockPOI buildReportTaskBody(Position position, EtapaEntity stage){
-        List<CellPOI> items = new ArrayList<>();
+    private List<EtapaEntity> buildReportTaskBody(){
         Map<Integer, Map<Month, List<Integer>>> daysByYearAndMonth  = (Map<Integer, Map<Month, List<Integer>>>) registry.get("daysByYearAndMonth");
+
+        List<EtapaEntity> stages = (List<EtapaEntity>)registry.get("plainedStages");
+        for (EtapaEntity stage: stages) {
+            
+            if (stage.getTareas() != null && stage.getTareas().size()>0){
+                stage.getTareas().forEach(e -> {
+                    /*List<CellPOI> siblings = new ArrayList<>(List.of(
+                        CellPOI.builder().value(e.getResponsable()).build(),
+                        CellPOI.builder().value(e.getEntregable()).build()
+                    ));*/
+                    int[] advanceColor = Methods.getColorFromPercentage(e.getAvance());
+                    LocalDate start = e.getFechaInicio().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalDate end = e.getFechaFin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    int startYear = start.getYear();
+                    int startMonth = start.getMonthValue();
+                    int startDay = start.getDayOfMonth();
+                    int endYear = end.getYear();
+                    int endMonth = end.getMonthValue();
+                    int endDay = end.getDayOfMonth();
         
-        stage.getTareas().forEach(e -> {
-            List<CellPOI> siblings = new ArrayList<>(List.of(
-                CellPOI.builder().value(e.getResponsable()).build(),
-                CellPOI.builder().value(e.getEntregable()).build()
-            ));
-            int[] advanceColor = Methods.getColorFromPercentage(e.getAvance());
-            LocalDate start = e.getFechaInicio().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate end = e.getFechaFin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            int startYear = start.getYear();
-            int startMonth = start.getMonthValue();
-            int startDay = start.getDayOfMonth();
-            int endYear = end.getYear();
-            int endMonth = end.getMonthValue();
-            int endDay = end.getDayOfMonth();
-            for (Map.Entry<Integer, Map<Month, List<Integer>>> yearEntry : daysByYearAndMonth.entrySet()) {
-                int year = yearEntry.getKey();
-                Map<Month, List<Integer>> monthsMap = yearEntry.getValue();
-                for (Map.Entry<Month, List<Integer>> monthEntry : monthsMap.entrySet()) {
-                    Month month = monthEntry.getKey();
-                    List<Integer> daysList = monthEntry.getValue();
-                    boolean draw = false;
-                    for (Integer day : daysList) {
-                        if (year == startYear && month.getValue() == startMonth && day == startDay){
-                            draw = true;
-                        }
-                        siblings.add(
-                            CellPOI.builder().style(
-                                Style.builder()
-                                    .borderStyle(BorderStyle.THIN)
-                                    .borders(new Boolean[]{true, false, true, false})//Top Right Bottom Left
-                                    .backgroundColorRGB(draw ? BLUE : WHITE)
-                                    .patternType(draw ? FillPatternType.SOLID_FOREGROUND : FillPatternType.NO_FILL).build()).build());
-                        if (year == endYear && month.getValue() == endMonth && day == endDay){
-                            draw = false;
+                    e.setDiasReporte(new ArrayList<>());
+                    
+                    for (Map.Entry<Integer, Map<Month, List<Integer>>> yearEntry : daysByYearAndMonth.entrySet()) {
+                        int year = yearEntry.getKey();
+                        Map<Month, List<Integer>> monthsMap = yearEntry.getValue();
+                        for (Map.Entry<Month, List<Integer>> monthEntry : monthsMap.entrySet()) {
+                            Month month = monthEntry.getKey();
+                            List<Integer> daysList = monthEntry.getValue();
+                            boolean included = false;
+                            for (Integer day : daysList) {
+                                if (year == startYear && month.getValue() == startMonth && day == startDay){
+                                    included = true;
+                                }
+                                if (year == endYear && month.getValue() == endMonth && day == endDay){
+                                    included = false;
+                                }
+                                e.getDiasReporte().add(included);
+                            }
                         }
                     }
-                }
+                    SeguimientoEntity lastFollowUp = getLastFollowUp(e.getSeguimientos());
+                    String observation = lastFollowUp != null ? lastFollowUp.getObservacion() : null;   
+                    e.setObservacionGeneral(observation);
+                });        
             }
-            SeguimientoEntity lastFollowUp = getLastFollowUp(e.getSeguimientos());
-            String observation = lastFollowUp != null ? lastFollowUp.getObservacion() : null;   
-            siblings.add(CellPOI.builder().value(observation).style(Style.builder().patternType(FillPatternType.NO_FILL).borderStyle(BorderStyle.THIN).borders(new Boolean[]{true, true, true, true}).build()).build());  
-            siblings.add(CellPOI.builder().value(e.getAvance()).style(Style.builder().patternType(FillPatternType.SOLID_FOREGROUND).backgroundColorRGB(advanceColor).borderStyle(BorderStyle.THIN).horizontalAlignment(HorizontalAlignment.CENTER).build()).build());  
-            items.add(
-                CellPOI.builder()
-                .value(e.getNombre())
-                .children(CellPOI.createSiblings(siblings))
-                .build());
-        });
+        }       
         
-        return BlockPOI.builder()
-            .position(position)
-            .items(items)
-            .showInColumn(true)
-            .style(Style.builder().backgroundColorRGB(WHITE).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.LEFT).verticalAlignment(VerticalAlignment.CENTER)
-                .borderStyle(BorderStyle.THIN).build())
-            .build();
+        return stages;
     }
 
-    private BlockPOI buildReportResume(Position position){
+    /*private BlockPOI buildReportResume(Position position){
         List<CellPOI> items = new ArrayList<>();
         Integer daysNumber = (Integer) registry.get("daysNumber");
         Double workplanAdvance = (Double) registry.get("advance");
@@ -323,8 +237,8 @@ public class WorkplanReportExcel {
             .showInColumn(false)
             .style(Style.builder().backgroundColorRGB(BLUE).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.CENTER).verticalAlignment(VerticalAlignment.CENTER).borderStyle(BorderStyle.THIN).bold(true).build())
             .build();
-    }
-    
+    }*/
+
     private void plainByStage(List<EtapaEntity> stages, List<EtapaEntity> plainedStages, Integer levelSubstage){
         if (stages != null){
             for (EtapaEntity e : stages) {

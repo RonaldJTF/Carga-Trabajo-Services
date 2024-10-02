@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -21,9 +22,9 @@ import org.jxls.transform.poi.PoiTransformer;
 public class StyleCommand extends AbstractCommand{
     private Area area;
 
-    private int width;
-    private short height;
-    private int[] backgroundColorRGB;
+    private String width;
+    private String height;
+    private String backgroundColorRGB;
     private Boolean[] borders;
     private BorderStyle borderStyle;
     private int[] borderColorRGB;
@@ -49,16 +50,18 @@ public class StyleCommand extends AbstractCommand{
         PoiTransformer transformer = (PoiTransformer) area.getTransformer();
         XSSFWorkbook workbook = (XSSFWorkbook) transformer.getWorkbook();
         XSSFSheet sheet = workbook.getSheet(cellRef.getSheetName());
-        
-        for (int i = cellRef.getCol(); i < cellRef.getCol() + resultSize.getWidth(); i++){
-            XSSFCell cell = sheet.getRow(cellRef.getRow()).getCell(i);
-            XSSFCellStyle style = getStyle(workbook, cell);
-            applyStyle(sheet, cell, style);
+        XSSFRow row = sheet.getRow(cellRef.getRow());
+        int w = 0;
+        for (int i = cellRef.getCol(); i < cellRef.getCol() + resultSize.getWidth(); i=i+1+w){
+            XSSFCell cell = row.getCell(i);
+            XSSFCellStyle style = getStyle(workbook, cell, context);
+            CellRangeAddress region = applyStyle(sheet, cell, style);
+            w = region != null ? region.getLastColumn() - region.getFirstColumn() : 0;
         }
         return resultSize;
     }
 
-    private XSSFCellStyle getStyle(XSSFWorkbook workbook, XSSFCell cell){
+    private XSSFCellStyle getStyle(XSSFWorkbook workbook, XSSFCell cell, Context context){
         XSSFCellStyle currentStyle = cell.getCellStyle();
         XSSFCellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(currentStyle);
@@ -66,8 +69,14 @@ public class StyleCommand extends AbstractCommand{
         XSSFFont font_ = (XSSFFont) style.getFont();
         
         if(backgroundColorRGB != null){
-            XSSFColor customColor = new XSSFColor(new byte[]{(byte)backgroundColorRGB[0], (byte)backgroundColorRGB[1], (byte)backgroundColorRGB[2]}, null);
-            style.setFillForegroundColor(customColor);
+            int[] bg = this.formatToRGB(this.getVal(backgroundColorRGB, context));
+            XSSFColor customColor = new XSSFColor(new byte[]{(byte)bg[0], (byte)bg[1], (byte)bg[2]}, null);
+            if(style.getFillPattern().equals(FillPatternType.NO_FILL) || style.getFillPattern().equals(FillPatternType.SOLID_FOREGROUND)){
+                style.setFillForegroundColor(customColor);
+                style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            }else{
+                style.setFillBackgroundColor(customColor);
+            }
         }
         if(borderStyle != null){
             style.setBorderTop(borderStyle);
@@ -93,22 +102,26 @@ public class StyleCommand extends AbstractCommand{
         return style;
     }
 
-    private void applyStyle(XSSFSheet sheet, XSSFCell cell, XSSFCellStyle style) {
+    private CellRangeAddress applyStyle(XSSFSheet sheet, XSSFCell cell, XSSFCellStyle style) {
         cell.setCellStyle(style);
         int cellRowIndex = cell.getRowIndex();
         int cellColIndex = cell.getColumnIndex();
+        CellRangeAddress foundRegion = null;
         for (int i = 0; i < sheet.getNumMergedRegions(); i++) {
             CellRangeAddress mergedRegion = sheet.getMergedRegion(i);
             if (mergedRegion.isInRange(cellRowIndex, cellColIndex)) {
                 applyStyleToMergedRegion(sheet, mergedRegion, style);
+                foundRegion = mergedRegion;
+                break;
             }
         }
-        if(width > 0){
-            setWidthSize(sheet, cellColIndex, width);
+        if(width != null){
+            setWidthSize(sheet, cellColIndex, Integer.parseInt(width));
         }
-        if(height > 0){
-            setHeightSize(sheet, cellRowIndex, height);
+        if(height != null){
+            setHeightSize(sheet, cellRowIndex, Short.parseShort(height));
         }
+        return foundRegion;
     }
 
     private void applyStyleToMergedRegion(XSSFSheet sheet, CellRangeAddress region, XSSFCellStyle style) {
@@ -120,7 +133,6 @@ public class StyleCommand extends AbstractCommand{
         for (int rowNum = firstRow; rowNum <= lastRow; rowNum++) {
             XSSFRow row = sheet.getRow(rowNum);
             if (row == null) continue;
-
             for (int colNum = firstCol; colNum <= lastCol; colNum++) {
                 XSSFCell cell = row.getCell(colNum);
                 if (cell == null) {
@@ -164,12 +176,38 @@ public class StyleCommand extends AbstractCommand{
         }
     }
 
+    public void setHeight(String height) {
+        this.height = height;
+    }
+
+    public void setWidth(String width) {
+        this.width = width;
+    }
+
     public void setBackgroundColorRGB(String backgroundColorRGB){
-        backgroundColorRGB = backgroundColorRGB.replace("{", "").replace("}", "");
-        String[] stringArray = backgroundColorRGB.split(",\\s*");
-        this.backgroundColorRGB = new int[3];
-        for (int i = 0; i < stringArray.length; i++) {
-            this.backgroundColorRGB[i] = Integer.parseInt(stringArray[i]);
+        this.backgroundColorRGB = backgroundColorRGB;
+    }
+
+    private String getVal(String expression, Context context) {
+        if (expression != null && expression.trim().length() > 0) {
+            Object obj = context.evaluate(expression);
+            if(obj != null && obj.toString().matches("^[\\{\\[]?\\d+,\\d+,\\d+[\\}\\]]?$")){
+                return obj.toString();
+            }else{
+                return expression;
+            }
         }
+        return "";
+    }
+
+
+    private int[] formatToRGB(String val){
+        String str = val.replace("{", "").replace("}", "");
+        String[] stringArray = str.split(",\\s*");
+        int[] bg = new int[3];
+        for (int i = 0; i < stringArray.length; i++) {
+            bg[i] = Integer.parseInt(stringArray[i]);
+        }
+        return bg;
     }
 }
