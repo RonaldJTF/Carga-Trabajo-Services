@@ -9,6 +9,7 @@ import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -153,22 +154,6 @@ public class WorkplanReportExcelJXLS {
         return years;
     }
 
-    /*private BlockPOI buildReportStageBody(EtapaEntity stage){
-        List<CellPOI> items = new ArrayList<>();
-        Integer daysNumber = (Integer) registry.get("daysNumber");
-        Double advance = stage.getAvance() != null ? stage.getAvance() : 0.0;
-        int[] advanceColor = Methods.getColorFromPercentage(advance);
-        int[] color = GRAY;
-        if (SUBSTAGE_COLORS.length > stage.getLevel()){
-            color = SUBSTAGE_COLORS[stage.getLevel()];
-        }
-        items.add(CellPOI.builder().value(stage.getNombre()).aditionalCellsToUse(2).build());        
-        items.add(CellPOI.builder().aditionalCellsToUse(daysNumber - 1).style(Style.builder().patternType(FillPatternType.THICK_BACKWARD_DIAG).build()).build());
-        items.add(CellPOI.builder().style(Style.builder().patternType(FillPatternType.THICK_FORWARD_DIAG).build()).build());  
-        items.add(CellPOI.builder().value(advance).style(Style.builder().backgroundColorRGB(advanceColor).build()).build());  
-        return items;
-    }*/
-
     private List<EtapaEntity> buildReportTaskBody(){
         Map<Integer, Map<Month, List<Integer>>> daysByYearAndMonth  = (Map<Integer, Map<Month, List<Integer>>>) registry.get("daysByYearAndMonth");
 
@@ -177,11 +162,6 @@ public class WorkplanReportExcelJXLS {
             
             if (stage.getTareas() != null && stage.getTareas().size()>0){
                 stage.getTareas().forEach(e -> {
-                    /*List<CellPOI> siblings = new ArrayList<>(List.of(
-                        CellPOI.builder().value(e.getResponsable()).build(),
-                        CellPOI.builder().value(e.getEntregable()).build()
-                    ));*/
-                    int[] advanceColor = Methods.getColorFromPercentage(e.getAvance());
                     LocalDate start = e.getFechaInicio().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     LocalDate end = e.getFechaFin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     int startYear = start.getYear();
@@ -192,22 +172,21 @@ public class WorkplanReportExcelJXLS {
                     int endDay = end.getDayOfMonth();
         
                     e.setDiasReporte(new ArrayList<>());
-                    
+                    boolean included = false;
                     for (Map.Entry<Integer, Map<Month, List<Integer>>> yearEntry : daysByYearAndMonth.entrySet()) {
                         int year = yearEntry.getKey();
                         Map<Month, List<Integer>> monthsMap = yearEntry.getValue();
                         for (Map.Entry<Month, List<Integer>> monthEntry : monthsMap.entrySet()) {
                             Month month = monthEntry.getKey();
                             List<Integer> daysList = monthEntry.getValue();
-                            boolean included = false;
                             for (Integer day : daysList) {
                                 if (year == startYear && month.getValue() == startMonth && day == startDay){
                                     included = true;
                                 }
+                                e.getDiasReporte().add(included);
                                 if (year == endYear && month.getValue() == endMonth && day == endDay){
                                     included = false;
                                 }
-                                e.getDiasReporte().add(included);
                             }
                         }
                     }
@@ -220,24 +199,6 @@ public class WorkplanReportExcelJXLS {
         
         return stages;
     }
-
-    /*private BlockPOI buildReportResume(Position position){
-        List<CellPOI> items = new ArrayList<>();
-        Integer daysNumber = (Integer) registry.get("daysNumber");
-        Double workplanAdvance = (Double) registry.get("advance");
-        int[] advanceColor = Methods.getColorFromPercentage(workplanAdvance);
-        
-        items.add(CellPOI.builder().value("PORCENTAJE DE AVANCE GLOBAL").aditionalCellsToUse(2).style(Style.builder().horizontalAlignment(HorizontalAlignment.LEFT).build()).build());        
-        items.add(CellPOI.builder().aditionalCellsToUse(daysNumber - 1).style(Style.builder().patternType(FillPatternType.THICK_BACKWARD_DIAG).build()).build());
-        items.add(CellPOI.builder().style(Style.builder().patternType(FillPatternType.THICK_FORWARD_DIAG).build()).build());  
-        items.add(CellPOI.builder().value(workplanAdvance).style(Style.builder().backgroundColorRGB(advanceColor).build()).build());  
-        return BlockPOI.builder()
-            .position(position)
-            .items(items)
-            .showInColumn(false)
-            .style(Style.builder().backgroundColorRGB(BLUE).patternType(FillPatternType.SOLID_FOREGROUND).horizontalAlignment(HorizontalAlignment.CENTER).verticalAlignment(VerticalAlignment.CENTER).borderStyle(BorderStyle.THIN).bold(true).build())
-            .build();
-    }*/
 
     private void plainByStage(List<EtapaEntity> stages, List<EtapaEntity> plainedStages, Integer levelSubstage){
         if (stages != null){
