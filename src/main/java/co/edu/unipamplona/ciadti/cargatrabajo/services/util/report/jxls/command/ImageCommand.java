@@ -216,7 +216,7 @@ public class ImageCommand extends AbstractCommand {
             anchor.setRow2(areaRef.getLastCellRef().getRow());
         }
         Picture picture = drawing.createPicture(anchor, imageIdx);
-        if (resize) {
+        if (resize && scaleX != null && scaleY != null) {
             picture.resize(scaleX.doubleValue(), scaleY.doubleValue());
         }
     }

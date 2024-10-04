@@ -82,6 +82,7 @@ public class ParameterConverter {
         return instanceClass;
     }
 
+    @SuppressWarnings("unchecked")
     private void addNestedParam(Map<String, Object> map, String[] keys, String value) {
         Map<String, Object> currentMap = map;
         for (int i = 0; i < keys.length - 1; i++) {
