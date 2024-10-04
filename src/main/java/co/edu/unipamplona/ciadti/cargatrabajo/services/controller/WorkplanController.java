@@ -308,6 +308,7 @@ public class WorkplanController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @SuppressWarnings("null")
     @GetMapping("/report")
     public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type,
                                                  @RequestParam(name = "stageIds", required = false) String stageIdsString,

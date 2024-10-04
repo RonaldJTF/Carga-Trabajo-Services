@@ -27,7 +27,9 @@ public class TenantFilter  extends OncePerRequestFilter {
      * permite luego definir la instancia con tenant por default.
     * */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@SuppressWarnings("null") HttpServletRequest request, 
+                                    @SuppressWarnings("null") HttpServletResponse response, 
+                                    @SuppressWarnings("null") FilterChain filterChain) throws ServletException, IOException {
         String tenantName = request.getHeader(Metadata.X_TENANT_ID);
         if (tenantName == null){
             final String authHeader = request.getHeader(Metadata.AUTHORIZATION);

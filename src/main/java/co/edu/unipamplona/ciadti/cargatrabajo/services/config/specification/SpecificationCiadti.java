@@ -32,7 +32,7 @@ public class SpecificationCiadti<T> implements Specification<T> {
     }
 
     @Override
-    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(@SuppressWarnings("null") Root<T> root, @SuppressWarnings("null") CriteriaQuery<?> query, @SuppressWarnings("null") CriteriaBuilder criteriaBuilder) {
         Predicate predicate = generatePredicate(root, criteriaBuilder, filter.getClass(), filter);
         if (orderBy != null) {
             List<Order> orders = new ArrayList<>();

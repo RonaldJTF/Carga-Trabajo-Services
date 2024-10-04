@@ -4,7 +4,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherServi
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.email.MailService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ChangePasswordDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.RegistradorDTO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportExcel;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +19,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PersonaEntit
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PersonaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.UsuarioService;
-import org.thymeleaf.TemplateEngine;
 
 import java.util.*;
 
@@ -34,9 +32,7 @@ public class AuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
     private final CipherService cipherService;
-    private final TemplateEngine templateEngine;
     private final MailService mailService;
-    private final StructureReportExcel structureReportExcel;
 
     @Value("${mail.urlFront}")
     private String urlFront;
