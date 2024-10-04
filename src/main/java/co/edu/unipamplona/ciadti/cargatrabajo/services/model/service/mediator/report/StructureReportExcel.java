@@ -54,11 +54,6 @@ public class StructureReportExcel {
     private final int[] AQUA = {233, 255, 253};
     private final int[] PINK = {245, 212, 208};
 
-    private final Boolean[] BORDER_TOP = {true, false, false, false};
-    private final Boolean[] BORDER_RIGHT = {false, true, false, false};
-    private final Boolean[] BORDER_BOTTOM = {false, false, true, false};
-    private final Boolean[] BORDER_LEFT = {false, false, false, true};
-
     public byte[] generate(List<Long> structureIds) throws CiadtiException{
         registry = new HashMap<>();
         HOURS_PER_MONTH = 151.3;

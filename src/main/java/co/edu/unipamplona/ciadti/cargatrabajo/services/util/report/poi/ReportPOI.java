@@ -32,7 +32,7 @@ public class ReportPOI {
     private BlockPOI titleBlock;
     private boolean showInColumn;
     private Map<String, List<CellPOI>> styleRegistry_ = new HashMap<>();
-    private Map<Style, XSSFCellStyle> cellStyles_ = new HashMap();
+    private Map<Style, XSSFCellStyle> cellStyles_ = new HashMap<>();
     private XSSFFont _subFont;
 
     public ReportPOI (){
@@ -97,7 +97,7 @@ public class ReportPOI {
         items = new ArrayList<>();
         styleRegistry_ = new HashMap<>();
         System.out.println(cellStyles_.size());
-        this.cellStyles_ = new HashMap();
+        this.cellStyles_ = new HashMap<>();
     }
 
     /**

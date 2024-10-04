@@ -6,10 +6,8 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO.DateAdvance;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.DependenciaDTO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.TipologiaDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.*;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.*;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl.TipologiaServiceImpl;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Routes;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Active;
@@ -51,7 +49,6 @@ public class ConfigurationMediator {
     private final FtpService ftpService;
     private final AccionService accionService;
     private final TipologiaAccionService tipologiaAccionService;
-    private final TipologiaServiceImpl tipologiaServiceImpl;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -940,9 +937,6 @@ public class ConfigurationMediator {
     public List<EstructuraEntity> getDependencies() throws CiadtiException{
         List<DependenciaDTO> results = this.estructuraService.findAllDependencies();
         return results != null ? buildDependencies(results) : null;
-        //List<EstructuraEntity> dependencies = this.estructuraService.findAllFilteredBy(EstructuraEntity.builder().tipologia(TipologiaEntity.builder().esDependencia("1").build()).build());
-        //this.filterByOnlyDependencies(dependencies);
-        //return dependencies;
     }
 
     private void filterByOnlyDependencies(List<EstructuraEntity> structures) {

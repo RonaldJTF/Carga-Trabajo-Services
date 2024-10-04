@@ -10,17 +10,19 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Excel {
-    private final ArrayList columnList;
+    private final List<Object> columnList;
 
-    public Excel(ArrayList columnList) {
+    public Excel(List<Object> columnList) {
         this.columnList = columnList;
     }
 
-    public ArrayList convertData(InputStream inputStream, Class<?> classVO) throws CiadtiException {
-        ArrayList dataList;
-        ArrayList results = null;
+    @SuppressWarnings("deprecation")
+    public List<Object> convertData(InputStream inputStream, Class<?> classVO) throws CiadtiException {
+        List<String[]> dataList;
+        List<Object> results = null;
         boolean isValid;
         Object instanceOfClass;
         String value;
@@ -29,7 +31,7 @@ public class Excel {
         try {
             dataList = this.read(inputStream);
             if (dataList != null && dataList.size() > 0) {
-                results = new ArrayList();
+                results = new ArrayList<>();
                 for (Object data : dataList) {
                     columns = (String[]) data;
                     if (columns != null) {
@@ -54,8 +56,8 @@ public class Excel {
         return results;
     }
 
-    public ArrayList<String[]> read(InputStream inputStream) throws CiadtiException {
-        ArrayList<String[]> data = new ArrayList();
+    public List<String[]> read(InputStream inputStream) throws CiadtiException {
+        ArrayList<String[]> data = new ArrayList<>();
         int counter;
         int totalColumns;
         String[] row;
@@ -76,6 +78,8 @@ public class Excel {
                                     break;
                                 case STRING:
                                     row[counter] = cell.getStringCellValue();
+                                    break;
+                                default:
                                     break;
                             }
                             if ((counter + 1) % totalColumns == 0) {

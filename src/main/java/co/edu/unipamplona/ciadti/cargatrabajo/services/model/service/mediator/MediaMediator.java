@@ -37,7 +37,6 @@ public class MediaMediator {
             byte[] bytes = multipartFile.getBytes();
             long size = multipartFile.getSize();
             String contentType = multipartFile.getContentType();
-            String name = multipartFile.getName();
 
             path = StringUtils.prependIfMissing(path, "/") + Methods.generateUniqueValue(originalFilename);
 

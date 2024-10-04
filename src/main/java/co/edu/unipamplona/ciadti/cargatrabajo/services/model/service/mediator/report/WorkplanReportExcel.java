@@ -33,10 +33,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EtapaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PlanTrabajoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.SeguimientoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TareaEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EtapaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PlanTrabajoService;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.SeguimientoService;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TareaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
@@ -52,9 +49,6 @@ import lombok.RequiredArgsConstructor;
 @Deprecated
 public class WorkplanReportExcel {
     private final PlanTrabajoService planTrabajoService;
-    private final EtapaService etapaService;
-    private final TareaService tareaService;
-    private final SeguimientoService seguimientoService;
     private final ConfigurationMediator configurationMediator;
     private final ResourceLoader resourceLoader;
 
@@ -64,8 +58,6 @@ public class WorkplanReportExcel {
     private final int[] GREEN = {238, 245, 208};
     private final int[] WHITE = {255, 255, 255};
     private final int[] BLUE = {208, 224, 245};
-    private final int[] AQUA = {233, 255, 253};
-    private final int[] PINK = {245, 212, 208};
 
     private final int[][] SUBSTAGE_COLORS = {
         {245, 182, 172}, // Rosa más oscuro

@@ -26,7 +26,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ActividadSe
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportExcel;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportExcelJXLS;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportPDF;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
@@ -52,7 +51,6 @@ public class EstructuraController {
     private final TipologiaService tipologiaService;
     private final ActividadService actividadService;
     private final ConfigurationMediator configurationMediator;
-    private final StructureReportExcel structureReportExcel;
     private final StructureReportPDF structureReportPDF;
     private final StructureReportExcelJXLS structureReportExcelJXLS;
 
@@ -79,7 +77,7 @@ public class EstructuraController {
     @GetMapping({"/dependencies"})
     public ResponseEntity<?> getDependencies() throws CiadtiException{
         List<EstructuraEntity> dependencies = this.configurationMediator.getDependencies();
-        return new ResponseEntity(dependencies, HttpStatus.OK);
+        return new ResponseEntity<>(dependencies, HttpStatus.OK);
     }
 
     @Operation(
@@ -88,7 +86,7 @@ public class EstructuraController {
     )
     @GetMapping({"/dependency/{idDependency}"})
     public ResponseEntity<?> getDependencyInformation(@PathVariable(required = true) Long idDependency) throws CiadtiException {
-        return new ResponseEntity(this.configurationMediator.getDependencyInformation(idDependency), HttpStatus.OK);
+        return new ResponseEntity<>(this.configurationMediator.getDependencyInformation(idDependency), HttpStatus.OK);
     }
 
     

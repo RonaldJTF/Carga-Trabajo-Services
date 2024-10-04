@@ -1,7 +1,5 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
@@ -9,7 +7,6 @@ import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -20,16 +17,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.jxls.functions.DoubleSummarizerBuilder;
 import org.jxls.functions.GroupSum;
 import org.jxls.transform.poi.JxlsPoiTemplateFillerBuilder;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
@@ -37,13 +27,9 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EtapaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PlanTrabajoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.SeguimientoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TareaEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EtapaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PlanTrabajoService;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.SeguimientoService;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TareaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.StaticResourceMediator;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.EachMergeCommand;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.HeaderCommand;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.ImageCommand;
@@ -156,10 +142,8 @@ public class WorkplanReportExcelJXLS {
 
     private List<EtapaEntity> buildReportTaskBody(){
         Map<Integer, Map<Month, List<Integer>>> daysByYearAndMonth  = (Map<Integer, Map<Month, List<Integer>>>) registry.get("daysByYearAndMonth");
-
         List<EtapaEntity> stages = (List<EtapaEntity>)registry.get("plainedStages");
         for (EtapaEntity stage: stages) {
-            
             if (stage.getTareas() != null && stage.getTareas().size()>0){
                 stage.getTareas().forEach(e -> {
                     LocalDate start = e.getFechaInicio().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();

@@ -15,7 +15,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PlanTrabajo
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.SeguimientoService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TareaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.WorkplanReportExcel;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.WorkplanReportExcelJXLS;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
@@ -52,7 +51,6 @@ public class WorkplanController {
     private final TareaService tareaService;
     private final SeguimientoService seguimientoService;
     private final ConfigurationMediator configurationMediator;
-    private final WorkplanReportExcel workplanReportExcel;
     private final WorkplanReportExcelJXLS workplanReportExcelJXLS;
 
     @Operation(
