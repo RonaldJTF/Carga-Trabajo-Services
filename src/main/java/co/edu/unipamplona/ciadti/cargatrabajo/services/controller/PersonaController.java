@@ -30,12 +30,12 @@ public class PersonaController {
     private final ConfigurationMediator configurationMediator;
 
     @Operation(
-            summary = "Obtener o listar las personas",
-            description = "Obtiene o lista las personas de acuerdo a ciertas variables o parámetros. " +
-                    "Args: id: identificador de la persona. " +
-                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase PersonaEntity). " +
-                    "Returns: Objeto o lista de objetos con información de la persona. " +
-                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
+        summary = "Obtener o listar las personas",
+        description = "Obtiene o lista las personas de acuerdo a ciertas variables o parámetros. " +
+                "Args: id: identificador de la persona. " +
+                "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase PersonaEntity). " +
+                "Returns: Objeto o lista de objetos con información de la persona. " +
+                "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
     @GetMapping(value = {"", "/{id}"})
     public ResponseEntity<?> get(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(PersonaEntity.class);

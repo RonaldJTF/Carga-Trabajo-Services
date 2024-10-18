@@ -135,20 +135,27 @@ public class EtapaServiceImpl implements EtapaService{
         return cont;
     }
 
-    private void orderSubstages(List<EtapaEntity> stages) {
+
+
+    /**
+     * Ordenas las etapas de un plan de trabajo a través de su nombre, y ordena los seguimientos de las tareas de acad etapa.
+     * @param stages: Etapas de un plan de trabajo.
+     */
+    private void orderStages(List<EtapaEntity> stages) {
         List<PropertyComparator<EtapaEntity>> propertyComparators = new ArrayList<>();
         propertyComparators.add(new PropertyComparator<>("nombre", true));
-        MultiPropertyComparator<EtapaEntity> multiPropertyComparator = new MultiPropertyComparator<>(
-                propertyComparators);
+        MultiPropertyComparator<EtapaEntity> multiPropertyComparator = new MultiPropertyComparator<>(propertyComparators);
         Collections.sort(stages, multiPropertyComparator);
-    }
-
-
-    private void orderStages(List<EtapaEntity> stages) {
-        orderSubstages(stages);
         for (EtapaEntity obj : stages) {
             if (obj.getSubEtapas() != null && !obj.getSubEtapas().isEmpty()) {
                 orderStages(obj.getSubEtapas());
+            }
+            if(obj.getTareas() != null){
+                obj.getTareas().forEach(t -> {
+                    if (t.getSeguimientos() != null){
+                        t.getSeguimientos().sort(new PropertyComparator<>("fecha", true));
+                    }
+                });
             }
         }
     }

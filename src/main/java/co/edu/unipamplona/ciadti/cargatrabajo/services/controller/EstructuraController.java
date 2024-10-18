@@ -243,7 +243,6 @@ public class EstructuraController {
         if(type == null || "EXCEL".equals(type.toUpperCase())){
             extension = "xlsx";
             mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            //fileBytes = structureReportExcel.generate(structureIds);
             fileBytes = structureReportExcelJXLS.generate(structureIds);
         }else if ("PDF".equals(type.toUpperCase())){
             extension = "pdf";

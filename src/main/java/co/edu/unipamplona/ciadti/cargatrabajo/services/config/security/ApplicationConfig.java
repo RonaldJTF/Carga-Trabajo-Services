@@ -1,7 +1,6 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.config.security;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,9 +20,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.UsuarioDAO;
 public class ApplicationConfig {
 
     private final UsuarioDAO usuarioDAO;
-
-    @Autowired
-    private CipherService cipherService;
+    private final CipherService cipherService;
 
     @Bean
     public UserDetailsService userDetailsService (){

@@ -66,9 +66,7 @@ public class WorkplanController {
         PlanTrabajoEntity filter = (PlanTrabajoEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
         List<PlanTrabajoEntity> result = planTrabajoService.findAllFilteredBy(filter);
-        //Map<Long, Double> advances = planTrabajoService.getAllAvances();
         result.forEach(planTrabajo -> {
-            //Double avance = advances.get(planTrabajo.getId());
             List<EtapaEntity> stages = configurationMediator.findAllStagesByIdWorkplan(planTrabajo.getId());
             Double avance = 0.0;
             Integer totalTareas = 0;
