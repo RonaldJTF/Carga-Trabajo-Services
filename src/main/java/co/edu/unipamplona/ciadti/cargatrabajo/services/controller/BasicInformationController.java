@@ -34,6 +34,8 @@ public class BasicInformationController {
     private final FtpService ftpService;
     private final AccionService accionService;
     private final TipologiaAccionService tipologiaAccionService;
+    private final AlcanceService alcanceService;
+    private final TipoNormatividadService tipoNormatividadService;
 
 
     @Operation(
@@ -535,4 +537,85 @@ public class BasicInformationController {
         configurationMediator.deleteTypologyActions(id, acctionIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @Operation(
+            summary = "Obtener o listar los tipos de alcances",
+            description = "Obtiene o lista los tipos de alcances de acuerdo a ciertas variables o parámetros." +
+                    "Args: id: identificador del tipo de alcance." +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase AlcanceEntity)." +
+                    "Returns: Objeto o lista de objetos con información del alcance. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
+    @GetMapping(value = {"scope", "scope/{id}"})
+    public ResponseEntity<?> getScope(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+        ParameterConverter parameterConverter = new ParameterConverter(AlcanceEntity.class);
+        AlcanceEntity filter = (AlcanceEntity) parameterConverter.converter(request.getParameterMap());
+        filter.setId(id == null ? filter.getId() : id);
+        System.out.println("Filtro: " + filter);
+        return Methods.getResponseAccordingToId(id, alcanceService.findAllFilteredBy(filter));
+    }
+
+    @Operation(
+            summary = "Crear un tipo de alcance",
+            description = "Crea un tipo de alcance" +
+                    "Args: alcanceEntity: objeto con información del tipo de alcance o a registrar. " +
+                    "Returns: Objeto con la información asociada.")
+    @PostMapping("/scope")
+    public ResponseEntity<?> createScope(@Valid @RequestBody AlcanceEntity alcanceEntity) {
+
+        AlcanceEntity alcanceNew = new AlcanceEntity();
+        alcanceNew.setNombre(alcanceEntity.getNombre().toUpperCase());
+        alcanceNew.setDescripcion(Methods.capitalizeFirstLetter(alcanceEntity.getDescripcion()));
+        System.out.println("Alcance: " + alcanceService.save(alcanceNew));
+        return new ResponseEntity<>(alcanceService.save(alcanceNew), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Actualizar un tipo de alcance",
+            description = "Actualiza un tipo de alcance." +
+                    "Args: alcanceEntity: objeto con información del tipo de alcance." +
+                    "id: identificador del tipo de alcance." +
+                    "Returns: Objeto con la información asociada.")
+    @PutMapping("/scope/{id}")
+    public ResponseEntity<?> updateScope(@Valid @RequestBody AlcanceEntity alcanceEntity, @PathVariable Long id) throws CiadtiException {
+        AlcanceEntity alcanceDB = alcanceService.findById(id);
+        alcanceDB.setDescripcion(Methods.capitalizeFirstLetter(alcanceEntity.getDescripcion()));
+        alcanceDB.setNombre(alcanceEntity.getNombre().toUpperCase());
+        return new ResponseEntity<>(alcanceService.save(alcanceDB), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Eliminar tipo de alcance por el id",
+            description = "Elimina un tipo de alcance por su id." +
+                    "Args: id: identificador del tipo de alcance a eliminar.")
+    @DeleteMapping("/scope/{id}")
+    public ResponseEntity<?> deleteScope(@PathVariable Long id) throws CiadtiException {
+        configurationMediator.deleteScope(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Eliminar tipos de alcances por el id",
+            description = "Elimina lista de tipos de alcances por su id." +
+                    "Args: documentTypeIds: identificadores de los tipos de alcances a eliminar.")
+    @DeleteMapping("/scope")
+    public ResponseEntity<?> deleteScopes(@RequestBody List<Long> scopeIds) throws CiadtiException {
+        configurationMediator.deleteScopes(scopeIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Obtener o listar los tipos de normatividades",
+            description = "Obtiene o lista los tipos de normatividades de acuerdo a ciertas variables o parámetros." +
+                    "Args: id: identificador del tipo de normatividad." +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase TipoNormatividadEntity)." +
+                    "Returns: Objeto o lista de objetos con información del tipo de normatividad. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
+    @GetMapping(value = {"normativity-type", "normativity-type/{id}"})
+    public ResponseEntity<?> getNormativityType(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+        ParameterConverter parameterConverter = new ParameterConverter(TipoNormatividadEntity.class);
+        TipoNormatividadEntity filter = (TipoNormatividadEntity) parameterConverter.converter(request.getParameterMap());
+        filter.setId(id == null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, tipoNormatividadService.findAllFilteredBy(filter));
+    }
+
 }

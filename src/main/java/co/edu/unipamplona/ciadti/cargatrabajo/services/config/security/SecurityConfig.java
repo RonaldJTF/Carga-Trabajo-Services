@@ -52,8 +52,8 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/media/**").authenticated()
                 
-                .requestMatchers(HttpMethod.GET, "/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").authenticated()
-                .requestMatchers("/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").hasAnyRole("DESARROLLADOR")
+                .requestMatchers(HttpMethod.GET, "/api/scope/**", "/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").authenticated()
+                .requestMatchers("/api/scope/**","/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").hasAnyRole("DESARROLLADOR")
                 
                 .anyRequest().denyAll()
             )

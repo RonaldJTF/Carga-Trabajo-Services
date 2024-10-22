@@ -49,6 +49,7 @@ public class ConfigurationMediator {
     private final FtpService ftpService;
     private final AccionService accionService;
     private final TipologiaAccionService tipologiaAccionService;
+    private final AlcanceService alcanceService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -1021,6 +1022,29 @@ public class ConfigurationMediator {
             result.add(estructuraEntity);
         }
         return result;
+    }
+
+    /**
+     * Eliminar un tipo de documento
+     * @param scopeId, identificador único del tipo de alcance que se desea eliminar
+     * @throws CiadtiException
+     */
+    public void deleteScope(Long scopeId) throws CiadtiException {
+        AlcanceEntity scopeDB = alcanceService.findById(scopeId);
+        if (scopeDB != null) {
+            alcanceService.deleteByProcedure(scopeDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de tipos de documentos
+     * @param scopesIds, lista de identificadores de los tipos de documentos a eliminar
+     * @throws CiadtiException
+     */
+    public void deleteScopes(List<Long> scopesIds) throws CiadtiException {
+        for (Long id : scopesIds) {
+            deleteScope(id);
+        }
     }
 
 }
