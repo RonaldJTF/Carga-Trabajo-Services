@@ -42,7 +42,7 @@ public class ValorVigenciaEntity implements Serializable, Cloneable{
     private Long idVariable;
 
     @Column(name = "vige_id", nullable = false, length = 30)
-    private Long idvigencia;
+    private Long idVigencia;
 
     @Column(name = "vavi_valor", nullable = false, length = 30)
     private Long valor;

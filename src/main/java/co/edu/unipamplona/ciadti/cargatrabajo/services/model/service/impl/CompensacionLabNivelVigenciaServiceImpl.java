@@ -39,7 +39,7 @@ public class CompensacionLabNivelVigenciaServiceImpl implements CompensacionLabN
             entity.onUpdate();
             compensacionLabNivelVigenciaDAO.update(
                 entity.getIdNivel(), 
-                entity.getIdCompensacionSalarial(), 
+                entity.getIdCompensacionLaboral(), 
                 entity.getId(), 
                 entity.getIdVigencia(), 
                 entity.getIdRegla(), 

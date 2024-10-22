@@ -13,7 +13,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VariableEnti
 public interface VariableDAO extends JpaRepository<VariableEntity, Long>, JpaSpecificationExecutor<VariableEntity>{
     
     @Modifying
-    @Query(value = "update VaraibleEntity v set v.nombre =:nombre, v.descripcion =:descripcion, v.valor =:valor, " +
+    @Query(value = "update VariableEntity v set v.nombre =:nombre, v.descripcion =:descripcion, v.valor =:valor, " +
                     "v.primaria =:primaria, v.global =:global, v.porVigencia =:porVigencia, v.estado =:estado, " +
                     "v.fechaCambio =:fechaCambio, v.registradoPor =:registradoPor where v.id =:id")
     int update (@Param("nombre") String nombre,

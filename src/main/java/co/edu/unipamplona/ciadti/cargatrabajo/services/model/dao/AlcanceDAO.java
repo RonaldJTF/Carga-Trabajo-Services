@@ -18,7 +18,7 @@ public interface AlcanceDAO extends JpaRepository<AlcanceEntity, Long>, JpaSpeci
     int update  (@Param("nombre") String nombre,
                  @Param("descripcion") String descripcion,
                  @Param("fechaCambio") Date fechaCambio,
-                 @Param("RegistradoPor") String registradoPor,
+                 @Param("registradoPor") String registradoPor,
                  @Param("id") Long id);
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_ALCANCE(?1, ?2)", nativeQuery = true)

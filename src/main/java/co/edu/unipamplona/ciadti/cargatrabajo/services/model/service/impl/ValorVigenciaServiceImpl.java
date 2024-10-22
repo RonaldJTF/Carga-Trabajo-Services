@@ -38,7 +38,7 @@ public class ValorVigenciaServiceImpl implements ValorVigenciaService{
             entity.onUpdate();
             valorVigenciaDAO.update(
                 entity.getIdVariable(), 
-                entity.getIdvigencia(), 
+                entity.getIdVigencia(), 
                 entity.getValor(), 
                 entity.getFechaCambio(), 
                 entity.getRegistradoPor(), 

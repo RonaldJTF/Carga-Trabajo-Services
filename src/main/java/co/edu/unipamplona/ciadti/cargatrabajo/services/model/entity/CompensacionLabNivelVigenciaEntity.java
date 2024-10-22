@@ -42,7 +42,7 @@ public class CompensacionLabNivelVigenciaEntity implements Serializable, Cloneab
     private Long idNivel;
 
     @Column(name = "cola_id", nullable = false, length = 30)
-    private Long idCompensacionSalarial;
+    private Long idCompensacionLaboral;
 
     @Column(name = "essa_id", nullable = false, length = 30)
     private Long idEscalaSalarial;

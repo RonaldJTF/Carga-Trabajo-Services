@@ -1,5 +1,6 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "ESCALASALARIAL", schema = "FORTALECIMIENTO")
 
-public class EscalaSalarialEntity {
+public class EscalaSalarialEntity implements Serializable, Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "essa_id", nullable = false, length = 30)
