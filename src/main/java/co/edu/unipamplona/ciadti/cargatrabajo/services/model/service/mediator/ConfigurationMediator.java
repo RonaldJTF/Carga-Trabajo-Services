@@ -50,6 +50,8 @@ public class ConfigurationMediator {
     private final AccionService accionService;
     private final TipologiaAccionService tipologiaAccionService;
     private final AlcanceService alcanceService;
+    private final CategoriaService categoriaService;
+    private final PeriodicidadService periodicidadService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -1025,7 +1027,7 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Eliminar un tipo de documento
+     * Eliminar un tipo de alcance
      * @param scopeId, identificador único del tipo de alcance que se desea eliminar
      * @throws CiadtiException
      */
@@ -1037,13 +1039,59 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Elimina lista de tipos de documentos
-     * @param scopesIds, lista de identificadores de los tipos de documentos a eliminar
+     * Elimina lista de tipos de alcance
+     * @param scopesIds, lista de identificadores de los tipos de alcances a eliminar
      * @throws CiadtiException
      */
     public void deleteScopes(List<Long> scopesIds) throws CiadtiException {
         for (Long id : scopesIds) {
             deleteScope(id);
+        }
+    }
+
+    /**
+     * Eliminar un tipo de categorías
+     * @param scopeId, identificador único del tipo de categoría que se desea eliminar
+     * @throws CiadtiException
+     */
+    public void deleteCategory(Long categoryId) throws CiadtiException {
+        CategoriaEntity categoryDB = categoriaService.findById(categoryId);
+        if (categoryDB != null) {
+            categoriaService.deleteByProcedure(categoryDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de tipos de categorías
+     * @param scopesIds, lista de identificadores de los tipos de categorías a eliminar
+     * @throws CiadtiException
+     */
+    public void deleteCategories(List<Long> categoriesIds) throws CiadtiException {
+        for (Long id : categoriesIds) {
+            deleteCategory(id);
+        }
+    }
+
+    /**
+     * Eliminar un tipo de periodicidad
+     * @param scopeId, identificador único del tipo de periodicidad que se desea eliminar
+     * @throws CiadtiException
+     */
+    public void deletePeriodicity(Long periodicityId) throws CiadtiException {
+        PeriodicidadEntity periodicityDB = periodicidadService.findById(periodicityId);
+        if (periodicityDB != null) {
+            periodicidadService.deleteByProcedure(periodicityDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de tipos de periodicidad
+     * @param scopesIds, lista de identificadores de los tipos de periodicidad a eliminar
+     * @throws CiadtiException
+     */
+    public void deletePeriodicities(List<Long> periodicitiesIds) throws CiadtiException {
+        for (Long id : periodicitiesIds) {
+            deletePeriodicity(id);
         }
     }
 

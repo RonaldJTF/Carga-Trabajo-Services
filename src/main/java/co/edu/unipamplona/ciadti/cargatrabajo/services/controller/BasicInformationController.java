@@ -36,6 +36,8 @@ public class BasicInformationController {
     private final TipologiaAccionService tipologiaAccionService;
     private final AlcanceService alcanceService;
     private final TipoNormatividadService tipoNormatividadService;
+    private final CategoriaService categoriaService;
+    private final PeriodicidadService periodicidadService;
 
 
     @Operation(
@@ -550,7 +552,6 @@ public class BasicInformationController {
         ParameterConverter parameterConverter = new ParameterConverter(AlcanceEntity.class);
         AlcanceEntity filter = (AlcanceEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id == null ? filter.getId() : id);
-        System.out.println("Filtro: " + filter);
         return Methods.getResponseAccordingToId(id, alcanceService.findAllFilteredBy(filter));
     }
 
@@ -565,7 +566,6 @@ public class BasicInformationController {
         AlcanceEntity alcanceNew = new AlcanceEntity();
         alcanceNew.setNombre(alcanceEntity.getNombre().toUpperCase());
         alcanceNew.setDescripcion(Methods.capitalizeFirstLetter(alcanceEntity.getDescripcion()));
-        System.out.println("Alcance: " + alcanceService.save(alcanceNew));
         return new ResponseEntity<>(alcanceService.save(alcanceNew), HttpStatus.CREATED);
     }
 
@@ -616,6 +616,131 @@ public class BasicInformationController {
         TipoNormatividadEntity filter = (TipoNormatividadEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id == null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, tipoNormatividadService.findAllFilteredBy(filter));
+    }
+
+    @Operation(
+            summary = "Obtener o listar los tipos de categorías",
+            description = "Obtiene o lista los tipos de categorías de acuerdo a ciertas variables o parámetros." +
+                    "Args: id: identificador del tipo de categoría." +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase CategoriaEntity)." +
+                    "Returns: Objeto o lista de objetos con información de la categoría. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
+    @GetMapping(value = {"category", "category/{id}"})
+    public ResponseEntity<?> getCategory(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+        ParameterConverter parameterConverter = new ParameterConverter(CategoriaEntity.class);
+        CategoriaEntity filter = (CategoriaEntity) parameterConverter.converter(request.getParameterMap());
+        filter.setId(id == null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, categoriaService.findAllFilteredBy(filter));
+    }
+
+    @Operation(
+            summary = "Crear un tipo de categoría",
+            description = "Crea un tipo de categoría" +
+                    "Args: categoriaEntity: objeto con información del tipo de categoría a registrar. " +
+                    "Returns: Objeto con la información asociada.")
+    @PostMapping("/category")
+    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoriaEntity categoriaEntity) {
+        CategoriaEntity categoriaNew = new CategoriaEntity();
+        categoriaNew.setNombre(categoriaEntity.getNombre().toUpperCase());
+        categoriaNew.setDescripcion(Methods.capitalizeFirstLetter(categoriaEntity.getDescripcion()));
+        return new ResponseEntity<>(categoriaService.save(categoriaNew), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Actualizar un tipo de categoría",
+            description = "Actualiza un tipo de categoría." +
+                    "Args: categoriaEntity: objeto con información del tipo de categoría." +
+                    "id: identificador del tipo de categoría." +
+                    "Returns: Objeto con la información asociada.")
+    @PutMapping("/category/{id}")
+    public ResponseEntity<?> updateCategory(@Valid @RequestBody CategoriaEntity categoriaEntity, @PathVariable Long id) throws CiadtiException {
+        CategoriaEntity categoriaDB = categoriaService.findById(id);
+        categoriaDB.setDescripcion(Methods.capitalizeFirstLetter(categoriaEntity.getDescripcion()));
+        categoriaDB.setNombre(categoriaEntity.getNombre().toUpperCase());
+        return new ResponseEntity<>(categoriaService.save(categoriaDB), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Eliminar tipo de categoría por el id",
+            description = "Elimina un tipo de categoría por su id." +
+                    "Args: id: identificador del tipo de categoría a eliminar.")
+    @DeleteMapping("/category/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Long id) throws CiadtiException {
+        configurationMediator.deleteCategory(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Eliminar tipos de categorías por el id",
+            description = "Elimina lista de tipos de categorías por su id." +
+                    "Args: documentTypeIds: identificadores de los tipos de categorías a eliminar.")
+    @DeleteMapping("/category")
+    public ResponseEntity<?> deleteCategories(@RequestBody List<Long> categoriesIds) throws CiadtiException {
+        configurationMediator.deleteCategories(categoriesIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Obtener o listar los tipos de periodicidad",
+            description = "Obtiene o lista los tipos de periodicidad de acuerdo a ciertas variables o parámetros." +
+                    "Args: id: identificador del tipo de periodicidad." +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase PeriodicidadEntity)." +
+                    "Returns: Objeto o lista de objetos con información de la periodicidad. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
+    @GetMapping(value = {"periodicity", "periodicity/{id}"})
+    public ResponseEntity<?> getPeriodicity(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+        ParameterConverter parameterConverter = new ParameterConverter(PeriodicidadEntity.class);
+        PeriodicidadEntity filter = (PeriodicidadEntity) parameterConverter.converter(request.getParameterMap());
+        filter.setId(id == null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, periodicidadService.findAllFilteredBy(filter));
+    }
+
+    @Operation(
+            summary = "Crear un tipo de periodicidad",
+            description = "Crea un tipo de periodicidad" +
+                    "Args: periodicidadEntity: objeto con información del tipo de periodicidad a registrar. " +
+                    "Returns: Objeto con la información asociada.")
+    @PostMapping("/periodicity")
+    public ResponseEntity<?> createPeriodicity(@Valid @RequestBody PeriodicidadEntity periodicidadEntity) {
+        PeriodicidadEntity periodicidadNew = new PeriodicidadEntity();
+        periodicidadNew.setNombre(periodicidadEntity.getNombre().toUpperCase());
+        periodicidadNew.setFrecuenciaAnual(periodicidadEntity.getFrecuenciaAnual());
+        System.out.println("CREAR: " + periodicidadNew);
+        return new ResponseEntity<>(periodicidadService.save(periodicidadNew), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Actualizar un tipo de periodicidad",
+            description = "Actualiza un tipo de periodicidad." +
+                    "Args: periodicidadEntity: objeto con información del tipo de periodicidad." +
+                    "id: identificador del tipo de periodicidad." +
+                    "Returns: Objeto con la información asociada.")
+    @PutMapping("/periodicity/{id}")
+    public ResponseEntity<?> updatePeriodicity(@Valid @RequestBody PeriodicidadEntity periodicidadEntity, @PathVariable Long id) throws CiadtiException {
+        PeriodicidadEntity periodicidadDB = periodicidadService.findById(id);
+        periodicidadDB.setNombre(periodicidadEntity.getNombre().toUpperCase());
+        periodicidadDB.setFrecuenciaAnual(periodicidadEntity.getFrecuenciaAnual());
+        return new ResponseEntity<>(periodicidadService.save(periodicidadDB), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Eliminar tipo de periodicidad por el id",
+            description = "Elimina un tipo de periodicidad por su id." +
+                    "Args: id: identificador del tipo de periodicidad a eliminar.")
+    @DeleteMapping("/periodicity/{id}")
+    public ResponseEntity<?> deletePeriodicity(@PathVariable Long id) throws CiadtiException {
+        configurationMediator.deletePeriodicity(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Eliminar tipos de periodicidad por el id",
+            description = "Elimina lista de tipos de periodicidad por su id." +
+                    "Args: documentTypeIds: identificadores de los tipos de periodicidad a eliminar.")
+    @DeleteMapping("/periodicity")
+    public ResponseEntity<?> deletePeriodicities(@RequestBody List<Long> periodicitiesIds) throws CiadtiException {
+        configurationMediator.deletePeriodicities(periodicitiesIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

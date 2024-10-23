@@ -21,6 +21,6 @@ public interface PeriodicidadDAO extends JpaRepository<PeriodicidadEntity, Long>
                 @Param("registradoPor") String registradoPor,
                 @Param("id") Long id);
     
-    @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENT0_D_PERIODICIDAD(?1, ?2)", nativeQuery = true)
+    @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_PERIODICIDAD(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
 }
