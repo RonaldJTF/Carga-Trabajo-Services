@@ -52,6 +52,7 @@ public class ConfigurationMediator {
     private final AlcanceService alcanceService;
     private final CategoriaService categoriaService;
     private final PeriodicidadService periodicidadService;
+    private final CargoService cargoService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -1051,7 +1052,7 @@ public class ConfigurationMediator {
 
     /**
      * Eliminar un tipo de categorías
-     * @param scopeId, identificador único del tipo de categoría que se desea eliminar
+     * @param categoryId, identificador único del tipo de categoría que se desea eliminar
      * @throws CiadtiException
      */
     public void deleteCategory(Long categoryId) throws CiadtiException {
@@ -1063,7 +1064,7 @@ public class ConfigurationMediator {
 
     /**
      * Elimina lista de tipos de categorías
-     * @param scopesIds, lista de identificadores de los tipos de categorías a eliminar
+     * @param categoriesIds, lista de identificadores de los tipos de categorías a eliminar
      * @throws CiadtiException
      */
     public void deleteCategories(List<Long> categoriesIds) throws CiadtiException {
@@ -1074,7 +1075,7 @@ public class ConfigurationMediator {
 
     /**
      * Eliminar un tipo de periodicidad
-     * @param scopeId, identificador único del tipo de periodicidad que se desea eliminar
+     * @param periodicityId, identificador único del tipo de periodicidad que se desea eliminar
      * @throws CiadtiException
      */
     public void deletePeriodicity(Long periodicityId) throws CiadtiException {
@@ -1086,12 +1087,35 @@ public class ConfigurationMediator {
 
     /**
      * Elimina lista de tipos de periodicidad
-     * @param scopesIds, lista de identificadores de los tipos de periodicidad a eliminar
+     * @param periodicitiesIds, lista de identificadores de los tipos de periodicidad a eliminar
      * @throws CiadtiException
      */
     public void deletePeriodicities(List<Long> periodicitiesIds) throws CiadtiException {
         for (Long id : periodicitiesIds) {
             deletePeriodicity(id);
+        }
+    }
+
+    /**
+     * Eliminar un tipo de cargo
+     * @param positionId, identificador único del tipo de cargo que se desea eliminar
+     * @throws CiadtiException
+     */
+    public void deletePosition(Long positionId) throws CiadtiException {
+        CargoEntity cargoDB = cargoService.findById(positionId);
+        if (cargoDB != null) {
+            cargoService.deleteByProcedure(cargoDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de tipos de periodicidad
+     * @param periodicitiesIds, lista de identificadores de los tipos de periodicidad a eliminar
+     * @throws CiadtiException
+     */
+    public void deletePositions(List<Long> positionIds) throws CiadtiException {
+        for (Long id : positionIds) {
+            deletePosition(id);
         }
     }
 
