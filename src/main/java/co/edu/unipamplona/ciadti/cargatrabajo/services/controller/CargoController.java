@@ -31,6 +31,7 @@ public class CargoController {
     private final CargoService cargoService;
     private final ConfigurationMediator configurationMediator;
 
+
     @Operation(
         summary = "Obtener o listar los cargos",
         description = "Obtiene o lista los cargos de acuerdo a ciertas variables o parámetros. " +
@@ -92,6 +93,5 @@ public class CargoController {
         configurationMediator.deletePositions(positionIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    
     
 }

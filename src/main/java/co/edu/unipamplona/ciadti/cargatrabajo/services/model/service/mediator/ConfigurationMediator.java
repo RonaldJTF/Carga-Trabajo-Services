@@ -53,6 +53,9 @@ public class ConfigurationMediator {
     private final CategoriaService categoriaService;
     private final PeriodicidadService periodicidadService;
     private final CargoService cargoService;
+    private final VigenciaService vigenciaService;
+    private final ValorVigenciaService valorVigenciaService;
+    private final VariableService variableService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -1109,13 +1112,82 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Elimina lista de tipos de periodicidad
-     * @param periodicitiesIds, lista de identificadores de los tipos de periodicidad a eliminar
+     * Elimina lista de tipos de cargo
+     * @param positionsIds, lista de identificadores de los tipos de cargo a eliminar
      * @throws CiadtiException
      */
     public void deletePositions(List<Long> positionIds) throws CiadtiException {
         for (Long id : positionIds) {
             deletePosition(id);
+        }
+    }
+
+    /**
+     * Eliminar un tipo de vigencia
+     * @param validityId, identificador único del tipo de vigencia que se desea eliminar
+     * @throws CiadtiException
+     */
+    public void deleteValidity(Long validityId) throws CiadtiException {
+        VigenciaEntity vigenciaDB = vigenciaService.findById(validityId);
+        if (vigenciaDB != null) {
+            vigenciaService.deleteByProcedure(vigenciaDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de tipos de vigencia
+     * @param validitiesIds, lista de identificadores de los tipos de vigencia a eliminar
+     * @throws CiadtiException
+     */
+    public void deleteValidities(List<Long> validityIds) throws CiadtiException {
+        for (Long id : validityIds) {
+            deleteValidity(id);
+        }
+    }
+
+    /**
+     * Eliminar un tipo de valor de vigencia
+     * @param validityValueId, identificador único del tipo de valor de vigencia que se desea eliminar
+     * @throws CiadtiException
+     */
+    public void deleteValidityValue(Long validityValueId) throws CiadtiException {
+        ValorVigenciaEntity valorVigenciaDB = valorVigenciaService.findById(validityValueId);
+        if (valorVigenciaDB != null) {
+            valorVigenciaService.deleteByProcedure(valorVigenciaDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de tipos de valor de vigencia
+     * @param validityValueIds, lista de identificadores de los tipos de valor de vigencia a eliminar
+     * @throws CiadtiException
+     */
+    public void deleteValidityValues(List<Long> validityValueIds) throws CiadtiException {
+        for (Long id : validityValueIds) {
+            deleteValidityValue(id);
+        }
+    }
+
+    /**
+     * Eliminar un tipo de variable
+     * @param variableId, identificador único del tipo de variable que se desea eliminar
+     * @throws CiadtiException
+     */
+    public void deleteVariable(Long variableId) throws CiadtiException {
+        VariableEntity variableDB = variableService.findById(variableId);
+        if (variableDB != null) {
+            variableService.deleteByProcedure(variableDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de tipos de variables
+     * @param variableIds, lista de identificadores de los tipos de variable a eliminar
+     * @throws CiadtiException
+     */
+    public void deleteVariables(List<Long> variableIds) throws CiadtiException {
+        for (Long id : variableIds) {
+            deleteVariable(id);
         }
     }
 
