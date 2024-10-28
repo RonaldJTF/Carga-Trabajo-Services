@@ -13,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -59,9 +60,7 @@ public class EscalaSalarialEntity implements Serializable, Cloneable{
     @Column(name = "essa_registradopor", nullable = false, length = 250)
     private String registradoPor;
 
-    @JoinColumn(name = "nive_id", insertable = false, updatable = false)
-    private NivelEntity nivel;
-
+    @OneToOne
     @JoinColumn(name = "norm_id", insertable = false, updatable = false)
     private NormatividadEntity normatividad;
 

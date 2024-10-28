@@ -11,6 +11,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.*;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Routes;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Active;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Status;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -56,6 +57,8 @@ public class ConfigurationMediator {
     private final VigenciaService vigenciaService;
     private final ValorVigenciaService valorVigenciaService;
     private final VariableService variableService;
+    private final NormatividadService normatividadService;
+    private final EscalaSalarialService escalaSalarialService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -805,6 +808,11 @@ public class ConfigurationMediator {
      */
     public void deleteLevel(Long levelId) throws CiadtiException {
         NivelEntity nivelDB = nivelService.findById(levelId);
+        List<EscalaSalarialEntity> escalasSalarialesToDelete = escalaSalarialService.findAllFilteredBy(EscalaSalarialEntity.builder().idNivel(levelId).build());
+
+        for (EscalaSalarialEntity e : escalasSalarialesToDelete){
+            escalaSalarialService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
         if (nivelDB != null) {
             nivelService.deleteByProcedure(nivelDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         }
@@ -1031,8 +1039,8 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Eliminar un tipo de alcance
-     * @param scopeId, identificador único del tipo de alcance que se desea eliminar
+     * Eliminar un alcance
+     * @param scopeId, identificador único del alcance que se desea eliminar
      * @throws CiadtiException
      */
     public void deleteScope(Long scopeId) throws CiadtiException {
@@ -1043,8 +1051,8 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Elimina lista de tipos de alcance
-     * @param scopesIds, lista de identificadores de los tipos de alcances a eliminar
+     * Elimina lista de alcances
+     * @param scopesIds, lista de identificadores de los alcances a eliminar
      * @throws CiadtiException
      */
     public void deleteScopes(List<Long> scopesIds) throws CiadtiException {
@@ -1191,4 +1199,80 @@ public class ConfigurationMediator {
         }
     }
 
+     /**
+     * Eliminar una normatividad junto a sus escalas salariales
+     * @param normativityId, identificador único de la normatividad que se desea eliminar
+     * @throws CiadtiException
+     */
+    public void deleteNormativity(Long normativityId) throws CiadtiException {
+        NormatividadEntity normatividadEntityBD = normatividadService.findById(normativityId);
+        List<EscalaSalarialEntity> salaryScalesToDelete = escalaSalarialService.findAllFilteredBy(EscalaSalarialEntity.builder().idNormatividad(normativityId).build());
+        for (EscalaSalarialEntity e : salaryScalesToDelete){
+            escalaSalarialService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+        normatividadService.deleteByProcedure(normatividadEntityBD.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+    }
+
+
+    /**
+     * Crea o actualiza un nivel de ocupación junto a sus nuevas escalas salariales.
+     * Aqui se trae la nueva lista de las escalas salariales, si ya no se incluye alguna de las existentes, 
+     * entonces se es eliminada de la BD, y si se trae una nueva, entonces se es insertada en BD.
+     * @param nivelEntity: Nivel de ocupación junto a las escalas salariales.
+     * @return Objeto NivelEntity con la información relacionada de las escalas salariales definidas.
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public NivelEntity saveLevel(NivelEntity nivelEntity, Long id) throws CiadtiException{
+        List<EscalaSalarialEntity> newSalaryScales = nivelEntity.getEscalasSalariales();
+        nivelEntity = nivelService.save(nivelEntity);        
+        List<EscalaSalarialEntity> oldSalaryScales = escalaSalarialService.findAllFilteredBy(EscalaSalarialEntity.builder().idNivel(nivelEntity.getId()).build());
+            
+        List<EscalaSalarialEntity> salaryScalesToDelete = oldSalaryScales.stream()
+                .filter(e -> !newSalaryScales.stream().map(EscalaSalarialEntity :: getId).collect(Collectors.toList()).contains(e.getId()))
+                .collect(Collectors.toList());
+
+        for (EscalaSalarialEntity e : newSalaryScales) {
+            e.setIdNivel(nivelEntity.getId());
+            escalaSalarialService.save(e);
+        }
+
+        for (EscalaSalarialEntity e : salaryScalesToDelete) {
+            escalaSalarialService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }     
+
+        return nivelEntity;
+    }
+
+    /**
+     * Actualiza una normatividad. Si el estado de la normatividad es inactivo (No vigente), entonces se inactivan todas 
+     * las escalas de valoración que se rigen bajo esa normatividad. Si el estado de la normatividad es activo, entonces 
+     * se verifica que todas las escalas estén inactivas para que sean activadas.
+     * En todos lo contrario, los estados de las escalas salariales no se actualizan.
+     * @param normatividadEntity
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public NormatividadEntity updateNormativity(NormatividadEntity normatividadEntity) {
+        normatividadService.save(normatividadEntity);
+        int totalActive = escalaSalarialService.countByStatusAndNormativityId(Status.ACTIVATED, normatividadEntity.getId());
+        if (normatividadEntity.getEstado().equals(Status.INACTIVATED) || totalActive == 0){
+            escalaSalarialService.updateStatusByNormativityId(
+                EscalaSalarialEntity.builder().estado(normatividadEntity.getEstado()).idNormatividad(normatividadEntity.getId()).build()
+            );
+        }
+        return normatividadEntity;
+    }
+    /**
+     * Elimina una escala salarial de acuerdo a su id
+     * @param id
+     * @throws CiadtiException 
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteSalaryScale(Long id) throws CiadtiException {
+        EscalaSalarialEntity salaryScaleTodelete = escalaSalarialService.findById(id);
+        if (salaryScaleTodelete != null) {
+            escalaSalarialService.deleteByProcedure(salaryScaleTodelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
 }

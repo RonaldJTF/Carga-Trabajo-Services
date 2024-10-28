@@ -2,6 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -58,6 +59,9 @@ public class NivelEntity implements Serializable{
     public String getNomenclatura() {
         return  descripcion != null && descripcion.length() >= 3 ? descripcion.substring(0, 3) : null;
     }
+
+    @Transient
+    private List<EscalaSalarialEntity> escalasSalariales;
 
     @PrePersist
     void onCreate() {

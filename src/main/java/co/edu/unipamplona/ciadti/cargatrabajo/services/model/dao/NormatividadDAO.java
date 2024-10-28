@@ -14,7 +14,7 @@ public interface NormatividadDAO extends JpaRepository<NormatividadEntity, Long>
     @Modifying
     @Query(value = "update NormatividadEntity n set n.nombre =:nombre, n.descripcion =:descripcion, " +
                     "n.emisor =:emisor, n.fechaInicioVigencia =:fechaInicioVigencia, n.fechaFinVigencia =:fechaFinVigencia, " +
-                    "n.estado =:estado, n.escalaSalarial =:escalaSalarial, n.idAlcance =:idAlcance, n.idTipoNormatividad =:idTipoNormatividad, " +
+                    "n.estado =:estado, n.esEscalaSalarial =:esEscalaSalarial, n.idAlcance =:idAlcance, n.idTipoNormatividad =:idTipoNormatividad, " +
                     "n.fechaCambio =:fechaCambio, n.registradoPor =:registradoPor where n.id =:id")
     int update(@Param("nombre") String nombre,
                @Param("descripcion") String descripcion,
@@ -22,7 +22,7 @@ public interface NormatividadDAO extends JpaRepository<NormatividadEntity, Long>
                @Param("fechaInicioVigencia") Date fechaInicioVigencia,
                @Param("fechaFinVigencia") Date fechaFinVigencia,
                @Param("estado") String estado,
-               @Param("escalaSalarial") String escalaSalarial,
+               @Param("esEscalaSalarial") String esEscalaSalarial,
                @Param("idAlcance") Long idAlcance,
                @Param("idTipoNormatividad") Long idTipoNormatividad,
                @Param("fechaCambio") Date fechaCambio,

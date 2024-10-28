@@ -25,7 +25,7 @@ import org.springframework.http.ResponseEntity;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/person")
-public class PersonaController {
+public class PersonController {
     private final PersonaService personaService;
     private final ConfigurationMediator configurationMediator;
 

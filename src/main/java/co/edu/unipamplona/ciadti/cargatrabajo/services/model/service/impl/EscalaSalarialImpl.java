@@ -72,5 +72,21 @@ public class EscalaSalarialImpl implements EscalaSalarialService{
         Specification<EscalaSalarialEntity> specification = new SpecificationCiadti<EscalaSalarialEntity>(filter);
         return escalaSalarialDAO.findAll(specification);
     }
-    
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public int updateStatusByNormativityId(EscalaSalarialEntity entity) {
+        entity.onUpdate();
+        return escalaSalarialDAO.updateStatusByNormativityId(
+            entity.getEstado(), 
+            entity.getIdNormatividad(), 
+            entity.getRegistradoPor(), 
+            entity.getFechaCambio());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int countByStatusAndNormativityId(String status, Long normativityId) {
+        return escalaSalarialDAO.countByStatusAndNormativityId(status, normativityId);
+    }
 }

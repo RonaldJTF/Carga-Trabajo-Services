@@ -44,7 +44,7 @@ public class NormatividadServiceImpl implements NormatividadService{
                 entity.getFechaInicioVigencia(), 
                 entity.getFechaFinVigencia(), 
                 entity.getEstado(), 
-                entity.getEscalaSalarial(), 
+                entity.getEsEscalaSalarial(), 
                 entity.getIdAlcance(), 
                 entity.getIdTipoNormatividad(), 
                 entity.getFechaCambio(), 

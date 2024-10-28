@@ -29,4 +29,15 @@ public interface EscalaSalarialDAO extends JpaRepository<EscalaSalarialEntity, L
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_ESCALASALARIAL(?1,?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    @Modifying
+    @Query(value = "update EscalaSalarialEntity es set es.estado = :estado, " +
+                   "es.fechaCambio = :fechaCambio, es.registradoPor = :registradoPor where es.idNormatividad = :idNormatividad ")
+    int updateStatusByNormativityId(@Param("estado") String estado,
+                                    @Param("idNormatividad") Long idNormatividad,
+                                    @Param("registradoPor")  String registradoPor,
+                                    @Param("fechaCambio")  Date fechaCambio);
+
+    @Query(value = "select count(es.id) from EscalaSalarialEntity es where es.estado =:estado and es.idNormatividad =:normativityId")                                
+    int countByStatusAndNormativityId(@Param("estado") String status, @Param("normativityId") Long normativityId);
 }

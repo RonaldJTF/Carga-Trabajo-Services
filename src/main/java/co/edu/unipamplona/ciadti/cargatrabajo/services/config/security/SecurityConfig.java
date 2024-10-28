@@ -2,7 +2,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.config.security;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -42,6 +41,18 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.GET, "/api/workplan/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/workplan/**").hasAnyRole("ADMINISTRADOR")
+
+                .requestMatchers(HttpMethod.GET, "/api/level/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers("/api/level/**").hasAnyRole("ADMINISTRADOR")
+
+                .requestMatchers(HttpMethod.GET, "/api/position/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers("/api/position/**").hasAnyRole("ADMINISTRADOR")
+
+                .requestMatchers(HttpMethod.GET, "/api/validity/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers("/api/validity/**").hasAnyRole("ADMINISTRADOR")
+
+                .requestMatchers(HttpMethod.GET, "/api/normativity/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers("/api/normativity/**").hasAnyRole("ADMINISTRADOR")
                 
                 .requestMatchers("/api/user/validate-password", "/api/user/new-password").authenticated()
                 .requestMatchers("/api/user/**").hasRole("SUPERADMINISTRADOR")
@@ -52,8 +63,8 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/media/**").authenticated()
                 
-                .requestMatchers(HttpMethod.GET, "/api/validity/**", "/api/position/**","/api/periodicity/**","/api/category/**","/api/scope/**", "/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").authenticated()
-                .requestMatchers("/api/validity/**", "/api/position/**","/api/periodicity/**","/api/category/**","/api/scope/**","/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").hasAnyRole("DESARROLLADOR")
+                .requestMatchers(HttpMethod.GET,"/api/periodicity/**","/api/category/**","/api/scope/**", "/api/normativity-type/**", "/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").authenticated()
+                .requestMatchers("/api/periodicity/**","/api/category/**","/api/scope/**",  "/api/normativity-type/**", "/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").hasAnyRole("DESARROLLADOR")
                 
                 .anyRequest().denyAll()
             )

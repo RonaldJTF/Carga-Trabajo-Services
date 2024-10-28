@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/user")
-public class UsuarioController {
+public class UserController {
     private final UsuarioService usuarioService;
     private final ConfigurationMediator configurationMediator;
     private final PasswordEncoder passwordEncoder;

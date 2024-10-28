@@ -3,7 +3,9 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.jackson.JacksonCIADTI;
@@ -15,6 +17,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -47,17 +51,17 @@ public class NormatividadEntity implements Serializable, Cloneable{
     @Column(name = "norm_emisor")
     private String emisor;
 
-    @Column(name = "norm_fechaeiniciovigencia", nullable = false)
+    @Column(name = "norm_fechainiciovigencia", nullable = false)
     private Date fechaInicioVigencia;
     
-    @Column(name = "norm_fechaefinvigencia", nullable = false)
+    @Column(name = "norm_fechafinvigencia", nullable = false)
     private Date fechaFinVigencia;
 
     @Column(name = "norm_estado", nullable = false, length = 1)
     private String estado;
 
-    @Column(name = "norm_escalasalarial", nullable = false, length = 1)
-    private String escalaSalarial;
+    @Column(name = "norm_esescalasalarial", nullable = false, length = 1)
+    private String esEscalaSalarial;
 
     @Column(name = "alca_id", nullable = false, length = 30)
     private Long idAlcance;
@@ -74,9 +78,11 @@ public class NormatividadEntity implements Serializable, Cloneable{
     @Column(name = "norm_registradopor", nullable = false, length = 250)
     private String registradoPor;
 
+    @OneToOne
     @JoinColumn(name = "alca_id", insertable = false, updatable = false)
     private AlcanceEntity alcance;
 
+    @OneToOne
     @JoinColumn(name = "tino_id", insertable = false, updatable = false)
     private TipoNormatividadEntity tipoNormatividad;
 

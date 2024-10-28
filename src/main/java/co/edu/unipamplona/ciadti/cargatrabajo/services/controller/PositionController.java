@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/position")
-public class CargoController {
+public class PositionController {
     private final CargoService cargoService;
     private final ConfigurationMediator configurationMediator;
 

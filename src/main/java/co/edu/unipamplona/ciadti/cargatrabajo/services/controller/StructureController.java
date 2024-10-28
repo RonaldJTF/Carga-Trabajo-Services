@@ -46,7 +46,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/structure")
-public class EstructuraController {
+public class StructureController {
     private final EstructuraService estructuraService;
     private final TipologiaService tipologiaService;
     private final ActividadService actividadService;
@@ -65,7 +65,6 @@ public class EstructuraController {
     public ResponseEntity<?> get (@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
         ParameterConverter parameterConverter = new ParameterConverter(EstructuraEntity.class);
         EstructuraEntity filter = (EstructuraEntity) parameterConverter.converter(request.getParameterMap());
-        System.out.println(filter);
         filter.setId(id==null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, estructuraService.findAllFilteredBy(filter));
     }
