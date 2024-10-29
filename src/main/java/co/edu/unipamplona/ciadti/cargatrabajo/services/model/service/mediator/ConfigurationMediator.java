@@ -59,6 +59,7 @@ public class ConfigurationMediator {
     private final VariableService variableService;
     private final NormatividadService normatividadService;
     private final EscalaSalarialService escalaSalarialService;
+    private final TipoNormatividadService tipoNormatividadService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -1097,8 +1098,8 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Elimina lista de tipos de periodicidad
-     * @param periodicitiesIds, lista de identificadores de los tipos de periodicidad a eliminar
+     * Elimina lista de periodicidad
+     * @param periodicitiesIds, lista de identificadores de periodicidades a eliminar
      * @throws CiadtiException
      */
     public void deletePeriodicities(List<Long> periodicitiesIds) throws CiadtiException {
@@ -1108,25 +1109,25 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Eliminar un tipo de cargo
-     * @param positionId, identificador único del tipo de cargo que se desea eliminar
+     * Eliminar un  cargo
+     * @param appointmentId, identificador único del cargo que se desea eliminar
      * @throws CiadtiException
      */
-    public void deletePosition(Long positionId) throws CiadtiException {
-        CargoEntity cargoDB = cargoService.findById(positionId);
+    public void deleteAppointment(Long appointmentId) throws CiadtiException {
+        CargoEntity cargoDB = cargoService.findById(appointmentId);
         if (cargoDB != null) {
             cargoService.deleteByProcedure(cargoDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         }
     }
 
     /**
-     * Elimina lista de tipos de cargo
-     * @param positionsIds, lista de identificadores de los tipos de cargo a eliminar
+     * Elimina lista de cargo
+     * @param appointmentIds, lista de identificadores de los cargos a eliminar
      * @throws CiadtiException
      */
-    public void deletePositions(List<Long> positionIds) throws CiadtiException {
-        for (Long id : positionIds) {
-            deletePosition(id);
+    public void deleteAppointments(List<Long> appointmentIds) throws CiadtiException {
+        for (Long id : appointmentIds) {
+            deleteAppointment(id);
         }
     }
 
@@ -1273,6 +1274,30 @@ public class ConfigurationMediator {
         EscalaSalarialEntity salaryScaleTodelete = escalaSalarialService.findById(id);
         if (salaryScaleTodelete != null) {
             escalaSalarialService.deleteByProcedure(salaryScaleTodelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+
+    /**
+     * Eliminar un tipo de normatividad
+     * @param normativityTypeId, identificador único del tipo de normatividad que se desea eliminar
+     * @throws CiadtiException
+     */
+    public void deleteNormativityType(Long normativityTypeId) throws CiadtiException {
+        TipoNormatividadEntity tipoNormatividadDB = tipoNormatividadService.findById(normativityTypeId);
+        if (tipoNormatividadDB != null) {
+            tipoNormatividadService.deleteByProcedure(tipoNormatividadDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de tipos de valor de vigencia
+     * @param validityValueIds, lista de identificadores de los tipos de valor de vigencia a eliminar
+     * @throws CiadtiException
+     */
+    public void deleteNormativityTypes(List<Long> validityValueIds) throws CiadtiException {
+        for (Long id : validityValueIds) {
+            deleteNormativityType(id);
         }
     }
 }

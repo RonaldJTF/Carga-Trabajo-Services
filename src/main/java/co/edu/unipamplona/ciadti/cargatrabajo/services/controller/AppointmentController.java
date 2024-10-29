@@ -80,17 +80,17 @@ public class AppointmentController {
             "Args: id: identificador del cargo a eliminar. ")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete (@PathVariable Long id) throws CiadtiException{
-        configurationMediator.deletePosition(id);
+        configurationMediator.deleteAppointment(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(
             summary = "Eliminar posiciones por el id",
             description = "Elimina lista de posiciones por su id." +
-                    "Args: positionIds: identificadores de los tipos de posiciones a eliminar.")
+                    "Args: appointmentIds: identificadores de los tipos de posiciones a eliminar.")
     @DeleteMapping
-    public ResponseEntity<?> deletePositions(@RequestBody List<Long> positionIds) throws CiadtiException {
-        configurationMediator.deletePositions(positionIds);
+    public ResponseEntity<?> deleteAppointments(@RequestBody List<Long> appointmentIds) throws CiadtiException {
+        configurationMediator.deleteAppointments(appointmentIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
