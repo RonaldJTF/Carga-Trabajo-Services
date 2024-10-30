@@ -444,4 +444,24 @@ public class Methods {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
+    /**
+     *
+     * @param id
+     * @param objeto
+     * @return
+     * @param <T>
+     */
+    public static <T> ResponseEntity<?> getResponseAccordingToParam(T id, Object objeto){
+        if (id == null) {
+            if (((List<?>) objeto).isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } else {
+            if (((List<?>) objeto).isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }
+        return new ResponseEntity<>(objeto, HttpStatus.OK);
+    }
+
 }

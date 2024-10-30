@@ -1,5 +1,6 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.*;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.*;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
@@ -34,6 +35,7 @@ public class BasicInformationController {
     private final FtpService ftpService;
     private final AccionService accionService;
     private final TipologiaAccionService tipologiaAccionService;
+    private final CipherService cipherService;
     private final AlcanceService alcanceService;
     private final TipoNormatividadService tipoNormatividadService;
     private final CategoriaService categoriaService;
@@ -48,11 +50,14 @@ public class BasicInformationController {
                     "Returns: Objeto o lista de objetos con información de la persona. " +
                     "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"document-type", "document-type/{id}"})
-    public ResponseEntity<?> getDocumentType(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+    public ResponseEntity<?> getDocumentType(@PathVariable(required = false) String id, HttpServletRequest request) throws CiadtiException {
+
+        Long idDocumentType = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
+
         ParameterConverter parameterConverter = new ParameterConverter(TipoDocumentoEntity.class);
         TipoDocumentoEntity filter = (TipoDocumentoEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id == null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, tipoDocumentoService.findAllFilteredBy(filter));
+        filter.setId(id == null ? filter.getId() : idDocumentType);
+        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(tipoDocumentoService.findAllFilteredBy(filter)));
     }
 
     @Operation(
@@ -63,11 +68,14 @@ public class BasicInformationController {
                     "Returns: Objeto o lista de objetos con información de los géneros. " +
                     "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"gender", "gender/{id}"})
-    public ResponseEntity<?> getGender(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+    public ResponseEntity<?> getGender(@PathVariable(required = false) String id, HttpServletRequest request) throws CiadtiException {
+
+        Long idDocumentType = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
+
         ParameterConverter parameterConverter = new ParameterConverter(GeneroEntity.class);
         GeneroEntity filter = (GeneroEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id == null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, generoService.findAllFilteredBy(filter));
+        filter.setId(id == null ? filter.getId() : idDocumentType);
+        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(generoService.findAllFilteredBy(filter)));
     }
 
     @Operation(
@@ -78,11 +86,14 @@ public class BasicInformationController {
                     "Returns: Objeto o lista de objetos con información de los roles. " +
                     "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"role", "role/{id}"})
-    public ResponseEntity<?> getRole(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+    public ResponseEntity<?> getRole(@PathVariable(required = false) String id, HttpServletRequest request) throws CiadtiException {
+
+        Long idUser = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
+
         ParameterConverter parameterConverter = new ParameterConverter(RolEntity.class);
         RolEntity filter = (RolEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id == null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, rolService.findAllFilteredBy(filter));
+        filter.setId(id == null ? filter.getId() : idUser);
+        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(rolService.findAllFilteredBy(filter)));
     }
 
     @Operation(
@@ -223,8 +234,9 @@ public class BasicInformationController {
                     "id: identificador del genero." +
                     "Returns: Objeto con la información asociada.")
     @PutMapping("/gender/{id}")
-    public ResponseEntity<?> updateGender(@Valid @RequestBody GeneroEntity generoEntity, @PathVariable Long id) throws CiadtiException {
-        GeneroEntity generoDB = generoService.findById(id);
+    public ResponseEntity<?> updateGender(@Valid @RequestBody GeneroEntity generoEntity, @PathVariable String id) throws CiadtiException {
+        Long idGender = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
+        GeneroEntity generoDB = generoService.findById(idGender);
         generoDB.setNombre(Methods.capitalizeFirstLetter(generoEntity.getNombre()));
         return new ResponseEntity<>(generoService.save(generoDB), HttpStatus.CREATED);
     }
