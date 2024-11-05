@@ -2,6 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
 
+import org.apache.el.stream.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -30,4 +31,11 @@ public interface VariableDAO extends JpaRepository<VariableEntity, Long>, JpaSpe
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_VARIABLE(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
     
+    @Query("SELECT v FROM VariableEntity v WHERE v.nombre = :nombre")
+    VariableEntity findByNombre(@Param("nombre") String nombre);
+
+    @Query(value="SELECT v FROM VariableEntity v " +
+            "left outer join ValorVigenciaEntity vv on (v.id = vv.idVariable) " + 
+            "where v.id = :id and (vv.idVigencia = :idVigencia or vv.idVigencia is null)")
+    VariableEntity findByIdAndValidityId(@Param("id") Long id, @Param("idVigencia") Long idVigencia); 
 }

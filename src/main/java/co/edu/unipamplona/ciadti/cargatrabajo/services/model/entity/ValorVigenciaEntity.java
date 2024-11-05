@@ -3,6 +3,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,6 +16,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -56,11 +59,16 @@ public class ValorVigenciaEntity implements Serializable, Cloneable{
     @Column(name = "vavi_registradopor", nullable = false, length = 250)
     private String registradoPor;
 
+    @JsonBackReference
+    @ManyToOne
     @JoinColumn(name = "vari_id", insertable = false, updatable = false)
     private VariableEntity variable;
 
-    @JoinColumn(name = "vige_id", insertable = false, updatable = false)
+    @ManyToOne
+    @JoinColumn(name = "vige_id", referencedColumnName = "vige_id", insertable = false, updatable = false)
     private VigenciaEntity vigencia;
+
+    
 
     @JsonIgnore
     @Transient

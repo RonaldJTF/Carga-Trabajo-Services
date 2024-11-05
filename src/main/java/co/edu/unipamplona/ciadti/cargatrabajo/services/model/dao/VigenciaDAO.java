@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VariableEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VigenciaEntity;
 
 public interface VigenciaDAO extends JpaRepository<VigenciaEntity, Long>, JpaSpecificationExecutor<VigenciaEntity>{
@@ -24,4 +25,5 @@ public interface VigenciaDAO extends JpaRepository<VigenciaEntity, Long>, JpaSpe
     
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENT0_D_VIGENCIA(?1 , ?2 )", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
 }

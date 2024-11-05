@@ -85,9 +85,9 @@ public class AppointmentController {
     }
 
     @Operation(
-            summary = "Eliminar posiciones por el id",
-            description = "Elimina lista de posiciones por su id." +
-                    "Args: appointmentIds: identificadores de los tipos de posiciones a eliminar.")
+            summary = "Eliminar cargos por el id",
+            description = "Elimina lista de cargos por su id." +
+                    "Args: appointmentIds: identificadores de los tipos de cargo a eliminar.")
     @DeleteMapping
     public ResponseEntity<?> deleteAppointments(@RequestBody List<Long> appointmentIds) throws CiadtiException {
         configurationMediator.deleteAppointments(appointmentIds);

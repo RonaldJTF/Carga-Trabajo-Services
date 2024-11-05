@@ -63,6 +63,7 @@ public class ConfigurationMediator {
     private final NormatividadService normatividadService;
     private final EscalaSalarialService escalaSalarialService;
     private final TipoNormatividadService tipoNormatividadService;
+    private final ReglaService reglaService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -1336,6 +1337,29 @@ public class ConfigurationMediator {
     public void deleteNormativityTypes(List<Long> validityValueIds) throws CiadtiException {
         for (Long id : validityValueIds) {
             deleteNormativityType(id);
+        }
+    }
+
+    /**
+     * Eliminar una regla
+     * @param ruleId, identificador único de la regla que se desea eliminar
+     * @throws CiadtiException
+     */
+    public void deleteRule(Long ruleId) throws CiadtiException {
+        ReglaEntity reglaDB = reglaService.findById(ruleId);
+        if (reglaDB != null) {
+            reglaService.deleteByProcedure(reglaDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de reglas de vigencia
+     * @param ruleIds, lista de identificadores de las reglas a eliminar
+     * @throws CiadtiException
+     */
+    public void deleteRules(List<Long> ruleIds) throws CiadtiException {
+        for (Long id : ruleIds) {
+            deleteRule(id);
         }
     }
 }

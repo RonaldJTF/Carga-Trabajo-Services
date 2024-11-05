@@ -45,7 +45,7 @@ public class ReglaEntity implements Serializable, Cloneable{
     private String descripcion;
 
     @Column(name = "regl_condiciones", nullable = false)
-    private String[] condiciones;
+    private String condiciones;
 
     @Column(name = "regl_global", length = 1)
     private String global;
