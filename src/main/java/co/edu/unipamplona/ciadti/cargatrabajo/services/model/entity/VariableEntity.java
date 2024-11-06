@@ -2,6 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -67,9 +68,15 @@ public class VariableEntity implements Serializable, Cloneable{
     @Column(name = "vari_registradopor", nullable = false, length = 250)
     private String registradoPor;
 
+    @Transient
+    private ValorVigenciaEntity valorVigencia;
+
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;
+
+    @Transient
+    private List<VariableEntity> variablesRelacionadas;
 
     @PrePersist
     void onCreate() {

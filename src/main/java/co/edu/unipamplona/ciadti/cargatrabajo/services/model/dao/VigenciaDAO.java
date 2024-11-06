@@ -22,6 +22,10 @@ public interface VigenciaDAO extends JpaRepository<VigenciaEntity, Long>, JpaSpe
                 @Param("registradoPor") String registradoPor,
                 @Param("id") Long id);
     
-    @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENT0_D_VIGENCIA(?1 , ?2 )", nativeQuery = true)
+    @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_VIGENCIA(?1 , ?2 )", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    @Modifying
+    @Query(value = "update VigenciaEntity v set v.estado =:state")
+    int updateStateToAllValidities(@Param("state") String state);
 }

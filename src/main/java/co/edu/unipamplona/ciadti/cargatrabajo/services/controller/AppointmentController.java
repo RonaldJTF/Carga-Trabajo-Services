@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CargoEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NormatividadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.CargoService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
@@ -31,20 +33,28 @@ public class AppointmentController {
     private final CargoService cargoService;
     private final ConfigurationMediator configurationMediator;
 
-
     @Operation(
-        summary = "Obtener o listar los cargos",
-        description = "Obtiene o lista los cargos de acuerdo a ciertas variables o parámetros. " +
+        summary = "Obtener o listar los cargos de acuerdo a una lista de Ids de dependencias, Ids Vigencias, etc",
+        description = "Obtiene o lista los  cargos de acuerdo a una lista de Ids de dependencias, Ids Vigencias, etc. " +
                 "Args: id: identificador del cargo. " +
                 "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase CargoEntity). " +
                 "Returns: Objeto o lista de objetos con información del cargo. " +
                 "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
-    @GetMapping(value = {"", "/{id}"})
-    public ResponseEntity<?> get(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
-        ParameterConverter parameterConverter = new ParameterConverter(CargoEntity.class);
-        CargoEntity filter = (CargoEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id == null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, cargoService.findAllFilteredBy(filter));
+    @GetMapping
+    public ResponseEntity<?> get(HttpServletRequest request) throws CiadtiException {
+        Map<String, Long[]> filters = Methods.convertParameterMap(request.getParameterMap());
+        return new ResponseEntity<>(cargoService.findAllBy(filters), HttpStatus.OK);
+    }
+    
+
+    @Operation(
+        summary = "Obtener informacion de un cargo por su id",
+        description = "Obtiene la información de una asignación laboral" +
+                "Args: id: identificador de la carga. " +
+                "Returns: Objeto con información de la carga laboral. ")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAppointment(@PathVariable Long id, HttpServletRequest request) throws CiadtiException {
+        return new ResponseEntity<>(cargoService.findByAppointmentId(id), HttpStatus.OK);
     }
 
     @Operation(
@@ -54,10 +64,7 @@ public class AppointmentController {
                     "Returns: Objeto con la información asociada.")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CargoEntity cargoEntity) {
-        CargoEntity cargoNew = new CargoEntity();
-        cargoNew.setAsignacionBasica(cargoEntity.getAsignacionBasica());
-        cargoNew.setTotalCargo(cargoEntity.getTotalCargo());
-        return new ResponseEntity<>(cargoService.save(cargoNew), HttpStatus.CREATED);
+        return new ResponseEntity<>(cargoService.save(cargoEntity), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -70,7 +77,13 @@ public class AppointmentController {
     public ResponseEntity<?> update (@Valid @RequestBody CargoEntity cargoEntity, @PathVariable Long id) throws CiadtiException{
         CargoEntity cargoEntityBD = cargoService.findById(id);
         cargoEntityBD.setAsignacionBasica(cargoEntity.getAsignacionBasica());
-        cargoEntityBD.setTotalCargo(cargoEntity.getTotalCargo());
+        cargoEntityBD.setTotalCargos(cargoEntity.getTotalCargos());
+        cargoEntityBD.setIdEstructura(cargoEntity.getIdEstructura());
+        cargoEntityBD.setIdVigencia(cargoEntity.getIdVigencia());
+        cargoEntityBD.setIdNivel(cargoEntity.getIdNivel());
+        cargoEntityBD.setIdEscalaSalarial(cargoEntity.getIdEscalaSalarial());
+        cargoEntityBD.setIdNormatividad(cargoEntity.getIdNormatividad());
+        cargoEntityBD.setIdAlcance(cargoEntity.getIdAlcance());
         return new ResponseEntity<>(cargoService.save(cargoEntityBD), HttpStatus.CREATED);
     }
 
@@ -80,18 +93,17 @@ public class AppointmentController {
             "Args: id: identificador del cargo a eliminar. ")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete (@PathVariable Long id) throws CiadtiException{
-        configurationMediator.deletePosition(id);
+        configurationMediator.deleteAppointment(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(
-            summary = "Eliminar posiciones por el id",
-            description = "Elimina lista de posiciones por su id." +
-                    "Args: positionIds: identificadores de los tipos de posiciones a eliminar.")
+        summary = "Eliminar varios cargos por su id",
+        description = "Elimina varios cargos por su id" + 
+            "Args: appointmentIds: lista de id de los cargos a eliminar. ")
     @DeleteMapping
-    public ResponseEntity<?> deletePositions(@RequestBody List<Long> positionIds) throws CiadtiException {
-        configurationMediator.deletePositions(positionIds);
+    public ResponseEntity<?> deleteAppointments (@RequestBody List<Long> appointmentIds) throws CiadtiException{
+        configurationMediator.deleteAppointments(appointmentIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    
 }

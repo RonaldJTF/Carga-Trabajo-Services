@@ -1,20 +1,31 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.CargoDAO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.AlcanceEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CargoEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EscalaSalarialEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NormatividadEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VigenciaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.CargoService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class CargoServiceImpl implements CargoService{
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final CargoDAO cargoDAO;
 
@@ -22,7 +33,6 @@ public class CargoServiceImpl implements CargoService{
     @Transactional(readOnly = true)
     public CargoEntity findById(Long id) throws CiadtiException {
         return cargoDAO.findById(id).orElseThrow(() -> new CiadtiException("Actividad no encontrada para el id :: " + id, 404));
-
     }
 
     @Override
@@ -38,7 +48,7 @@ public class CargoServiceImpl implements CargoService{
             entity.onUpdate();
             cargoDAO.update(
                 entity.getAsignacionBasica(), 
-                entity.getTotalCargo(), 
+                entity.getTotalCargos(), 
                 entity.getIdEstructura(), 
                 entity.getIdNivel(), 
                 entity.getIdNormatividad(), 
@@ -70,8 +80,179 @@ public class CargoServiceImpl implements CargoService{
 
     @Override
     public List<CargoEntity> findAllFilteredBy(CargoEntity filter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllFilteredBy'");
+        SpecificationCiadti<CargoEntity> specification = new SpecificationCiadti<CargoEntity>(filter);
+        return cargoDAO.findAll(specification);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CargoEntity> findAllBy(Map<String, Long[]> filter) {
+        Long[] structureIds = filter.get("dependencies");
+        Long[] validitiesIds = filter.get("validities");
+
+        String jpql= " select c.id, c.asignacionBasica, c.totalCargos, c.idEstructura, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial, " + 
+                " e.nombre, e.icono, e.mimetype, e.idPadre, " +
+                " v.nombre, v.anio, v.estado, " + 
+                " a.nombre, " +
+                " n.nombre, " +
+                " ni.descripcion, " +
+                " es.nombre " +
+                " from CargoEntity c  " +
+                " inner join EstructuraEntity e on (c.idEstructura = e.id)    " +
+                " inner join VigenciaEntity v on (c.idVigencia = v.id)      " +
+                " inner join AlcanceEntity a on (c.idAlcance = a.id)       " +
+                " inner join NormatividadEntity n on (c.idNormatividad = n.id)  " +
+                " inner join NivelEntity ni on (c.idNivel = ni.id)       " +
+                " left outer join EscalaSalarialEntity es on (c.idEscalaSalarial = es.id) " +
+                " where 2 > 1  ";
+
+        Map<String, Object> parameters = new HashMap<>();
+
+        if (validitiesIds != null && validitiesIds.length > 0){
+            jpql += "AND c.idVigencia IN :validitiesIds ";
+            parameters.put("validitiesIds", Arrays.asList(validitiesIds));
+        }
+        if (structureIds != null && structureIds.length > 0){
+            jpql += "AND c.idEstructura IN :structureIds ";
+            parameters.put("structureIds", Arrays.asList(structureIds));
+        }
+
+        jpql += "order by c.idEstructura asc, c.idVigencia asc, c.idAlcance asc, c.idNivel asc ";
+
+        Query query = entityManager.createQuery(jpql);
+
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
+        } 
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = query.getResultList();
+        List<CargoEntity> appointments = new ArrayList<>();
+
+        for (Object[] row : results) {
+            CargoEntity c = CargoEntity.builder()
+                .id((Long) row[0])
+                .asignacionBasica((Double) row[1])
+                .totalCargos((Integer) row[2])
+                .idEstructura((Long) row[3])
+                .idVigencia((Long) row[4])
+                .idAlcance((Long) row[5])
+                .idNormatividad((Long) row[6])
+                .idNivel((Long) row[7])
+                .idEscalaSalarial((Long) row[8])
+                .estructura(EstructuraEntity.builder()
+                    .id((Long) row[3])
+                    .nombre((String) row[9])
+                    .icono((byte[]) row[10])
+                    .mimetype((String)row[11])
+                    .idPadre((Long) row[12])
+                    .build())
+                .vigencia(VigenciaEntity.builder()
+                    .id((Long) row[4])
+                    .nombre((String) row[13])
+                    .anio((String)row[14])
+                    .estado((String)row[15])
+                    .build())
+                .alcance(AlcanceEntity.builder()
+                    .id((Long) row[5])
+                    .nombre((String) row[16])
+                    .build())
+                .normatividad(NormatividadEntity.builder()
+                    .id((Long) row[6])
+                    .nombre((String) row[17])
+                    .build())
+                .nivel(NivelEntity.builder()
+                    .id((Long) row[7])
+                    .descripcion((String) row[18])
+                    .build())
+                .escalaSalarial(EscalaSalarialEntity.builder()
+                    .id((Long) row[8])
+                    .nombre((String) row[19])
+                    .build())
+                .build();
+            appointments.add(c);
+        }
+        return appointments;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CargoEntity findByAppointmentId(Long id) {
+        String jpql= " select c.id, c.asignacionBasica, c.totalCargos, c.idEstructura, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial, " + 
+                " e.nombre, e.icono, e.mimetype, e.idPadre, " +
+                " v.nombre, v.anio, v.estado, " + 
+                " a.nombre, " +
+                " n, " +
+                " ni.descripcion, " +
+                " es.nombre " +
+                " from CargoEntity c  " +
+                " inner join EstructuraEntity e on (c.idEstructura = e.id)    " +
+                " inner join VigenciaEntity v on (c.idVigencia = v.id)      " +
+                " inner join AlcanceEntity a on (c.idAlcance = a.id)       " +
+                " inner join NormatividadEntity n on (c.idNormatividad = n.id)  " +
+                " inner join NivelEntity ni on (c.idNivel = ni.id)       " +
+                " left outer join EscalaSalarialEntity es on (c.idEscalaSalarial = es.id) " +
+                " where 2 > 1  ";
+
+        Map<String, Object> parameters = new HashMap<>();
+
+        if (id != null){
+            jpql += "AND c.id = :id ";
+            parameters.put("id", id);
+        }
+
+        jpql += "order by c.idEstructura asc, c.idVigencia asc, c.idAlcance asc, c.idNivel asc ";
+
+        Query query = entityManager.createQuery(jpql);
+
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
+        } 
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = query.getResultList();
+        CargoEntity appointment = null;
+
+        for (Object[] row : results) {
+            appointment = CargoEntity.builder()
+                .id((Long) row[0])
+                .asignacionBasica((Double) row[1])
+                .totalCargos((Integer) row[2])
+                .idEstructura((Long) row[3])
+                .idVigencia((Long) row[4])
+                .idAlcance((Long) row[5])
+                .idNormatividad((Long) row[6])
+                .idNivel((Long) row[7])
+                .idEscalaSalarial((Long) row[8])
+                .estructura(EstructuraEntity.builder()
+                    .id((Long) row[3])
+                    .nombre((String) row[9])
+                    .icono((byte[]) row[10])
+                    .mimetype((String)row[11])
+                    .idPadre((Long) row[12])
+                    .build())
+                .vigencia(VigenciaEntity.builder()
+                    .id((Long) row[4])
+                    .nombre((String) row[13])
+                    .anio((String)row[14])
+                    .estado((String)row[15])
+                    .build())
+                .alcance(AlcanceEntity.builder()
+                    .id((Long) row[5])
+                    .nombre((String) row[16])
+                    .build())
+                .normatividad((NormatividadEntity) row[17])
+                .nivel(NivelEntity.builder()
+                    .id((Long) row[7])
+                    .descripcion((String) row[18])
+                    .build())
+                .escalaSalarial(EscalaSalarialEntity.builder()
+                    .id((Long) row[8])
+                    .nombre((String) row[19])
+                    .build())
+                .build();
+        }
+        return appointment;
     }
     
 }

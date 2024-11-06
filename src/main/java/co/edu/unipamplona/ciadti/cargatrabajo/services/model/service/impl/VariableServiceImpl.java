@@ -72,5 +72,20 @@ public class VariableServiceImpl implements VariableService{
         SpecificationCiadti<VariableEntity> specification = new SpecificationCiadti<VariableEntity>(filter);
         return variableDAO.findAll(specification);
     }
+
+    @Override
+    public List<VariableEntity> findAllConfigureByValidityAndActive() {
+        return variableDAO.findAllByPorVigenciaAndEstado("1", "1");
+    }
+
+    @Override
+    public List<VariableEntity> findAllWhereIdIsIncluded(Long id) {
+        return variableDAO.findAllWhereIdIsIncluded(id);
+    }
+
+    @Override
+    public List<VariableEntity> findAllByIds(List<Long> variableIds) {
+        return variableDAO.findAllByIds(variableIds);
+    }
     
 }

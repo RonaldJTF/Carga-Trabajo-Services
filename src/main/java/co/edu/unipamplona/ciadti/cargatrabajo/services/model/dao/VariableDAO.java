@@ -1,7 +1,9 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.jexl3.JexlException.Variable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -29,5 +31,12 @@ public interface VariableDAO extends JpaRepository<VariableEntity, Long>, JpaSpe
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_VARIABLE(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
-    
+
+    List<VariableEntity> findAllByPorVigenciaAndEstado(String byValidity, String status);
+
+    @Query(value = "select v from VariableEntity v where v.valor like CONCAT('%[', :id, ']%')")
+    List<VariableEntity> findAllWhereIdIsIncluded(@Param("id") Long id);
+
+    @Query(value="select v from VariableEntity as v where v.id in :variableIds")
+    List<VariableEntity> findAllByIds(@Param("variableIds") List<Long> variableIds);
 }

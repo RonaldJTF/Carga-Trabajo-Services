@@ -51,6 +51,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/validity/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/validity/**").hasAnyRole("ADMINISTRADOR")
 
+                .requestMatchers(HttpMethod.GET, "/api/variable/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers("/api/variable/**").hasAnyRole("ADMINISTRADOR")
+
+                .requestMatchers(HttpMethod.GET, "/api/rule/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers("/api/rule/**").hasAnyRole("ADMINISTRADOR")
+
                 .requestMatchers(HttpMethod.GET, "/api/normativity/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/normativity/**").hasAnyRole("ADMINISTRADOR")
                 

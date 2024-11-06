@@ -1,7 +1,6 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,13 +10,12 @@ import org.springframework.data.repository.query.Param;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CargoEntity;
 
 public interface CargoDAO extends JpaRepository<CargoEntity, Long>, JpaSpecificationExecutor<CargoEntity>{
-    
     @Modifying
-    @Query(value = "update CargoEntity c set c.asignacionBasica =:asignacionBasica, c.totalCargo =:totalCargo, " +
+    @Query(value = "update CargoEntity c set c.asignacionBasica =:asignacionBasica, c.totalCargos =:totalCargos, " +
                     "c.idEstructura =:idEstructura, c.idNivel =:idNivel, c.idNormatividad =:idNormatividad, c.idEscalaSalarial =:idEscalaSalarial, " + 
                     "c.idAlcance =:idAlcance, c.idVigencia =:idVigencia, c.fechaCambio =:fechaCambio, c.registradoPor =:registradoPor where c.id =:id")
-    int update (@Param("asignacionBasica") Long asiganacionBasica,
-                @Param("totalCargo") Long totalCargo,
+    int update (@Param("asignacionBasica") Double asiganacionBasica,
+                @Param("totalCargos") Integer totalCargos,
                 @Param("idEstructura") Long idEstructura,
                 @Param("idNivel") Long idNivel,
                 @Param("idNormatividad") Long idNormatividad,

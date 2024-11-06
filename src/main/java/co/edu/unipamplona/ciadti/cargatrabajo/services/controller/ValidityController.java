@@ -32,13 +32,11 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/validity")
 public class ValidityController {
     private final VigenciaService vigenciaService;
-    private final ValorVigenciaService valorVigenciaService;
     private final ConfigurationMediator configurationMediator;
-    private final VariableService variableService;
     
     @Operation(
-        summary = "Obtener o listar las vigencias",
-        description = "Obtiene o lista las vigencias de acuerdo a ciertas variables o parámetros. " +
+        summary = "Obtener o listar las vigencias con las variables parametrizadas con respectivos valores",
+        description = "Obtiene o lista las vigencias con las variables parametrizadas con respectivos valores de acuerdo a ciertas variables o parámetros. " +
             "Args: id: identificador de la vigencia. " +
             "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase VigenciaEntity). " +
             "Returns: Objeto o lista de objetos con información de la vigencia. " +
@@ -57,12 +55,8 @@ public class ValidityController {
             "Args: vigenciaEntity: objeto con información de la vigencia. " +
             "Returns: Objeto con la información asociada.")
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody VigenciaEntity vigenciaEntity) {
-        VigenciaEntity vigenciaNew = new VigenciaEntity();
-        vigenciaNew.setNombre(vigenciaEntity.getNombre());
-        vigenciaNew.setAnio(vigenciaEntity.getAnio());
-        vigenciaNew.setEstado(vigenciaEntity.getEstado());
-        return new ResponseEntity<>(vigenciaService.save(vigenciaNew), HttpStatus.CREATED);
+    public ResponseEntity<?> create(@Valid @RequestBody VigenciaEntity vigenciaEntity) throws CiadtiException {
+        return new ResponseEntity<>(configurationMediator.saveValidity(vigenciaEntity), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -73,16 +67,13 @@ public class ValidityController {
             "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
     public ResponseEntity<?> update (@Valid @RequestBody VigenciaEntity vigenciaEntity, @PathVariable Long id) throws CiadtiException{
-        VigenciaEntity vigenciaEntityBD = vigenciaService.findById(id);
-        vigenciaEntityBD.setNombre(vigenciaEntity.getNombre());
-        vigenciaEntityBD.setAnio(vigenciaEntity.getAnio());
-        vigenciaEntityBD.setEstado(vigenciaEntity.getEstado());
-        return new ResponseEntity<>(vigenciaService.save(vigenciaEntityBD), HttpStatus.CREATED);
+        vigenciaEntity.setId(id);
+        return new ResponseEntity<>(configurationMediator.saveValidity(vigenciaEntity), HttpStatus.CREATED);
     }
 
     @Operation(
-        summary = "Eliminar una vigencia",
-        description = "Eliminar una vigencia" + 
+        summary = "Eliminar una vigencia junto a las parametrizaciones de los valores de las variables en esa vigencia.",
+        description = "Eliminar una vigencia junto a las parametrizaciones de los valores de las variables en esa vigencia." + 
             "Args: id: identificador de la vigencia a eliminar. ")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteValidity(@PathVariable Long id) throws CiadtiException{
@@ -91,23 +82,23 @@ public class ValidityController {
     }
 
     @Operation(
-            summary = "Eliminar posiciones por el id",
-            description = "Elimina lista de posiciones por su id." +
-                    "Args: positionIds: identificadores de los tipos de posiciones a eliminar.")
+            summary = "Eliminar vigencias por el id junto a las parametrizaciones de los valores de las variables en esas vigencias.",
+            description = "Elimina lista de vigencias por su id junto a las parametrizaciones de los valores de las variables en esas vigencias." +
+                    "Args: positionIds: identificadores de las vigencias a eliminar.")
     @DeleteMapping
     public ResponseEntity<?> deleteValidities(@RequestBody List<Long> validityIds) throws CiadtiException {
         configurationMediator.deleteValidities(validityIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Operation(
+    /*@Operation(
         summary = "Obtener o listar los valores de vigencias",
         description = "Obtiene o lista los valores de vigencias de acuerdo a ciertas variables o parámetros. " +
             "Args: id: identificador del valor de vigencia. " +
             "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase ValorVigenciaEntity). " +
             "Returns: Objeto o lista de objetos con información del valor de vigencia. " +
             "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
-    @GetMapping(value = {"/validity-value", "/validity-value/{id}"})
+    @GetMapping(value = {"/value-in-validity", "/value-in-validity/{id}"})
     public ResponseEntity<?> getValidityValue(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
         ParameterConverter parameterConverter = new ParameterConverter(ValorVigenciaEntity.class);
         ValorVigenciaEntity filter = (ValorVigenciaEntity) parameterConverter.converter(request.getParameterMap());
@@ -120,7 +111,7 @@ public class ValidityController {
         description = "Crea un valor de vigencia" +
             "Args: valorVigenciaEntity: objeto con información del valor de vigencia. " +
             "Returns: Objeto con la información asociada.")
-    @PostMapping("/validity-value")
+    @PostMapping("/value-in-validity")
     public ResponseEntity<?> createValidityValue(@Valid @RequestBody ValorVigenciaEntity valorVigenciaEntity) {
         ValorVigenciaEntity valorVigenciaNew = new ValorVigenciaEntity();
         valorVigenciaNew.setValor(valorVigenciaEntity.getValor());
@@ -133,95 +124,31 @@ public class ValidityController {
             "Args: valorVigenciaEntity: objeto con información del valor de vigencia. " +
             "id: identificador del cargo. " +
             "Returns: Objeto con la información asociada.")
-    @PutMapping("/validity-value/{id}")
+    @PutMapping("/value-in-validity/{id}")
     public ResponseEntity<?> updateValidityValue(@Valid @RequestBody ValorVigenciaEntity valorVigenciaEntity, @PathVariable Long id) throws CiadtiException{
         ValorVigenciaEntity valorVigenciaEntityBD = valorVigenciaService.findById(id);
         valorVigenciaEntityBD.setValor(valorVigenciaEntity.getValor());
         return new ResponseEntity<>(valorVigenciaService.save(valorVigenciaEntityBD), HttpStatus.CREATED);
-    }
+    }*/
 
     @Operation(
-        summary = "Eliminar un valor de vigencia",
-        description = "Eliminar un valor de vigencia" + 
-            "Args: id: identificador del valor de vigencia a eliminar. ")
-    @DeleteMapping("/validity-value/{id}")
-    public ResponseEntity<?> deleteValidityValue(@PathVariable Long id) throws CiadtiException{
-        configurationMediator.deleteValidityValue(id);
+        summary = "Eliminar un valor de una variable en una vigencia",
+        description = "Eliminar un valor d euna variable en una vigencia" + 
+            "Args: id: identificador del valor vigencia a eliminar. ")
+    @DeleteMapping("/value-in-validity/{id}")
+    public ResponseEntity<?> deleteValueInValidity(@PathVariable Long id) throws CiadtiException{
+        configurationMediator.deleteValueInValidity(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Operation(
+    /*@Operation(
             summary = "Eliminar valores de vigencia por el id",
             description = "Elimina lista de valores de vigencia por su id." +
                     "Args: validityValuesIds: identificadores de los tipos de posiciones a eliminar.")
-    @DeleteMapping("/validity-value")
+    @DeleteMapping("/value-in-validity")
     public ResponseEntity<?> deleteValidityValues(@RequestBody List<Long> validityValueIds) throws CiadtiException {
         configurationMediator.deleteValidityValues(validityValueIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @Operation(
-        summary = "Obtener o listar una variable",
-        description = "Obtiene o lista las variables de acuerdo a ciertos parámetros. " +
-            "Args: id: identificador de variable. " +
-            "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase VariableEntity). " +
-            "Returns: Objeto o lista de objetos con información del valor de variable. " +
-            "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
-    @GetMapping(value = {"/variable", "/variable/{id}"})
-    public ResponseEntity<?> getVariable(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
-        ParameterConverter parameterConverter = new ParameterConverter(VariableEntity.class);
-        VariableEntity filter = (VariableEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id==null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, variableService.findAllFilteredBy(filter));
-    }
-
-    @Operation(
-        summary="Crear una variable",
-        description = "Crea una variable" +
-            "Args: variableEntity: objeto con información de la variable. " +
-            "Returns: Objeto con la información asociada.")
-    @PostMapping("/variable")
-    public ResponseEntity<?> createVariable(@Valid @RequestBody VariableEntity variableEntity) {
-        return new ResponseEntity<>(variableService.save(variableEntity), HttpStatus.CREATED);
-    }
-
-    @Operation(
-        summary="Actualizar una variable",
-        description = "Actualiza una variable. " + 
-            "Args: variableEntity: objeto con información de la variable. " +
-            "id: identificador del cargo. " +
-            "Returns: Objeto con la información asociada.")
-    @PutMapping("/variable/{id}")
-    public ResponseEntity<?> updateVariable(@Valid @RequestBody VariableEntity variableEntity, @PathVariable Long id) throws CiadtiException{
-        VariableEntity variableEntityDB = new VariableEntity();
-        variableEntityDB.setNombre(variableEntity.getNombre());
-        variableEntityDB.setDescripcion(variableEntity.getDescripcion());
-        variableEntityDB.setValor(variableEntity.getValor());
-        variableEntityDB.setPrimaria(variableEntity.getPrimaria());
-        variableEntityDB.setGlobal(variableEntity.getGlobal());
-        variableEntityDB.setPorVigencia(variableEntity.getPorVigencia());
-        variableEntityDB.setEstado(variableEntity.getPorVigencia());
-        return new ResponseEntity<>(variableService.save(variableEntityDB), HttpStatus.CREATED);
-    }
-
-    @Operation(
-        summary = "Elimina una variable",
-        description = "Eliminar una variable" + 
-            "Args: id: identificador de la variable a eliminar. ")
-    @DeleteMapping("/variable/{id}")
-    public ResponseEntity<?> deleteVariable(@PathVariable Long id) throws CiadtiException{
-        configurationMediator.deleteVariable(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @Operation(
-            summary = "Eliminar variables por el id",
-            description = "Elimina lista de variables por su id." +
-                    "Args: variableIds: identificadores de los tipos de variables a eliminar.")
-    @DeleteMapping("/variable")
-    public ResponseEntity<?> deleteVariables(@RequestBody List<Long> validityIds) throws CiadtiException {
-        configurationMediator.deleteVariables(validityIds);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+    }*/
 
 }

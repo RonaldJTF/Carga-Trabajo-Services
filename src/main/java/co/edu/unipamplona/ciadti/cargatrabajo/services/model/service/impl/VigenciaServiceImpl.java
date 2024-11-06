@@ -6,16 +6,22 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.OrderBy;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.VigenciaDAO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VigenciaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.VigenciaService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class VigenciaServiceImpl implements VigenciaService{
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final VigenciaDAO vigenciaDAO;
 
@@ -65,9 +71,16 @@ public class VigenciaServiceImpl implements VigenciaService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<VigenciaEntity> findAllFilteredBy(VigenciaEntity filter) {
-        SpecificationCiadti<VigenciaEntity> specification = new SpecificationCiadti<VigenciaEntity>(filter);
+        OrderBy orderBy = new OrderBy("anio", false);
+        SpecificationCiadti<VigenciaEntity> specification = new SpecificationCiadti<VigenciaEntity>(filter, orderBy);
         return vigenciaDAO.findAll(specification);
     }
-    
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public int updateStateToAllValidities(String state) {
+        return vigenciaDAO.updateStateToAllValidities(state);
+    }    
 }

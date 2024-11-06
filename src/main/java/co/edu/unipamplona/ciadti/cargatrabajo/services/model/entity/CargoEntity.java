@@ -15,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -40,10 +41,10 @@ public class CargoEntity implements Serializable, Cloneable {
     private Long id;
 
     @Column(name = "carg_asignacionbasica", nullable = false, length = 30)
-    private Long asignacionBasica;
+    private Double asignacionBasica;
 
     @Column(name = "carg_totalcargo", nullable = false, length = 30)
-    private Long totalCargo;
+    private Integer totalCargos;
   
     @Column(name = "estr_id", nullable = false, length = 30)
     private Long idEstructura;
@@ -72,21 +73,27 @@ public class CargoEntity implements Serializable, Cloneable {
     @Column(name = "carg_registradopor", nullable = false, length = 250)
     private String registradoPor;
 
+    @OneToOne
     @JoinColumn(name = "estr_id", insertable = false, updatable = false)
     private EstructuraEntity estructura;
 
+    @OneToOne
     @JoinColumn(name = "nive_id", insertable = false, updatable = false)
     private NivelEntity nivel;
 
+    @OneToOne
     @JoinColumn(name = "norm_id", insertable = false, updatable = false)
     private NormatividadEntity normatividad;
 
+    @OneToOne
     @JoinColumn(name = "essa_id", insertable = false, updatable = false)
     private EscalaSalarialEntity escalaSalarial;
 
+    @OneToOne
     @JoinColumn(name = "alca_id", insertable = false, updatable = false)
     private AlcanceEntity alcance;
 
+    @OneToOne
     @JoinColumn(name = "vige_id", insertable = false, updatable = false)
     private VigenciaEntity vigencia;
 

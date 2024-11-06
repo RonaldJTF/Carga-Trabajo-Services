@@ -60,6 +60,11 @@ public class NivelEntity implements Serializable{
         return  descripcion != null && descripcion.length() >= 3 ? descripcion.substring(0, 3) : null;
     }
 
+    @JsonGetter("nombre")
+    public String getNombre() {
+        return  descripcion;
+    }
+
     @Transient
     private List<EscalaSalarialEntity> escalasSalariales;
 

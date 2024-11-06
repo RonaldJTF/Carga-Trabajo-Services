@@ -71,5 +71,10 @@ public class ReglaServiceImpl implements ReglaService{
         Specification<ReglaEntity> specification = new SpecificationCiadti<ReglaEntity>(filter);
         return reglaDAO.findAll(specification);
     }
+
+    @Override
+    public List<ReglaEntity> findAllWhereVariableIsIncluded(Long idVariable) {
+        return reglaDAO.findAllWhereVariableIsIncluded(idVariable);
+    }
     
 }

@@ -2,6 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -45,7 +46,10 @@ public class ReglaEntity implements Serializable, Cloneable{
     private String descripcion;
 
     @Column(name = "regl_condiciones", nullable = false)
-    private String[] condiciones;
+    private String condiciones;
+
+    @Transient
+    private String expresionCondiciones;
 
     @Column(name = "regl_global", length = 1)
     private String global;
@@ -61,6 +65,9 @@ public class ReglaEntity implements Serializable, Cloneable{
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "regl_registradopor", nullable = false, length = 250)
     private String registradoPor;
+
+    @Transient
+    private List<VariableEntity> variablesRelacionadas;
 
     @JsonIgnore
     @Transient

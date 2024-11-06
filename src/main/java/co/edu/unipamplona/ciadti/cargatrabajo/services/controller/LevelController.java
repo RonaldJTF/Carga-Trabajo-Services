@@ -63,7 +63,7 @@ public class LevelController {
                     "Returns: Objeto con la información asociada.")
     @PostMapping
     public ResponseEntity<?> createLevel(@Valid @RequestBody NivelEntity nivelEntity) throws CiadtiException {
-        return new ResponseEntity<>(configurationMediator.saveLevel(nivelEntity, null), HttpStatus.CREATED);
+        return new ResponseEntity<>(configurationMediator.saveLevel(nivelEntity), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -74,7 +74,8 @@ public class LevelController {
                     "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateLevel(@Valid @RequestBody NivelEntity nivelEntity, @PathVariable Long id) throws CiadtiException {
-        return new ResponseEntity<>(configurationMediator.saveLevel(nivelEntity, id), HttpStatus.CREATED);
+        nivelEntity.setId(id);
+        return new ResponseEntity<>(configurationMediator.saveLevel(nivelEntity), HttpStatus.CREATED);
     }
 
     @Operation(

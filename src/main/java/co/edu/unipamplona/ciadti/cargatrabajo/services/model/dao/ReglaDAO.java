@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -17,7 +18,7 @@ public interface ReglaDAO extends JpaRepository<ReglaEntity, Long>, JpaSpecifica
                     "r.global =:global, r.estado =:estado, r.fechaCambio =:fechaCambio, r.registradoPor =:registradoPor where r.id =:id")
     int update (@Param("nombre") String nombre,
                 @Param("descripcion") String descripcion,
-                @Param("condiciones") String[] condiciones,
+                @Param("condiciones") String condiciones,
                 @Param("global") String global,
                 @Param("estado") String estado,
                 @Param("fechaCambio") Date fechaCambio,
@@ -26,4 +27,7 @@ public interface ReglaDAO extends JpaRepository<ReglaEntity, Long>, JpaSpecifica
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_REGLA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    @Query(value = "select r from ReglaEntity r where r.condiciones like CONCAT('%[', :idVariable, ']%')")
+    List<ReglaEntity> findAllWhereVariableIsIncluded(@Param("idVariable") Long idVariable);
 }

@@ -11,7 +11,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.*;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Routes;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Active;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Status;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.State;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -59,6 +61,7 @@ public class ConfigurationMediator {
     private final VariableService variableService;
     private final NormatividadService normatividadService;
     private final EscalaSalarialService escalaSalarialService;
+    private final ReglaService reglaService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -745,6 +748,7 @@ public class ConfigurationMediator {
      * Método para actualizar la contraseña de un usuario
      * @param data, objeto con la información del usuario a actualizar
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void changePassword(UsuarioEntity data) throws CiadtiException {
         String password = cipherService.decryptCredential(data.getPassword());
         UsuarioEntity usuario = usuarioService.findById(data.getId());
@@ -760,6 +764,7 @@ public class ConfigurationMediator {
      * @param roleId, identificador único del rol que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteRole(Long roleId) throws CiadtiException {
         RolEntity rolDB = rolService.findById(roleId);
         if (rolDB != null) {
@@ -772,6 +777,7 @@ public class ConfigurationMediator {
      * @param roleIds, lista de identificadores de roles a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteRoles(List<Long> roleIds) throws CiadtiException {
         for (Long id : roleIds) {
             deleteRole(id);
@@ -783,6 +789,7 @@ public class ConfigurationMediator {
      * @param genderId, identificador único del género que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteGender(Long genderId) throws CiadtiException {
         GeneroEntity generoDB = generoService.findById(genderId);
         if (generoDB != null) {
@@ -795,6 +802,7 @@ public class ConfigurationMediator {
      * @param genderIds, lista de identificadores de géneros a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteGenders(List<Long> genderIds) throws CiadtiException {
         for (Long id : genderIds) {
             deleteGender(id);
@@ -806,6 +814,7 @@ public class ConfigurationMediator {
      * @param levelId, identificador único del nivel de ocupación que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteLevel(Long levelId) throws CiadtiException {
         NivelEntity nivelDB = nivelService.findById(levelId);
         List<EscalaSalarialEntity> escalasSalarialesToDelete = escalaSalarialService.findAllFilteredBy(EscalaSalarialEntity.builder().idNivel(levelId).build());
@@ -823,6 +832,7 @@ public class ConfigurationMediator {
      * @param levelIds, lista de identificadores de los niveles a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteLevels(List<Long> levelIds) throws CiadtiException {
         for (Long id : levelIds) {
             deleteLevel(id);
@@ -834,6 +844,7 @@ public class ConfigurationMediator {
      * @param documentTypeId, identificador único del tipo de documento que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteDocumentType(Long documentTypeId) throws CiadtiException {
         TipoDocumentoEntity tipoDocumentoDB = tipoDocumentoService.findById(documentTypeId);
         if (tipoDocumentoDB != null) {
@@ -846,6 +857,7 @@ public class ConfigurationMediator {
      * @param documentTypeIds, lista de identificadores de los tipos de documentos a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteDocumentTypes(List<Long> documentTypeIds) throws CiadtiException {
         for (Long id : documentTypeIds) {
             deleteDocumentType(id);
@@ -857,6 +869,7 @@ public class ConfigurationMediator {
      * @param typologyId, identificador único de la tipología que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteTypology(Long typologyId) throws CiadtiException {
         tipologiaService.deleteByProcedure(typologyId, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
@@ -866,6 +879,7 @@ public class ConfigurationMediator {
      * @param typologiesIds, lista de identificadores de las tipologías a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteTypoligies(List<Long> typologiesIds) throws CiadtiException {
         for (Long id : typologiesIds) {
             deleteTypology(id);
@@ -877,6 +891,7 @@ public class ConfigurationMediator {
      * @param ftpId, identificador único del FTP que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteFtp(Long ftpId) throws CiadtiException {
         ftpService.deleteByProcedure(ftpId, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
@@ -886,6 +901,7 @@ public class ConfigurationMediator {
      * @param ftpIds, lista de identificadores de los FTP's
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteFtps(List<Long> ftpIds) throws CiadtiException {
         for (Long id : ftpIds) {
             deleteFtp(id);
@@ -898,6 +914,7 @@ public class ConfigurationMediator {
      * @return, Objeto con el id de la acción guardada
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public AccionEntity saveActionProcedure(AccionEntity actionEntity) throws CiadtiException {
         return accionService.saveActionProcedure(actionEntity);
     }
@@ -907,6 +924,7 @@ public class ConfigurationMediator {
      * @param actionId, identificador único de la acción que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteAction(Long actionId) throws CiadtiException {
         accionService.deleteByProcedure(actionId, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
@@ -916,6 +934,7 @@ public class ConfigurationMediator {
      * @param actionIds, lista de identificadores de las acciones a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteActions(List<Long> actionIds) throws CiadtiException {
         for (Long id : actionIds) {
             deleteAction(id);
@@ -927,6 +946,7 @@ public class ConfigurationMediator {
      * @param tipologiaAccionEntity, Objeto con información utilizada para la eliminación del registro
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteTypologyAction(TipologiaAccionEntity tipologiaAccionEntity) throws CiadtiException{
         List<TipologiaAccionEntity> taDB = tipologiaAccionService.findAllFilteredBy(tipologiaAccionEntity);
         for (TipologiaAccionEntity ta : taDB) {
@@ -940,6 +960,7 @@ public class ConfigurationMediator {
      * @param actionIds, lista de ids de las acciones relacionadas con la tipología
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteTypologyActions(Long idTypology, List<Long> actionIds) throws CiadtiException {
         for (Long id : actionIds) {
             TipologiaAccionEntity tipologiaAccion = new TipologiaAccionEntity();
@@ -949,6 +970,11 @@ public class ConfigurationMediator {
         }
     }
 
+    /**
+     * Obtiene las dependencias con la relación de las subdependencias.
+     * @return
+     * @throws CiadtiException
+     */
     public List<EstructuraEntity> getDependencies() throws CiadtiException{
         List<DependenciaDTO> results = this.estructuraService.findAllDependencies();
         return results != null ? buildDependencies(results) : null;
@@ -968,6 +994,12 @@ public class ConfigurationMediator {
         }
     }
 
+    /**
+     * Obtiene la dependencia por su id
+     * @param idDependency
+     * @return
+     * @throws CiadtiException
+     */
     public EstructuraEntity getDependencyInformation(Long idDependency) throws CiadtiException {
         EstructuraEntity dependency = (EstructuraEntity)this.estructuraService.findById(idDependency);
         if (dependency.getSubEstructuras() != null) {
@@ -1043,6 +1075,7 @@ public class ConfigurationMediator {
      * @param scopeId, identificador único del alcance que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteScope(Long scopeId) throws CiadtiException {
         AlcanceEntity scopeDB = alcanceService.findById(scopeId);
         if (scopeDB != null) {
@@ -1055,6 +1088,7 @@ public class ConfigurationMediator {
      * @param scopesIds, lista de identificadores de los alcances a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteScopes(List<Long> scopesIds) throws CiadtiException {
         for (Long id : scopesIds) {
             deleteScope(id);
@@ -1066,6 +1100,7 @@ public class ConfigurationMediator {
      * @param categoryId, identificador único del tipo de categoría que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteCategory(Long categoryId) throws CiadtiException {
         CategoriaEntity categoryDB = categoriaService.findById(categoryId);
         if (categoryDB != null) {
@@ -1078,6 +1113,7 @@ public class ConfigurationMediator {
      * @param categoriesIds, lista de identificadores de los tipos de categorías a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteCategories(List<Long> categoriesIds) throws CiadtiException {
         for (Long id : categoriesIds) {
             deleteCategory(id);
@@ -1089,6 +1125,7 @@ public class ConfigurationMediator {
      * @param periodicityId, identificador único del tipo de periodicidad que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deletePeriodicity(Long periodicityId) throws CiadtiException {
         PeriodicidadEntity periodicityDB = periodicidadService.findById(periodicityId);
         if (periodicityDB != null) {
@@ -1101,6 +1138,7 @@ public class ConfigurationMediator {
      * @param periodicitiesIds, lista de identificadores de los tipos de periodicidad a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deletePeriodicities(List<Long> periodicitiesIds) throws CiadtiException {
         for (Long id : periodicitiesIds) {
             deletePeriodicity(id);
@@ -1108,36 +1146,19 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Eliminar un tipo de cargo
-     * @param positionId, identificador único del tipo de cargo que se desea eliminar
-     * @throws CiadtiException
-     */
-    public void deletePosition(Long positionId) throws CiadtiException {
-        CargoEntity cargoDB = cargoService.findById(positionId);
-        if (cargoDB != null) {
-            cargoService.deleteByProcedure(cargoDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
-        }
-    }
-
-    /**
-     * Elimina lista de tipos de cargo
-     * @param positionsIds, lista de identificadores de los tipos de cargo a eliminar
-     * @throws CiadtiException
-     */
-    public void deletePositions(List<Long> positionIds) throws CiadtiException {
-        for (Long id : positionIds) {
-            deletePosition(id);
-        }
-    }
-
-    /**
-     * Eliminar un tipo de vigencia
+     * Eliminar una vigencia junto a las parametrizaciones de los valores de las variables en esa vigencia.
      * @param validityId, identificador único del tipo de vigencia que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteValidity(Long validityId) throws CiadtiException {
         VigenciaEntity vigenciaDB = vigenciaService.findById(validityId);
         if (vigenciaDB != null) {
+            if (vigenciaDB.getValoresVigencia() != null){
+                for (ValorVigenciaEntity e : vigenciaDB.getValoresVigencia()){
+                    valorVigenciaService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+                }
+            }
             vigenciaService.deleteByProcedure(vigenciaDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         }
     }
@@ -1147,6 +1168,7 @@ public class ConfigurationMediator {
      * @param validitiesIds, lista de identificadores de los tipos de vigencia a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteValidities(List<Long> validityIds) throws CiadtiException {
         for (Long id : validityIds) {
             deleteValidity(id);
@@ -1154,48 +1176,81 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Eliminar un tipo de valor de vigencia
-     * @param validityValueId, identificador único del tipo de valor de vigencia que se desea eliminar
-     * @throws CiadtiException
-     */
-    public void deleteValidityValue(Long validityValueId) throws CiadtiException {
-        ValorVigenciaEntity valorVigenciaDB = valorVigenciaService.findById(validityValueId);
-        if (valorVigenciaDB != null) {
-            valorVigenciaService.deleteByProcedure(valorVigenciaDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
-        }
-    }
-
-    /**
-     * Elimina lista de tipos de valor de vigencia
-     * @param validityValueIds, lista de identificadores de los tipos de valor de vigencia a eliminar
-     * @throws CiadtiException
-     */
-    public void deleteValidityValues(List<Long> validityValueIds) throws CiadtiException {
-        for (Long id : validityValueIds) {
-            deleteValidityValue(id);
-        }
-    }
-
-    /**
-     * Eliminar un tipo de variable
+     * Eliminar variable junto a las variables que tienen relación con ella, de tal manera que si la que tenía relación con ella 
+     * está relacionada en otras variables, estas tambien son eliminadas. Esta tarea se hace en cascada.
      * @param variableId, identificador único del tipo de variable que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteVariable(Long variableId) throws CiadtiException {
         VariableEntity variableDB = variableService.findById(variableId);
         if (variableDB != null) {
+            deleteRelashionshipWithVariable(variableDB.getId());
             variableService.deleteByProcedure(variableDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+            List<ReglaEntity> rulesToDelete = reglaService.findAllWhereVariableIsIncluded(variableDB.getId());
+            for (ReglaEntity r : rulesToDelete){
+                reglaService.deleteByProcedure(r.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+            }
         }
     }
 
     /**
-     * Elimina lista de tipos de variables
+     * Elimina lista de variables
      * @param variableIds, lista de identificadores de los tipos de variable a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteVariables(List<Long> variableIds) throws CiadtiException {
         for (Long id : variableIds) {
             deleteVariable(id);
+        }
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    private void deleteRelashionshipWithVariable (Long id){
+        List<VariableEntity> variables = variableService.findAllWhereIdIsIncluded(id);
+        for (VariableEntity v : variables){
+            try {
+                deleteVariable(v.getId());
+            } catch (CiadtiException ignored) {} //Puede que ya se eliminó en cascada otra variable seleccionada para eliminar y lance la excepción de que removió 0 filas
+        }
+    }
+
+    /**
+     * Eliminar una asignación de cargos
+     * @param appointmentId, identificador único del cargo que se desea eliminar
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteAppointment(Long appointmentId) throws CiadtiException {
+        CargoEntity cargoDB = cargoService.findById(appointmentId);
+        if (cargoDB != null) {
+            cargoService.deleteByProcedure(cargoDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina varias desiganciones de cargos por sus ids.
+     * @param appointmentIds
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteAppointments(List<Long> appointmentIds) throws CiadtiException {
+        for (Long id : appointmentIds) {
+            deleteAppointment(id);
+        }
+    }
+
+    /**
+     * Eliminar un valor de una variable en una vigencia
+     * @param valueInValidityId, identificador único del valor de  la variable en una vigencia que se desea eliminar
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteValueInValidity(Long valueInValidityId) throws CiadtiException {
+        ValorVigenciaEntity valorVigenciaDB = valorVigenciaService.findById(valueInValidityId);
+        if (valorVigenciaDB != null) {
+            valorVigenciaService.deleteByProcedure(valorVigenciaDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         }
     }
 
@@ -1204,6 +1259,7 @@ public class ConfigurationMediator {
      * @param normativityId, identificador único de la normatividad que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteNormativity(Long normativityId) throws CiadtiException {
         NormatividadEntity normatividadEntityBD = normatividadService.findById(normativityId);
         List<EscalaSalarialEntity> salaryScalesToDelete = escalaSalarialService.findAllFilteredBy(EscalaSalarialEntity.builder().idNormatividad(normativityId).build());
@@ -1223,7 +1279,7 @@ public class ConfigurationMediator {
      * @throws CiadtiException
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public NivelEntity saveLevel(NivelEntity nivelEntity, Long id) throws CiadtiException{
+    public NivelEntity saveLevel(NivelEntity nivelEntity) throws CiadtiException{
         List<EscalaSalarialEntity> newSalaryScales = nivelEntity.getEscalasSalariales();
         nivelEntity = nivelService.save(nivelEntity);        
         List<EscalaSalarialEntity> oldSalaryScales = escalaSalarialService.findAllFilteredBy(EscalaSalarialEntity.builder().idNivel(nivelEntity.getId()).build());
@@ -1255,8 +1311,8 @@ public class ConfigurationMediator {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public NormatividadEntity updateNormativity(NormatividadEntity normatividadEntity) {
         normatividadService.save(normatividadEntity);
-        int totalActive = escalaSalarialService.countByStatusAndNormativityId(Status.ACTIVATED, normatividadEntity.getId());
-        if (normatividadEntity.getEstado().equals(Status.INACTIVATED) || totalActive == 0){
+        int totalActive = escalaSalarialService.countByStatusAndNormativityId(State.ACTIVATED, normatividadEntity.getId());
+        if (normatividadEntity.getEstado().equals(State.INACTIVATED) || totalActive == 0){
             escalaSalarialService.updateStatusByNormativityId(
                 EscalaSalarialEntity.builder().estado(normatividadEntity.getEstado()).idNormatividad(normatividadEntity.getId()).build()
             );
@@ -1273,6 +1329,97 @@ public class ConfigurationMediator {
         EscalaSalarialEntity salaryScaleTodelete = escalaSalarialService.findById(id);
         if (salaryScaleTodelete != null) {
             escalaSalarialService.deleteByProcedure(salaryScaleTodelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+
+    /**
+     * Crea o actualiza una vigencia junto los valores de las variables en la vigencia
+     * Aqui se trae la nueva lista de los valores de las variables en la vigencia, si ya no se incluye alguna de las existentes, 
+     * entonces se es eliminada de la BD, y si se trae una nueva, entonces se es insertada en BD.
+     * @param vigenciaEntity
+     * @return
+     * @throws CiadtiException
+    */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public VigenciaEntity saveValidity(VigenciaEntity vigenciaEntity) throws CiadtiException{
+        List<ValorVigenciaEntity> newValuesInValidity = vigenciaEntity.getValoresVigencia();
+
+        if(Methods.convertToBoolean(vigenciaEntity.getEstado())){
+            vigenciaService.updateStateToAllValidities(State.INACTIVATED);
+        }
+        vigenciaEntity = vigenciaService.save(vigenciaEntity);    
+
+        List<ValorVigenciaEntity> oldValuesInValidity = valorVigenciaService.findAllFilteredBy(ValorVigenciaEntity.builder().idVigencia(vigenciaEntity.getId()).build());
+            
+        List<ValorVigenciaEntity> valuesInValidityToDelete = oldValuesInValidity.stream()
+                .filter(e -> !newValuesInValidity.stream().map(ValorVigenciaEntity :: getId).collect(Collectors.toList()).contains(e.getId()))
+                .collect(Collectors.toList());
+
+        for (ValorVigenciaEntity e : newValuesInValidity) {
+            e.setIdVigencia(vigenciaEntity.getId());
+            valorVigenciaService.save(e);
+        }
+
+        for (ValorVigenciaEntity e : valuesInValidityToDelete) {
+            valorVigenciaService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }     
+
+        return vigenciaEntity;
+    }
+
+    /**
+     * Consulta una variable junto a las variables que tiene relacionada
+     * @param id
+     * @return
+     * @throws CiadtiException
+     */
+    public VariableEntity findVariable(Long id) throws CiadtiException {
+        VariableEntity variableEntity = variableService.findById(id);
+        variableEntity.setVariablesRelacionadas(variableService.findAllByIds(extractVariableIds(variableEntity.getValor())));
+        return variableEntity;
+    }
+
+    public ReglaEntity findRule(Long id) throws CiadtiException {
+        ReglaEntity reglaEntity = reglaService.findById(id);
+        reglaEntity.setVariablesRelacionadas(variableService.findAllByIds(extractVariableIds(reglaEntity.getCondiciones())));
+        return reglaEntity;
+    }
+
+
+    private List<Long> extractVariableIds(String expression) {
+        List<Long> numbers = new ArrayList<>();
+        Pattern pattern = Pattern.compile("\\$\\[(\\d+)\\]");
+        Matcher matcher = pattern.matcher(expression);
+
+        while (matcher.find()) {
+            numbers.add(Long.parseLong(matcher.group(1)));
+        }
+        return numbers;
+    }
+
+    /**
+     * Eliminar una regla
+     * @param ruleId, identificador único de la regla que se desea eliminar
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteRule(Long ruleId) throws CiadtiException {
+        ReglaEntity reglaDB = reglaService.findById(ruleId);
+        if (reglaDB != null) {
+            reglaService.deleteByProcedure(reglaDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de reglas de vigencia
+     * @param ruleIds, lista de identificadores de las reglas a eliminar
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteRules(List<Long> ruleIds) throws CiadtiException {
+        for (Long id : ruleIds) {
+            deleteRule(id);
         }
     }
 }

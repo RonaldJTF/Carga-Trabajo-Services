@@ -444,4 +444,36 @@ public class Methods {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
+    /**
+     * Convierte un mapa de parámetros de tipo `Map<String, String[]>` en un mapa de tipo `Map<String, Long[]>`.
+     * 
+     * Este método toma un `Map<String, String[]>`, en el que cada clave está asociada con un arreglo de `String`,
+     * y convierte los valores de cada arreglo de `String` a un arreglo de `Long`. Si un valor en el arreglo 
+     * de `String` no puede convertirse a `Long` debido a un formato inválido, ese valor se establece como `null`
+     * en el arreglo de `Long`.
+     * 
+     * @param parameterMap Un mapa de parámetros donde cada clave tiene un arreglo de `String` como valor,
+     *                     generalmente obtenido de solicitudes HTTP.
+     * @return Un `Map<String, Long[]>` en el que cada clave está asociada a un arreglo de `Long`,
+     *         donde cada valor se convierte desde `String` a `Long` o `null` si el valor no era convertible.
+     */
+    public static Map<String, Long[]> convertParameterMap(Map<String, String[]> parameterMap ) {
+        Map<String, Long[]> longParameterMap = new HashMap<>();
+
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            String key = entry.getKey();
+            String[] stringValues = entry.getValue();
+
+            Long[] longValues = new Long[stringValues.length];
+            for (int i = 0; i < stringValues.length; i++) {
+                try {
+                    longValues[i] = Long.parseLong(stringValues[i]);
+                } catch (NumberFormatException e) {
+                    longValues[i] = null;
+                }
+            }
+            longParameterMap.put(key, longValues);
+        }
+        return longParameterMap;
+    }
 }
