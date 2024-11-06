@@ -1345,6 +1345,7 @@ public class ConfigurationMediator {
      * @param ruleId, identificador único de la regla que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional
     public void deleteRule(Long ruleId) throws CiadtiException {
         ReglaEntity reglaDB = reglaService.findById(ruleId);
         if (reglaDB != null) {
@@ -1357,6 +1358,7 @@ public class ConfigurationMediator {
      * @param ruleIds, lista de identificadores de las reglas a eliminar
      * @throws CiadtiException
      */
+    @Transactional
     public void deleteRules(List<Long> ruleIds) throws CiadtiException {
         for (Long id : ruleIds) {
             deleteRule(id);

@@ -23,7 +23,6 @@ public class CompensacionLabNivelVigenciaServiceImpl implements CompensacionLabN
     @Transactional(readOnly = true)
     public CompensacionLabNivelVigenciaEntity findById(Long id) throws CiadtiException {
         return compensacionLabNivelVigenciaDAO.findById(id).orElseThrow(() -> new CiadtiException("Actividad no encontrada para el id :: " + id, 404));
-
     }
 
     @Override

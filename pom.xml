@@ -196,19 +196,20 @@
 		</dependency>
 		<!-- End -->
 
-<<<<<<< Updated upstream
+
         <!-- uuid -->
 		<dependency>
 			<groupId>com.fasterxml.uuid</groupId>
 			<artifactId>java-uuid-generator</artifactId>
 			<version>4.1.1</version>
-=======
+		</dependency>
+
 		<!-- EVALUATE MATH EXPRESSIONS -->
 		<dependency>
 			<groupId>net.objecthunter</groupId>
 			<artifactId>exp4j</artifactId>
 			<version>0.4.8</version>
->>>>>>> Stashed changes
+
 		</dependency>
 		<!-- End -->
 	</dependencies>

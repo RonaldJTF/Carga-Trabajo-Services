@@ -9,17 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.jackson.JacksonCIADTI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.RegistradorDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -65,21 +55,27 @@ public class CompensacionLabNivelVigenciaEntity implements Serializable, Cloneab
     @Column(name = "clnv_registradopor", nullable =  false, length = 250)
     private String registradoPor;
 
+    @OneToOne
     @JoinColumn(name = "nive_id", insertable = false, updatable = false)
     private NivelEntity nivel;
 
+    @OneToOne
     @JoinColumn(name = "cola_id", insertable = false, updatable = false)
-    private CompensacionLaboralEntity compensacionSalarial;
+    private CompensacionLaboralEntity compensacionLaboral;
 
+    @OneToOne
     @JoinColumn(name = "essa_id", insertable = false, updatable = false)
     private EscalaSalarialEntity escalaSalarial;
 
+    @OneToOne
     @JoinColumn(name = "vige_id", insertable = false, updatable = false)
     private VigenciaEntity vigencia;
 
+    @OneToOne
     @JoinColumn(name = "regl_id", insertable = false, updatable = false)
     private ReglaEntity regla;
 
+    @OneToOne
     @JoinColumn(name = "vari_id", insertable = false, updatable = false)
     private VariableEntity variable;
 

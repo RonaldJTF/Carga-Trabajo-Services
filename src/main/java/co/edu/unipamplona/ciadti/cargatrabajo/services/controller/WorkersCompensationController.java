@@ -3,8 +3,10 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CategoriaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CompensacionLabNivelVigenciaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CompensacionLaboralEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.CategoriaService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.CompensacionLabNivelVigenciaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.CompensacionLaboralService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
@@ -26,6 +28,7 @@ public class WorkersCompensationController {
 
     private final CipherService cipherService;
     private final CompensacionLaboralService compensacionLaboralService;
+    private final CompensacionLabNivelVigenciaService compensacionLabNivelVigenciaService;
     private final ConfigurationMediator configurationMediator;
     private final CategoriaService categoriaService;
 
@@ -42,7 +45,7 @@ public class WorkersCompensationController {
         ParameterConverter parameterConverter = new ParameterConverter(CompensacionLaboralEntity.class);
         CompensacionLaboralEntity filter = (CompensacionLaboralEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id == null ? filter.getId() : idCompensation);
-        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(compensacionLaboralService.findAllFilteredBy(filter)));
+        return Methods.getResponseAccordingToId(idCompensation, compensacionLaboralService.findAllFilteredBy(filter));
     }
 
     @Operation(
@@ -102,7 +105,7 @@ public class WorkersCompensationController {
         CategoriaEntity filter = (CategoriaEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id == null ? filter.getId() : idCategory);
         List<CategoriaEntity> result = categoriaService.findAllFilteredBy(filter);
-        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(result));
+        return Methods.getResponseAccordingToId(idCategory, result);
     }
 
     @Operation(
@@ -142,4 +145,49 @@ public class WorkersCompensationController {
         configurationMediator.deleteCategory(Long.valueOf(cipherService.decryptParam(id)));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @Operation(
+            summary = "Obtener la relación de un compensación con un nivel en una vigencia",
+            description = "Obtiene o lista las relaciones de una compensación laboral con los nivel ocupacional en una vigencia" +
+                    "de acuerdo a ciertos parámetros o variables de filtrado" +
+                    "Args: id: identificador del la compensación laboral. " +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase CompensacionLabNivelVigenciaEntity). " +
+                    "Returns: Objeto o lista de objetos con información de la compensación laboral. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
+    @GetMapping(value = {"/level", "/level/{id}"})
+    public ResponseEntity<?> getCompensacionLaboralNivelVigencia(@PathVariable(required = false) String id, HttpServletRequest request) throws CiadtiException {
+        Long idNivel = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
+        ParameterConverter parameterConverter = new ParameterConverter(CompensacionLabNivelVigenciaEntity.class);
+        CompensacionLabNivelVigenciaEntity filter = (CompensacionLabNivelVigenciaEntity) parameterConverter.converter(request.getParameterMap());
+        filter.setIdNivel(idNivel != null ? idNivel : filter.getIdNivel());
+        return Methods.getResponseAccordingToParam(idNivel, compensacionLabNivelVigenciaService.findAllFilteredBy(filter));
+    }
+
+    @Operation(
+            summary = "Crea una compensación laboral",
+            description = "Crea una compensación laboral" +
+                    "Args: compensacionLaboralEntity: objeto con información de la compensación laboral. " +
+                    "Returns: Objeto con la información asociada."
+    )
+    @PostMapping("/level")
+    public ResponseEntity<?> createCompensacionLaboralNivelVigencia(@Valid @RequestBody CompensacionLabNivelVigenciaEntity compensacionLabNivelVigenciaEntity) {
+        return new ResponseEntity<>(compensacionLabNivelVigenciaService.save(compensacionLabNivelVigenciaEntity), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Actualizar una compensación laboral",
+            description = "Actualiza una compensación laboral. " +
+                    "Args: compensacionLaboralEntity: objeto con información de la compensación laboral. " +
+                    "id: identificador de la compensación laboral. " +
+                    "Returns: Objeto con la información asociada.")
+    @PutMapping("/level/{id}")
+    public ResponseEntity<?> updateCompensacionLaboralNivelVigencia(@Valid @RequestBody CompensacionLabNivelVigenciaEntity compensacionLabNivelVigenciaEntity, @PathVariable String id) throws CiadtiException {
+        Long idCLNV = Long.valueOf(cipherService.decryptParam(id));
+        CompensacionLabNivelVigenciaEntity compensacionLaboralDB = compensacionLabNivelVigenciaService.findById(idCLNV);
+        if (compensacionLaboralDB != null) {
+            compensacionLabNivelVigenciaEntity.setId(compensacionLaboralDB.getId());
+        }
+        return new ResponseEntity<>(compensacionLabNivelVigenciaService.save(compensacionLabNivelVigenciaEntity), HttpStatus.CREATED);
+    }
+
 }

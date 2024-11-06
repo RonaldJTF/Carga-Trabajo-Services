@@ -33,20 +33,24 @@ public class SecurityConfig {
                 .requestMatchers("/doc/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/statistics/**", "/api/structure/report").hasAnyRole("SUPERADMINISTRADOR")
-                        .requestMatchers(HttpMethod.GET, "/api/inventory/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                    .requestMatchers(HttpMethod.GET, "/api/statistics/**", "/api/structure/report").hasAnyRole("SUPERADMINISTRADOR")
+                    .requestMatchers(HttpMethod.GET, "/api/inventory/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
 
-                        .requestMatchers(HttpMethod.GET, "/api/structure/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
-                        .requestMatchers("/api/structure/**").hasAnyRole("ADMINISTRADOR")
+                    .requestMatchers(HttpMethod.GET, "/api/structure/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                    .requestMatchers("/api/structure/**").hasAnyRole("ADMINISTRADOR")
 
-                        .requestMatchers(HttpMethod.GET, "/api/workplan/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
-                        .requestMatchers("/api/workplan/**").hasAnyRole("ADMINISTRADOR")
+                    .requestMatchers(HttpMethod.GET, "/api/workplan/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                    .requestMatchers("/api/workplan/**").hasAnyRole("ADMINISTRADOR")
 
-                        .requestMatchers(HttpMethod.GET,"/api/compensation/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
-                        .requestMatchers("/api/compensation/**").hasAnyRole("ADMINISTRADOR")
+                    .requestMatchers(HttpMethod.GET,"/api/compensation/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                    .requestMatchers("/api/compensation/**").hasAnyRole("ADMINISTRADOR")
 
-                        .requestMatchers("/api/user/validate-password", "/api/user/new-password").authenticated()
-                        .requestMatchers("/api/user/**").hasRole("SUPERADMINISTRADOR")
+                    .requestMatchers(HttpMethod.GET,"/api/rule/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                    .requestMatchers("/api/rule/**").hasAnyRole("ADMINISTRADOR")
+
+                    .requestMatchers("/api/user/validate-password", "/api/user/new-password").authenticated()
+                    .requestMatchers("/api/user/**").hasRole("SUPERADMINISTRADOR")
+
                 .requestMatchers(HttpMethod.GET, "/api/workplan/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/workplan/**").hasAnyRole("ADMINISTRADOR")
 
