@@ -2,13 +2,13 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ReglaEntity;
 
 public interface ReglaDAO extends JpaRepository<ReglaEntity, Long>, JpaSpecificationExecutor<ReglaEntity>{
@@ -30,4 +30,7 @@ public interface ReglaDAO extends JpaRepository<ReglaEntity, Long>, JpaSpecifica
 
     @Query(value = "select r from ReglaEntity r where r.condiciones like CONCAT('%[', :idVariable, ']%')")
     List<ReglaEntity> findAllWhereVariableIsIncluded(@Param("idVariable") Long idVariable);
+
+    @Query("SELECT r.id, r.condiciones FROM ReglaEntity r")
+    Optional<List<Object[]>> findAllNombresAndCondicionesAndId();
 }

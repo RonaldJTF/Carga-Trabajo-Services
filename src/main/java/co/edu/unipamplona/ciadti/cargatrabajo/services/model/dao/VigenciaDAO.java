@@ -28,4 +28,5 @@ public interface VigenciaDAO extends JpaRepository<VigenciaEntity, Long>, JpaSpe
     @Modifying
     @Query(value = "update VigenciaEntity v set v.estado =:state")
     int updateStateToAllValidities(@Param("state") String state);
+
 }

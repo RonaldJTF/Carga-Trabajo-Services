@@ -68,24 +68,39 @@ public class VariableServiceImpl implements VariableService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<VariableEntity> findAllFilteredBy(VariableEntity filter) {
         SpecificationCiadti<VariableEntity> specification = new SpecificationCiadti<VariableEntity>(filter);
         return variableDAO.findAll(specification);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<VariableEntity> findAllConfigureByValidityAndActive() {
         return variableDAO.findAllByPorVigenciaAndEstado("1", "1");
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<VariableEntity> findAllWhereIdIsIncluded(Long id) {
         return variableDAO.findAllWhereIdIsIncluded(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<VariableEntity> findAllByIds(List<Long> variableIds) {
         return variableDAO.findAllByIds(variableIds);
+    }
+
+    /*@Override
+    @Transactional(readOnly = true)
+    public VariableEntity findByIdAndValidityId(Long idVariable, Long idVigencia) {
+        return variableDAO.findByIdAndValidityId(idVariable, idVigencia);
+    }*/
+
+    @Override
+    public Double findValueInValidity(Long variableId, Long validityId) {
+        return variableDAO.findValueInValidity(variableId, validityId);
     }
     
 }

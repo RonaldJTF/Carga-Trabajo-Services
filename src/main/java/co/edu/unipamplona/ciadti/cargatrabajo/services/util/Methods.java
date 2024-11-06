@@ -476,4 +476,24 @@ public class Methods {
         }
         return longParameterMap;
     }
+    /**
+     *
+     * @param id
+     * @param objeto
+     * @return
+     * @param <T>
+     */
+    public static <T> ResponseEntity<?> getResponseAccordingToParam(T id, Object objeto){
+        if (id == null) {
+            if (((List<?>) objeto).isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } else {
+            if (((List<?>) objeto).isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }
+        return new ResponseEntity<>(objeto, HttpStatus.OK);
+    }
+
 }

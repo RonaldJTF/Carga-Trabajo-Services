@@ -48,9 +48,6 @@ public class ReglaEntity implements Serializable, Cloneable{
     @Column(name = "regl_condiciones", nullable = false)
     private String condiciones;
 
-    @Transient
-    private String expresionCondiciones;
-
     @Column(name = "regl_global", length = 1)
     private String global;
 
@@ -68,6 +65,9 @@ public class ReglaEntity implements Serializable, Cloneable{
 
     @Transient
     private List<VariableEntity> variablesRelacionadas;
+
+    @Transient
+    private String expresionCondiciones;
 
     @JsonIgnore
     @Transient

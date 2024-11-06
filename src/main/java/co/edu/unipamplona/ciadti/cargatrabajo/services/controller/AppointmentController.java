@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CargoEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NormatividadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.CargoService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.VariableService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.GeneralExpressionMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -31,7 +31,9 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/appointment")
 public class AppointmentController {
     private final CargoService cargoService;
+    private final VariableService variableService;
     private final ConfigurationMediator configurationMediator;
+    private final GeneralExpressionMediator generalExpressionMediator;
 
     @Operation(
         summary = "Obtener o listar los cargos de acuerdo a una lista de Ids de dependencias, Ids Vigencias, etc",
@@ -54,7 +56,9 @@ public class AppointmentController {
                 "Returns: Objeto con información de la carga laboral. ")
     @GetMapping("/{id}")
     public ResponseEntity<?> getAppointment(@PathVariable Long id, HttpServletRequest request) throws CiadtiException {
-        return new ResponseEntity<>(cargoService.findByAppointmentId(id), HttpStatus.OK);
+        CargoEntity result = cargoService.findByAppointmentId(id);
+        result.setAsignacionBasica(generalExpressionMediator.getValueOfVariable(34L, 1L, variableService.findAll()));
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @Operation(
@@ -93,6 +97,7 @@ public class AppointmentController {
             "Args: id: identificador del cargo a eliminar. ")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete (@PathVariable Long id) throws CiadtiException{
+        configurationMediator.deleteAppointment(id);
         configurationMediator.deleteAppointment(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

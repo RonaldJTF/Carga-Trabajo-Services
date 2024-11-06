@@ -55,12 +55,14 @@ public class ConfigurationMediator {
     private final AlcanceService alcanceService;
     private final CategoriaService categoriaService;
     private final PeriodicidadService periodicidadService;
+    private final CompensacionLaboralService compensacionLaboralService;
     private final CargoService cargoService;
     private final VigenciaService vigenciaService;
     private final ValorVigenciaService valorVigenciaService;
     private final VariableService variableService;
     private final NormatividadService normatividadService;
     private final EscalaSalarialService escalaSalarialService;
+    private final TipoNormatividadService tipoNormatividadService;
     private final ReglaService reglaService;
 
     /**
@@ -202,9 +204,9 @@ public class ConfigurationMediator {
      * @throws CiadtiException
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void deletePeople(List<Long> personIds) throws CiadtiException {
-        for (Long id : personIds) {
-            deletePerson(id);
+    public void deletePeople(List<String> personIds) throws CiadtiException {
+        for (String id : personIds) {
+            deletePerson(Long.valueOf(cipherService.decryptParam(id)));
         }
     }
 
@@ -819,7 +821,7 @@ public class ConfigurationMediator {
         NivelEntity nivelDB = nivelService.findById(levelId);
         List<EscalaSalarialEntity> escalasSalarialesToDelete = escalaSalarialService.findAllFilteredBy(EscalaSalarialEntity.builder().idNivel(levelId).build());
 
-        for (EscalaSalarialEntity e : escalasSalarialesToDelete){
+        for (EscalaSalarialEntity e : escalasSalarialesToDelete) {
             escalaSalarialService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         }
         if (nivelDB != null) {
@@ -983,12 +985,12 @@ public class ConfigurationMediator {
     private void filterByOnlyDependencies(List<EstructuraEntity> structures) {
         if (structures != null) {
             Iterator<EstructuraEntity> iterator = structures.iterator();
-            while(iterator.hasNext()) {
-                EstructuraEntity e = (EstructuraEntity)iterator.next();
+            while (iterator.hasNext()) {
+                EstructuraEntity e = (EstructuraEntity) iterator.next();
                 if (!Methods.convertToBoolean(e.getTipologia().getEsDependencia())) {
-                iterator.remove();
+                    iterator.remove();
                 } else {
-                this.filterByOnlyDependencies(e.getSubEstructuras());
+                    this.filterByOnlyDependencies(e.getSubEstructuras());
                 }
             }
         }
@@ -1001,11 +1003,11 @@ public class ConfigurationMediator {
      * @throws CiadtiException
      */
     public EstructuraEntity getDependencyInformation(Long idDependency) throws CiadtiException {
-        EstructuraEntity dependency = (EstructuraEntity)this.estructuraService.findById(idDependency);
+        EstructuraEntity dependency = (EstructuraEntity) this.estructuraService.findById(idDependency);
         if (dependency.getSubEstructuras() != null) {
             Iterator<EstructuraEntity> iterator = dependency.getSubEstructuras().iterator();
-            while(iterator.hasNext()) {
-                EstructuraEntity e = (EstructuraEntity)iterator.next();
+            while (iterator.hasNext()) {
+                EstructuraEntity e = (EstructuraEntity) iterator.next();
                 if (Methods.convertToBoolean(e.getTipologia().getEsDependencia())) {
                     this.filterByOnlyDependencies(e.getSubEstructuras());
                 }
@@ -1104,6 +1106,14 @@ public class ConfigurationMediator {
     public void deleteCategory(Long categoryId) throws CiadtiException {
         CategoriaEntity categoryDB = categoriaService.findById(categoryId);
         if (categoryDB != null) {
+            CompensacionLaboralEntity filter = new CompensacionLaboralEntity();
+            filter.setIdCategoria(categoryId);
+            ArrayList<CompensacionLaboralEntity> list = (ArrayList<CompensacionLaboralEntity>) compensacionLaboralService.findAllFilteredBy(filter);
+            if (list != null) {
+                for (CompensacionLaboralEntity c : list) {
+                    compensacionLaboralService.deleteByProcedure(c.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+                }
+            }
             categoriaService.deleteByProcedure(categoryDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         }
     }
@@ -1134,8 +1144,8 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Elimina lista de tipos de periodicidad
-     * @param periodicitiesIds, lista de identificadores de los tipos de periodicidad a eliminar
+     * Elimina lista de periodicidad
+     * @param periodicitiesIds, lista de identificadores de periodicidades a eliminar
      * @throws CiadtiException
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -1146,7 +1156,33 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Eliminar una vigencia junto a las parametrizaciones de los valores de las variables en esa vigencia.
+     * Elimina una compensación laboral
+     *
+     * @param id, identificador único de la compensación laboral
+     * @throws CiadtiException, excepción
+     */
+    public void deleteCompensation(String id) throws CiadtiException {
+        Long idCompensation = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
+        CompensacionLaboralEntity compensacionLaboralDB = compensacionLaboralService.findById(idCompensation);
+        if (compensacionLaboralDB != null) {
+            compensacionLaboralService.deleteByProcedure(compensacionLaboralDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de compensaciones laborales
+     *
+     * @param compensationsIds, lista de identificadores de las compensaciones laborales a eliminar
+     * @throws CiadtiException, excepción
+     */
+    public void deleteCompensations(List<String> compensationsIds) throws CiadtiException {
+        for (String id : compensationsIds) {
+            deleteCompensation(id);
+        }
+    }
+
+    /**
+     * Eliminar un tipo de vigencia
      * @param validityId, identificador único del tipo de vigencia que se desea eliminar
      * @throws CiadtiException
      */
@@ -1319,6 +1355,7 @@ public class ConfigurationMediator {
         }
         return normatividadEntity;
     }
+
     /**
      * Elimina una escala salarial de acuerdo a su id
      * @param id
@@ -1420,6 +1457,30 @@ public class ConfigurationMediator {
     public void deleteRules(List<Long> ruleIds) throws CiadtiException {
         for (Long id : ruleIds) {
             deleteRule(id);
+        }
+    }
+
+
+    /**
+     * Eliminar un tipo de normatividad
+     * @param normativityTypeId, identificador único del tipo de normatividad que se desea eliminar
+     * @throws CiadtiException
+     */
+    public void deleteNormativityType(Long normativityTypeId) throws CiadtiException {
+        TipoNormatividadEntity tipoNormatividadDB = tipoNormatividadService.findById(normativityTypeId);
+        if (tipoNormatividadDB != null) {
+            tipoNormatividadService.deleteByProcedure(tipoNormatividadDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    /**
+     * Elimina lista de tipos de valor de vigencia
+     * @param validityValueIds, lista de identificadores de los tipos de valor de vigencia a eliminar
+     * @throws CiadtiException
+     */
+    public void deleteNormativityTypes(List<Long> validityValueIds) throws CiadtiException {
+        for (Long id : validityValueIds) {
+            deleteNormativityType(id);
         }
     }
 }

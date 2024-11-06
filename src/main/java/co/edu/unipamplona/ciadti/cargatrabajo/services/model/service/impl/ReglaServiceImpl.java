@@ -2,6 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,11 @@ public class ReglaServiceImpl implements ReglaService{
     @Override
     public List<ReglaEntity> findAllWhereVariableIsIncluded(Long idVariable) {
         return reglaDAO.findAllWhereVariableIsIncluded(idVariable);
+    }
+
+    @Override
+    public List<Object[]> findAllNombresAndCondicionesAndId() throws CiadtiException {
+        return reglaDAO.findAllNombresAndCondicionesAndId().orElseThrow(()-> new CiadtiException("No se encontraron reglas"));
     }
     
 }

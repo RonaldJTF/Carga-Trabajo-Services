@@ -3,7 +3,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.jexl3.JexlException.Variable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -39,4 +38,14 @@ public interface VariableDAO extends JpaRepository<VariableEntity, Long>, JpaSpe
 
     @Query(value="select v from VariableEntity as v where v.id in :variableIds")
     List<VariableEntity> findAllByIds(@Param("variableIds") List<Long> variableIds);
+    @Query("SELECT v FROM VariableEntity v WHERE v.nombre = :nombre")
+    VariableEntity findByNombre(@Param("nombre") String nombre);
+
+    @Query(value="SELECT v FROM VariableEntity v " +
+            "left outer join ValorVigenciaEntity vv on (v.id = vv.idVariable) " + 
+            "where v.id = :id and (vv.idVigencia = :idVigencia or vv.idVigencia is null)")
+    VariableEntity findByIdAndValidityId(@Param("id") Long id, @Param("idVigencia") Long idVigencia);
+
+    @Query(value="select vv.valor from ValorVigenciaEntity vv where vv.idVariable = :variableId and vv.idVigencia = :validityId")
+    Double findValueInValidity(@Param("variableId") Long variableId, @Param("validityId") Long validityId); 
 }

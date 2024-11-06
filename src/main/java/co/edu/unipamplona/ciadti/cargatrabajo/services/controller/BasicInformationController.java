@@ -1,5 +1,6 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.*;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.*;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
@@ -34,6 +35,7 @@ public class BasicInformationController {
     private final FtpService ftpService;
     private final AccionService accionService;
     private final TipologiaAccionService tipologiaAccionService;
+    private final CipherService cipherService;
     private final AlcanceService alcanceService;
     private final TipoNormatividadService tipoNormatividadService;
     private final CategoriaService categoriaService;
@@ -48,11 +50,14 @@ public class BasicInformationController {
                     "Returns: Objeto o lista de objetos con información de la persona. " +
                     "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"document-type", "document-type/{id}"})
-    public ResponseEntity<?> getDocumentType(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+    public ResponseEntity<?> getDocumentType(@PathVariable(required = false) String id, HttpServletRequest request) throws CiadtiException {
+
+        Long idDocumentType = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
+
         ParameterConverter parameterConverter = new ParameterConverter(TipoDocumentoEntity.class);
         TipoDocumentoEntity filter = (TipoDocumentoEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id == null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, tipoDocumentoService.findAllFilteredBy(filter));
+        filter.setId(id == null ? filter.getId() : idDocumentType);
+        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(tipoDocumentoService.findAllFilteredBy(filter)));
     }
 
     @Operation(
@@ -63,11 +68,14 @@ public class BasicInformationController {
                     "Returns: Objeto o lista de objetos con información de los géneros. " +
                     "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"gender", "gender/{id}"})
-    public ResponseEntity<?> getGender(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+    public ResponseEntity<?> getGender(@PathVariable(required = false) String id, HttpServletRequest request) throws CiadtiException {
+
+        Long idDocumentType = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
+
         ParameterConverter parameterConverter = new ParameterConverter(GeneroEntity.class);
         GeneroEntity filter = (GeneroEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id == null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, generoService.findAllFilteredBy(filter));
+        filter.setId(id == null ? filter.getId() : idDocumentType);
+        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(generoService.findAllFilteredBy(filter)));
     }
 
     @Operation(
@@ -78,11 +86,14 @@ public class BasicInformationController {
                     "Returns: Objeto o lista de objetos con información de los roles. " +
                     "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"role", "role/{id}"})
-    public ResponseEntity<?> getRole(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+    public ResponseEntity<?> getRole(@PathVariable(required = false) String id, HttpServletRequest request) throws CiadtiException {
+
+        Long idUser = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
+
         ParameterConverter parameterConverter = new ParameterConverter(RolEntity.class);
         RolEntity filter = (RolEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id == null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, rolService.findAllFilteredBy(filter));
+        filter.setId(id == null ? filter.getId() : idUser);
+        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(rolService.findAllFilteredBy(filter)));
     }
 
     @Operation(
@@ -223,8 +234,9 @@ public class BasicInformationController {
                     "id: identificador del genero." +
                     "Returns: Objeto con la información asociada.")
     @PutMapping("/gender/{id}")
-    public ResponseEntity<?> updateGender(@Valid @RequestBody GeneroEntity generoEntity, @PathVariable Long id) throws CiadtiException {
-        GeneroEntity generoDB = generoService.findById(id);
+    public ResponseEntity<?> updateGender(@Valid @RequestBody GeneroEntity generoEntity, @PathVariable String id) throws CiadtiException {
+        Long idGender = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
+        GeneroEntity generoDB = generoService.findById(idGender);
         generoDB.setNombre(Methods.capitalizeFirstLetter(generoEntity.getNombre()));
         return new ResponseEntity<>(generoService.save(generoDB), HttpStatus.CREATED);
     }
@@ -544,21 +556,6 @@ public class BasicInformationController {
     }
 
     @Operation(
-            summary = "Obtener o listar los tipos de normatividades",
-            description = "Obtiene o lista los tipos de normatividades de acuerdo a ciertas variables o parámetros." +
-                    "Args: id: identificador del tipo de normatividad." +
-                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase TipoNormatividadEntity)." +
-                    "Returns: Objeto o lista de objetos con información del tipo de normatividad. " +
-                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
-    @GetMapping(value = {"normativity-type", "normativity-type/{id}"})
-    public ResponseEntity<?> getNormativityType(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
-        ParameterConverter parameterConverter = new ParameterConverter(TipoNormatividadEntity.class);
-        TipoNormatividadEntity filter = (TipoNormatividadEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id == null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, tipoNormatividadService.findAllFilteredBy(filter));
-    }
-
-    @Operation(
             summary = "Obtener o listar los tipos de categorías",
             description = "Obtiene o lista los tipos de categorías de acuerdo a ciertas variables o parámetros." +
                     "Args: id: identificador del tipo de categoría." +
@@ -676,10 +673,73 @@ public class BasicInformationController {
     @Operation(
             summary = "Eliminar tipos de periodicidad por el id",
             description = "Elimina lista de tipos de periodicidad por su id." +
-                    "Args: documentTypeIds: identificadores de los tipos de periodicidad a eliminar.")
+                    "Args: periodicitiesIds: identificadores de los tipos de periodicidad a eliminar.")
     @DeleteMapping("/periodicity")
     public ResponseEntity<?> deletePeriodicities(@RequestBody List<Long> periodicitiesIds) throws CiadtiException {
         configurationMediator.deletePeriodicities(periodicitiesIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Obtener o listar los tipos de normatividades",
+            description = "Obtiene o lista los tipos de normatividades de acuerdo a ciertas variables o parámetros." +
+                    "Args: id: identificador del tipo de normatividad." +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase TipoNormatividadEntity)." +
+                    "Returns: Objeto o lista de objetos con información del tipo de normatividad. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
+    @GetMapping(value = {"normativity-type", "normativity-type/{id}"})
+    public ResponseEntity<?> getNormativityType(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+        ParameterConverter parameterConverter = new ParameterConverter(TipoNormatividadEntity.class);
+        TipoNormatividadEntity filter = (TipoNormatividadEntity) parameterConverter.converter(request.getParameterMap());
+        filter.setId(id == null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, tipoNormatividadService.findAllFilteredBy(filter));
+    }
+
+    @Operation(
+            summary = "Crear un tipo de normatividades",
+            description = "Crea un tipo de normatividad" +
+                    "Args: tipoNormatividadEntity: objeto con información del tipo de normatividad a registrar. " +
+                    "Returns: Objeto con la información asociada.")
+    @PostMapping("/normativity-type")
+    public ResponseEntity<?> createNormativityType(@Valid @RequestBody TipoNormatividadEntity tipoNormatividadEntity) {
+        TipoNormatividadEntity tipoNormatividadNew = new TipoNormatividadEntity();
+        tipoNormatividadNew.setNombre(tipoNormatividadEntity.getNombre().toUpperCase());
+        tipoNormatividadNew.setDescripcion(tipoNormatividadEntity.getDescripcion());
+        System.out.println("funciona el controller de crear");
+        return new ResponseEntity<>(tipoNormatividadService.save(tipoNormatividadNew), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Actualizar un tipo de normatividad",
+            description = "Actualiza un tipo de normatividad." +
+                    "Args: tipoNormatividadEntity: objeto con información del tipo de normatividad." +
+                    "id: identificador del tipo de normatividad." +
+                    "Returns: Objeto con la información asociada.")
+    @PutMapping("/normativity-type/{id}")
+    public ResponseEntity<?> updateNormativityType(@Valid @RequestBody TipoNormatividadEntity tipoNormatividadEntity, @PathVariable Long id) throws CiadtiException {
+        TipoNormatividadEntity tipoNormatividadDB = tipoNormatividadService.findById(id);
+        tipoNormatividadDB.setNombre(tipoNormatividadEntity.getNombre().toUpperCase());
+        tipoNormatividadDB.setDescripcion(tipoNormatividadEntity.getDescripcion());
+        return new ResponseEntity<>(tipoNormatividadService.save(tipoNormatividadDB), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Eliminar tipo de normatividad por el id",
+            description = "Elimina un tipo de normatividad por su id." +
+                    "Args: id: identificador del tipo de normatividad a eliminar.")
+    @DeleteMapping("/normativity-type/{id}")
+    public ResponseEntity<?> deleteNormativityType(@PathVariable Long id) throws CiadtiException {
+        configurationMediator.deleteNormativityType(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Eliminar tipos de normatividad por el id",
+            description = "Elimina lista de tipos de normatividad por su id." +
+                    "Args: normativityTypeIds: identificadores de los tipos de normatividad a eliminar.")
+    @DeleteMapping("/normativity-type")
+    public ResponseEntity<?> deleteNormativityTypes(@RequestBody List<Long> normativityTypeIds) throws CiadtiException {
+        configurationMediator.deleteNormativityTypes(normativityTypeIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

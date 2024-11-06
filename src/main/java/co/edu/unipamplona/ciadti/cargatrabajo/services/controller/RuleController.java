@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ReglaEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VariableEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ReglaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.GeneralExpressionMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class RuleController {
     private final ReglaService reglaService;
     private final ConfigurationMediator configurationMediator;
+    private final GeneralExpressionMediator generalExpressionMediator;
 
     @Operation(
         summary = "Obtener o listar las reglas",
@@ -48,14 +49,10 @@ public class RuleController {
             ParameterConverter parameterConverter = new ParameterConverter(ReglaEntity.class);
             ReglaEntity filter = (ReglaEntity) parameterConverter.converter(request.getParameterMap());
             filter.setId(id == null ? filter.getId() : id);
-            List<ReglaEntity> result = reglaService.findAllFilteredBy(filter);
-            for(ReglaEntity r : result){
-                r.setExpresionCondiciones(null);
-            }
-            return Methods.getResponseAccordingToId(id, result);
+            return Methods.getResponseAccordingToId(id, generalExpressionMediator.getRules(filter));
         }
     }
-
+    
     @Operation(
             summary = "Crear un tipo de cargo",
             description = "Crea un tipo de cargo" +

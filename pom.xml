@@ -195,6 +195,22 @@
 			<version>6.21.3</version>
 		</dependency>
 		<!-- End -->
+
+        <!-- UUID -->
+		<dependency>
+			<groupId>com.fasterxml.uuid</groupId>
+			<artifactId>java-uuid-generator</artifactId>
+			<version>4.1.1</version>
+		</dependency>
+		<!-- End -->
+
+		<!-- EVALUATE MATH EXPRESSIONS -->
+		<dependency>
+			<groupId>net.objecthunter</groupId>
+			<artifactId>exp4j</artifactId>
+			<version>0.4.8</version>
+		</dependency>
+		<!-- End -->
 	</dependencies>
 
 	<dependencyManagement>

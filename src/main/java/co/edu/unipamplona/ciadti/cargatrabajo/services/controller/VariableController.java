@@ -17,6 +17,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VariableEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.VariableService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.GeneralExpressionMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +32,7 @@ public class VariableController {
 
     private final VariableService variableService;
     private final ConfigurationMediator configurationMediator;
+    private final GeneralExpressionMediator generalExpressionMediator;
 
     @Operation(
         summary = "Obtener o listar las variables",
@@ -47,7 +49,7 @@ public class VariableController {
             ParameterConverter parameterConverter = new ParameterConverter(VariableEntity.class);
             VariableEntity filter = (VariableEntity) parameterConverter.converter(request.getParameterMap());
             filter.setId(id==null ? filter.getId() : id);
-            return Methods.getResponseAccordingToId(id, variableService.findAllFilteredBy(filter));
+            return Methods.getResponseAccordingToId(id, generalExpressionMediator.getVariables(filter));
         }
     }
 
