@@ -45,7 +45,8 @@ public class AppointmentController {
     @GetMapping
     public ResponseEntity<?> get(HttpServletRequest request) throws CiadtiException {
         Map<String, Long[]> filters = Methods.convertParameterMap(request.getParameterMap());
-        return new ResponseEntity<>(cargoService.findAllBy(filters), HttpStatus.OK);
+        List<CargoEntity> result = configurationMediator.findAppointments(filters);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
     
 
@@ -57,7 +58,6 @@ public class AppointmentController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getAppointment(@PathVariable Long id, HttpServletRequest request) throws CiadtiException {
         CargoEntity result = cargoService.findByAppointmentId(id);
-        result.setAsignacionBasica(generalExpressionMediator.getValueOfVariable(34L, 1L, variableService.findAll()));
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

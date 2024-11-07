@@ -87,46 +87,6 @@ public class ValidityController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    /*@Operation(
-        summary = "Obtener o listar los valores de vigencias",
-        description = "Obtiene o lista los valores de vigencias de acuerdo a ciertas variables o parámetros. " +
-            "Args: id: identificador del valor de vigencia. " +
-            "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase ValorVigenciaEntity). " +
-            "Returns: Objeto o lista de objetos con información del valor de vigencia. " +
-            "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
-    @GetMapping(value = {"/value-in-validity", "/value-in-validity/{id}"})
-    public ResponseEntity<?> getValidityValue(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
-        ParameterConverter parameterConverter = new ParameterConverter(ValorVigenciaEntity.class);
-        ValorVigenciaEntity filter = (ValorVigenciaEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id==null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, valorVigenciaService.findAllFilteredBy(filter));
-    }
-
-    @Operation(
-        summary="Crear un valor de vigencia",
-        description = "Crea un valor de vigencia" +
-            "Args: valorVigenciaEntity: objeto con información del valor de vigencia. " +
-            "Returns: Objeto con la información asociada.")
-    @PostMapping("/value-in-validity")
-    public ResponseEntity<?> createValidityValue(@Valid @RequestBody ValorVigenciaEntity valorVigenciaEntity) {
-        ValorVigenciaEntity valorVigenciaNew = new ValorVigenciaEntity();
-        valorVigenciaNew.setValor(valorVigenciaEntity.getValor());
-        return new ResponseEntity<>(valorVigenciaService.save(valorVigenciaNew), HttpStatus.CREATED);
-    }
-
-    @Operation(
-        summary="Actualizar un valor de vigencia",
-        description = "Actualiza un valor de vigencia. " + 
-            "Args: valorVigenciaEntity: objeto con información del valor de vigencia. " +
-            "id: identificador del cargo. " +
-            "Returns: Objeto con la información asociada.")
-    @PutMapping("/value-in-validity/{id}")
-    public ResponseEntity<?> updateValidityValue(@Valid @RequestBody ValorVigenciaEntity valorVigenciaEntity, @PathVariable Long id) throws CiadtiException{
-        ValorVigenciaEntity valorVigenciaEntityBD = valorVigenciaService.findById(id);
-        valorVigenciaEntityBD.setValor(valorVigenciaEntity.getValor());
-        return new ResponseEntity<>(valorVigenciaService.save(valorVigenciaEntityBD), HttpStatus.CREATED);
-    }*/
-
     @Operation(
         summary = "Eliminar un valor de una variable en una vigencia",
         description = "Eliminar un valor d euna variable en una vigencia" + 
@@ -136,15 +96,4 @@ public class ValidityController {
         configurationMediator.deleteValueInValidity(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-    /*@Operation(
-            summary = "Eliminar valores de vigencia por el id",
-            description = "Elimina lista de valores de vigencia por su id." +
-                    "Args: validityValuesIds: identificadores de los tipos de posiciones a eliminar.")
-    @DeleteMapping("/value-in-validity")
-    public ResponseEntity<?> deleteValidityValues(@RequestBody List<Long> validityValueIds) throws CiadtiException {
-        configurationMediator.deleteValidityValues(validityValueIds);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }*/
-
 }

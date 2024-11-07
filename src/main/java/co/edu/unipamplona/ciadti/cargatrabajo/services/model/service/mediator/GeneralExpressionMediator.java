@@ -183,7 +183,7 @@ public class GeneralExpressionMediator {
      * @throws CiadtiException
      */
     private boolean evaluateBooleanExpression(String expression, Long validityId, List<VariableEntity> allVariablesInDB) throws CiadtiException {
-        String[] partes = expression.split("(?<=[<>!=])|(?=[<>!=])");
+        String[] partes = expression.split("(?<=\\b|\\W)(?=<=|>=|!=|==|<|>)|(?<=<=|>=|!=|==|<|>)(?=\\b|\\W)");
         double ladoIzquierdo, ladoDerecho;
     
         if (partes.length == 1) { 

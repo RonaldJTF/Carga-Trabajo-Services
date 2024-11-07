@@ -10,6 +10,8 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.CargoDAO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.AlcanceEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CargoEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CompensacionLabNivelVigenciaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CompensacionLaboralEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EscalaSalarialEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
@@ -84,6 +86,7 @@ public class CargoServiceImpl implements CargoService{
         return cargoDAO.findAll(specification);
     }
 
+    @SuppressWarnings("null")
     @Override
     @Transactional(readOnly = true)
     public List<CargoEntity> findAllBy(Map<String, Long[]> filter) {
@@ -96,7 +99,9 @@ public class CargoServiceImpl implements CargoService{
                 " a.nombre, " +
                 " n.nombre, " +
                 " ni.descripcion, " +
-                " es.nombre " +
+                " es.nombre, " +
+                " clnv.id, clnv.idVigencia, clnv.idNivel, clnv.idEscalaSalarial, clnv.idCompensacionLaboral, clnv.idRegla, clnv.idVariable, " +
+                " cl.nombre " +
                 " from CargoEntity c  " +
                 " inner join EstructuraEntity e on (c.idEstructura = e.id)    " +
                 " inner join VigenciaEntity v on (c.idVigencia = v.id)      " +
@@ -104,6 +109,8 @@ public class CargoServiceImpl implements CargoService{
                 " inner join NormatividadEntity n on (c.idNormatividad = n.id)  " +
                 " inner join NivelEntity ni on (c.idNivel = ni.id)       " +
                 " left outer join EscalaSalarialEntity es on (c.idEscalaSalarial = es.id) " +
+                " left outer join CompensacionLabNivelVigenciaEntity clnv on (v.id=clnv.idVigencia and ni.id = clnv.idNivel and (es.id = clnv.idEscalaSalarial OR clnv.idEscalaSalarial IS NULL)) " +
+                " left outer join CompensacionLaboralEntity cl on (clnv.idCompensacionLaboral = cl.id )   " +
                 " where 2 > 1  ";
 
         Map<String, Object> parameters = new HashMap<>();
@@ -128,49 +135,73 @@ public class CargoServiceImpl implements CargoService{
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
         List<CargoEntity> appointments = new ArrayList<>();
+        Long appointmentId = -1L;
+        CargoEntity appointment = null;
 
         for (Object[] row : results) {
-            CargoEntity c = CargoEntity.builder()
-                .id((Long) row[0])
-                .asignacionBasica((Double) row[1])
-                .totalCargos((Integer) row[2])
-                .idEstructura((Long) row[3])
-                .idVigencia((Long) row[4])
-                .idAlcance((Long) row[5])
-                .idNormatividad((Long) row[6])
-                .idNivel((Long) row[7])
-                .idEscalaSalarial((Long) row[8])
-                .estructura(EstructuraEntity.builder()
-                    .id((Long) row[3])
-                    .nombre((String) row[9])
-                    .icono((byte[]) row[10])
-                    .mimetype((String)row[11])
-                    .idPadre((Long) row[12])
-                    .build())
-                .vigencia(VigenciaEntity.builder()
-                    .id((Long) row[4])
-                    .nombre((String) row[13])
-                    .anio((String)row[14])
-                    .estado((String)row[15])
-                    .build())
-                .alcance(AlcanceEntity.builder()
-                    .id((Long) row[5])
-                    .nombre((String) row[16])
-                    .build())
-                .normatividad(NormatividadEntity.builder()
-                    .id((Long) row[6])
-                    .nombre((String) row[17])
-                    .build())
-                .nivel(NivelEntity.builder()
-                    .id((Long) row[7])
-                    .descripcion((String) row[18])
-                    .build())
-                .escalaSalarial(EscalaSalarialEntity.builder()
-                    .id((Long) row[8])
-                    .nombre((String) row[19])
-                    .build())
-                .build();
-            appointments.add(c);
+            if (((Long) row[0]) != appointmentId){
+                appointment = CargoEntity.builder()
+                    .id((Long) row[0])
+                    .asignacionBasica((Double) row[1])
+                    .totalCargos((Integer) row[2])
+                    .idEstructura((Long) row[3])
+                    .idVigencia((Long) row[4])
+                    .idAlcance((Long) row[5])
+                    .idNormatividad((Long) row[6])
+                    .idNivel((Long) row[7])
+                    .idEscalaSalarial((Long) row[8])
+                    .estructura(EstructuraEntity.builder()
+                        .id((Long) row[3])
+                        .nombre((String) row[9])
+                        .icono((byte[]) row[10])
+                        .mimetype((String)row[11])
+                        .idPadre((Long) row[12])
+                        .build())
+                    .vigencia(VigenciaEntity.builder()
+                        .id((Long) row[4])
+                        .nombre((String) row[13])
+                        .anio((String)row[14])
+                        .estado((String)row[15])
+                        .build())
+                    .alcance(AlcanceEntity.builder()
+                        .id((Long) row[5])
+                        .nombre((String) row[16])
+                        .build())
+                    .normatividad(NormatividadEntity.builder()
+                        .id((Long) row[6])
+                        .nombre((String) row[17])
+                        .build())
+                    .nivel(NivelEntity.builder()
+                        .id((Long) row[7])
+                        .descripcion((String) row[18])
+                        .build())
+                    .escalaSalarial(EscalaSalarialEntity.builder()
+                        .id((Long) row[8])
+                        .nombre((String) row[19])
+                        .build())
+                    .compensacionesLaboralesAplicadas(new ArrayList<>())
+                    .build();
+                appointments.add(appointment);
+                appointmentId = (Long) row[0];
+            }
+
+            if(row[20] != null){
+                CompensacionLabNivelVigenciaEntity c = CompensacionLabNivelVigenciaEntity.builder()
+                    .id((Long) row[20])
+                    .idVigencia((Long) row[21])
+                    .idNivel((Long) row[22])
+                    .idEscalaSalarial((Long) row[23])
+                    .idCompensacionLaboral((Long) row[24])
+                    .idRegla((Long) row[25])
+                    .idVariable((Long) row[26])
+                    .compensacionLaboral(CompensacionLaboralEntity.builder()
+                        .id((Long) row[24])
+                        .nombre((String) row[27])
+                        .build())
+                    .build();
+                appointment.getCompensacionesLaboralesAplicadas().add(c);
+            }
+           
         }
         return appointments;
     }

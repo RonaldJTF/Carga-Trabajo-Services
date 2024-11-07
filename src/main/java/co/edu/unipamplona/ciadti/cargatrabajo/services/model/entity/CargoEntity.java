@@ -2,6 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -97,6 +98,12 @@ public class CargoEntity implements Serializable, Cloneable {
     @JoinColumn(name = "vige_id", insertable = false, updatable = false)
     private VigenciaEntity vigencia;
 
+    @Transient
+    private List<CompensacionLabNivelVigenciaEntity> compensacionesLaboralesAplicadas;
+
+    @Transient
+    private Double asignacionTotal;
+    
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;

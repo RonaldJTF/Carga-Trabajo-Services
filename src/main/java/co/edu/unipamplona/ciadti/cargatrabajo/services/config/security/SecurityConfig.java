@@ -36,20 +36,20 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/statistics/**", "/api/structure/report").hasAnyRole("SUPERADMINISTRADOR")
                 .requestMatchers(HttpMethod.GET, "/api/inventory/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
 
+                .requestMatchers(HttpMethod.PUT, "/api/person/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/person/**").authenticated()
+                .requestMatchers("/api/person/**").hasRole("SUPERADMINISTRADOR")
+
+                .requestMatchers("/api/media/**").authenticated()
+
                 .requestMatchers(HttpMethod.GET, "/api/structure/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/structure/**").hasAnyRole("ADMINISTRADOR")
 
                 .requestMatchers(HttpMethod.GET, "/api/workplan/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/workplan/**").hasAnyRole("ADMINISTRADOR")
 
-                .requestMatchers(HttpMethod.GET,"/api/compensation/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
-                .requestMatchers("/api/compensation/**").hasAnyRole("ADMINISTRADOR")
-
                 .requestMatchers("/api/user/validate-password", "/api/user/new-password").authenticated()
                 .requestMatchers("/api/user/**").hasRole("SUPERADMINISTRADOR")
-
-                .requestMatchers(HttpMethod.GET, "/api/workplan/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
-                .requestMatchers("/api/workplan/**").hasAnyRole("ADMINISTRADOR")
 
                 .requestMatchers(HttpMethod.GET, "/api/level/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/level/**").hasAnyRole("ADMINISTRADOR")
@@ -69,14 +69,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/normativity/**").hasAnyRole( "SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/normativity/**").hasAnyRole("ADMINISTRADOR")
 
-                .requestMatchers("/api/user/validate-password", "/api/user/new-password").authenticated()
-                .requestMatchers("/api/user/**").hasRole("SUPERADMINISTRADOR")
-
-                .requestMatchers(HttpMethod.PUT, "/api/person/**").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/person/**").authenticated()
-                .requestMatchers("/api/person/**").hasRole("SUPERADMINISTRADOR")
-
-                .requestMatchers("/api/media/**").authenticated()
+                .requestMatchers(HttpMethod.GET,"/api/compensation/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers("/api/compensation/**").hasAnyRole("ADMINISTRADOR")
 
                 .requestMatchers(HttpMethod.GET,"/api/periodicity/**","/api/category/**","/api/scope/**", "/api/normativity-type/**", "/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").authenticated()
                 .requestMatchers("/api/periodicity/**","/api/category/**","/api/scope/**",  "/api/normativity-type/**", "/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").hasAnyRole("DESARROLLADOR")

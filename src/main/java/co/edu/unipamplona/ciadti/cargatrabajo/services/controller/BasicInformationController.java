@@ -41,7 +41,6 @@ public class BasicInformationController {
     private final CategoriaService categoriaService;
     private final PeriodicidadService periodicidadService;
 
-
     @Operation(
             summary = "Obtener o listar los tipos de documentos",
             description = "Obtiene o lista los tipos de documentos de acuerdo a ciertas variables o parámetros." +
@@ -57,7 +56,7 @@ public class BasicInformationController {
         ParameterConverter parameterConverter = new ParameterConverter(TipoDocumentoEntity.class);
         TipoDocumentoEntity filter = (TipoDocumentoEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id == null ? filter.getId() : idDocumentType);
-        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(tipoDocumentoService.findAllFilteredBy(filter)));
+        return Methods.getResponseAccordingToId(idDocumentType, tipoDocumentoService.findAllFilteredBy(filter));
     }
 
     @Operation(
@@ -70,12 +69,12 @@ public class BasicInformationController {
     @GetMapping(value = {"gender", "gender/{id}"})
     public ResponseEntity<?> getGender(@PathVariable(required = false) String id, HttpServletRequest request) throws CiadtiException {
 
-        Long idDocumentType = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
+        Long idGender = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
 
         ParameterConverter parameterConverter = new ParameterConverter(GeneroEntity.class);
         GeneroEntity filter = (GeneroEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id == null ? filter.getId() : idDocumentType);
-        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(generoService.findAllFilteredBy(filter)));
+        filter.setId(id == null ? filter.getId() : idGender);
+        return Methods.getResponseAccordingToId(idGender, generoService.findAllFilteredBy(filter));
     }
 
     @Operation(
@@ -93,7 +92,7 @@ public class BasicInformationController {
         ParameterConverter parameterConverter = new ParameterConverter(RolEntity.class);
         RolEntity filter = (RolEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id == null ? filter.getId() : idUser);
-        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(rolService.findAllFilteredBy(filter)));
+        return Methods.getResponseAccordingToId(idUser, rolService.findAllFilteredBy(filter));
     }
 
     @Operation(

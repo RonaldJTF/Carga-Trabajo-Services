@@ -44,7 +44,7 @@ public class PersonController {
         ParameterConverter parameterConverter = new ParameterConverter(PersonaEntity.class);
         PersonaEntity filter = (PersonaEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id == null ? filter.getId() : idPerson);
-        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(personaService.findAllFilteredBy(filter)));
+        return Methods.getResponseAccordingToId(idPerson, personaService.findAllFilteredBy(filter));
     }
 
     @Operation(

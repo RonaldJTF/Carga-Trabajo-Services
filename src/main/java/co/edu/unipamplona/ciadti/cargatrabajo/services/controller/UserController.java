@@ -52,7 +52,7 @@ public class UserController {
         ParameterConverter parameterConverter = new ParameterConverter(UsuarioEntity.class);
         UsuarioEntity filter = (UsuarioEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : idUser);
-        return Methods.getResponseAccordingToParam(id, cipherService.encryptResponse(usuarioService.findAllFilteredBy(filter)));
+        return Methods.getResponseAccordingToId(idUser, usuarioService.findAllFilteredBy(filter));
     }
 
     @Operation(
