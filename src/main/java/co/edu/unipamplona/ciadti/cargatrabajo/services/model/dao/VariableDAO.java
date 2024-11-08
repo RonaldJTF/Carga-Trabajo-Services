@@ -48,4 +48,8 @@ public interface VariableDAO extends JpaRepository<VariableEntity, Long>, JpaSpe
 
     @Query(value="select vv.valor from ValorVigenciaEntity vv where vv.idVariable = :variableId and vv.idVigencia = :validityId")
     Double findValueInValidity(@Param("variableId") Long variableId, @Param("validityId") Long validityId); 
+
+    @Query("SELECT v FROM VariableEntity v WHERE v.primaria = '1' AND v.global = '1'")
+    List<VariableEntity> findByPrimariaAndGlobal();
+
 }

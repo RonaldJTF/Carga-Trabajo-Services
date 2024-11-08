@@ -13,5 +13,7 @@ public interface VariableService extends CommonService<VariableEntity>{
     List<VariableEntity> findAllByIds(List<Long> variableIds);
 
     Double findValueInValidity(Long variableId, Long validityId);
+
+    List<VariableEntity> findByPrimariaAndGlobal();
     
 }

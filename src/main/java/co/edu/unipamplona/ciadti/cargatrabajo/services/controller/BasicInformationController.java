@@ -40,6 +40,7 @@ public class BasicInformationController {
     private final TipoNormatividadService tipoNormatividadService;
     private final CategoriaService categoriaService;
     private final PeriodicidadService periodicidadService;
+    private final VariableService variableService;
 
     @Operation(
             summary = "Obtener o listar los tipos de documentos",
@@ -742,4 +743,75 @@ public class BasicInformationController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(
+        summary = "Obtener o listar una variable primaria",
+        description = "Obtiene o lista las variables primarias de acuerdo a ciertos parámetros. " +
+            "Args: id: identificador de variable primaria. " +
+            "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase VariableEntity). " +
+            "Returns: Objeto o lista de objetos con información del valor de variable primaria. " +
+            "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables primarias o parámetros especificados. ")
+    @GetMapping(value = {"/primary-variable", "/primary-variable/{id}"})
+    public ResponseEntity<?> getPrimaryVariable(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
+        if (id != null){
+            return new ResponseEntity<>(configurationMediator.findVariable(id), HttpStatus.OK);
+        }else{
+            ParameterConverter parameterConverter = new ParameterConverter(VariableEntity.class);
+            VariableEntity filter = (VariableEntity) parameterConverter.converter(request.getParameterMap());
+            filter.setId(id==null ? filter.getId() : id);
+            return Methods.getResponseAccordingToId(id, variableService.findByPrimariaAndGlobal());
+        }
+    }
+
+    @Operation(
+        summary="Crear una variable primaria",
+        description = "Crea una variable primaria" +
+            "Args: variableEntity: objeto con información de la variable primaria. " +
+            "Returns: Objeto con la información asociada.")
+    @PostMapping("/primary-variable")
+    public ResponseEntity<?> createPrimaryVariable(@Valid @RequestBody VariableEntity variableEntity) {
+        return new ResponseEntity<>(variableService.save(variableEntity), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary="Actualizar una variable primaria",
+        description = "Actualiza una variable primaria. " + 
+            "Args: variableEntity: objeto con información de la variable primaria. " +
+            "id: identificador del cargo. " +
+            "Returns: Objeto con la información asociada.")
+    @PutMapping("/primary-variable/{id}")
+    public ResponseEntity<?> updatePrimaryVariable(@Valid @RequestBody VariableEntity variableEntity, @PathVariable Long id) throws CiadtiException{
+        VariableEntity variableEntityDB = variableService.findById(id);
+        variableEntityDB.setNombre(variableEntity.getNombre());
+        variableEntityDB.setDescripcion(variableEntity.getDescripcion());
+        variableEntityDB.setValor(variableEntity.getValor());
+        variableEntityDB.setPrimaria(variableEntity.getPrimaria());
+        variableEntityDB.setGlobal(variableEntity.getGlobal());
+        variableEntityDB.setPorVigencia(variableEntity.getPorVigencia());
+        variableEntityDB.setEstado(variableEntity.getEstado());
+
+        if (Methods.convertToBoolean(variableEntity.getPorVigencia())){
+            variableEntityDB.setValor("");
+        }
+        return new ResponseEntity<>(variableService.save(variableEntityDB), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary = "Elimina una variable primaria",
+        description = "Eliminar una variable primaria" + 
+            "Args: id: identificador de la variable primaria a eliminar. ")
+    @DeleteMapping("/primary-variable/{id}")
+    public ResponseEntity<?> deletePrimaryVariable(@PathVariable Long id) throws CiadtiException{
+        configurationMediator.deleteVariable(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Eliminar variables primarias por el id",
+            description = "Elimina lista de variables primarias  por su id." +
+                    "Args: primaryVariableIds: identificadores de los tipos de variables primarias a eliminar.")
+    @DeleteMapping("/primary-variable")
+    public ResponseEntity<?> deletePrimaryVariables(@RequestBody List<Long> primaryVariableIds) throws CiadtiException {
+        configurationMediator.deleteVariables(primaryVariableIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

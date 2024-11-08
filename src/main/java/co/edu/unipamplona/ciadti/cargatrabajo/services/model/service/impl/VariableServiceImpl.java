@@ -102,5 +102,10 @@ public class VariableServiceImpl implements VariableService{
     public Double findValueInValidity(Long variableId, Long validityId) {
         return variableDAO.findValueInValidity(variableId, validityId);
     }
+
+    @Override
+    public List<VariableEntity> findByPrimariaAndGlobal() {
+        return variableDAO.findByPrimariaAndGlobal();
+    }
     
 }
