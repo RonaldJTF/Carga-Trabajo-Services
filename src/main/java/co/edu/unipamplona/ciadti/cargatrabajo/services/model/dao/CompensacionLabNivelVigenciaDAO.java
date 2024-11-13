@@ -14,14 +14,12 @@ public interface CompensacionLabNivelVigenciaDAO extends JpaRepository<Compensac
     
     @Modifying
     @Query(value = "update CompensacionLabNivelVigenciaEntity clnv set clnv.idNivel =:idNivel, clnv.idCompensacionLaboral=:idCompensacionLaboral, " +
-                    "clnv.idEscalaSalarial =:idEscalaSalarial, clnv.idVigencia =:idVigencia, clnv.idRegla =:idRegla, clnv.idVariable =:idVariable, " +
+                    "clnv.idEscalaSalarial =:idEscalaSalarial, clnv.idVigencia =:idVigencia, " +
                     "clnv.fechaCambio =:fechaCambio, clnv.registradoPor =:registradoPor where clnv.id =:id")
     int update (@Param("idNivel") Long idNivel,
                 @Param("idCompensacionLaboral") Long idCompensacionLaboral,
                 @Param("idEscalaSalarial") Long idEscalaSalarial,
                 @Param("idVigencia") Long idVigencia,
-                @Param("idRegla") Long idRegla,
-                @Param("idVariable") Long idVariable,
                 @Param("fechaCambio") Date fechaCambio,
                 @Param("registradoPor") String registradoPor,
                 @Param("id") Long id);

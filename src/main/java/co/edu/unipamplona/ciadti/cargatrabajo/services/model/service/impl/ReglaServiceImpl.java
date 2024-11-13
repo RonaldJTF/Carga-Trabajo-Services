@@ -2,7 +2,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;

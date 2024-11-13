@@ -64,7 +64,6 @@ public class ConfigurationMediator {
     private final EscalaSalarialService escalaSalarialService;
     private final TipoNormatividadService tipoNormatividadService;
     private final ReglaService reglaService;
-    private final CompensacionLabNivelVigenciaService compensacionLabNivelVigenciaService;
     private final GeneralExpressionMediator generalExpressionMediator;
 
     /**
@@ -1163,12 +1162,8 @@ public class ConfigurationMediator {
      * @param id, identificador único de la compensación laboral
      * @throws CiadtiException, excepción
      */
-    public void deleteCompensation(String id) throws CiadtiException {
-        Long idCompensation = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
-        CompensacionLaboralEntity compensacionLaboralDB = compensacionLaboralService.findById(idCompensation);
-        if (compensacionLaboralDB != null) {
-            compensacionLaboralService.deleteByProcedure(compensacionLaboralDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
-        }
+    public void deleteCompensation(Long id) throws CiadtiException {
+       compensacionLaboralService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
 
     /**
@@ -1177,8 +1172,8 @@ public class ConfigurationMediator {
      * @param compensationsIds, lista de identificadores de las compensaciones laborales a eliminar
      * @throws CiadtiException, excepción
      */
-    public void deleteCompensations(List<String> compensationsIds) throws CiadtiException {
-        for (String id : compensationsIds) {
+    public void deleteCompensations(List<Long> compensationsIds) throws CiadtiException {
+        for (Long id : compensationsIds) {
             deleteCompensation(id);
         }
     }
@@ -1502,12 +1497,17 @@ public class ConfigurationMediator {
     public List<CargoEntity> findAppointments( Map<String, Long[]> filters) throws CiadtiException{
         List<CargoEntity> appointments = cargoService.findAllBy(filters);
         List<VariableEntity> allVariablesInDB = variableService.findAll();
+        Map<String, Double> primaryValues;
         for (CargoEntity appointment : appointments){
             Double asignacionTotal = 0.0;
             for (CompensacionLabNivelVigenciaEntity clnv : appointment.getCompensacionesLaboralesAplicadas()){
-                if(generalExpressionMediator.evaluateRuleConditions(clnv.getIdRegla(),  appointment.getIdVigencia(), allVariablesInDB)){
-                    clnv.setValorAplicado(generalExpressionMediator.getValueOfVariable(clnv.getIdVariable(), appointment.getIdVigencia(), allVariablesInDB));
-                    asignacionTotal += clnv.getValorAplicado();
+                for (CompensacionLabNivelVigValorEntity cnvv : clnv.getValoresCompensacionLabNivelVigencia()){
+                    System.out.println(cnvv);
+                    if(generalExpressionMediator.evaluateRuleConditions(cnvv.getIdRegla(),  appointment.getIdVigencia(), allVariablesInDB)){
+                        clnv.setValorAplicado(generalExpressionMediator.getValueOfVariable(cnvv.getIdVariable(), appointment.getIdVigencia(), allVariablesInDB));
+                        asignacionTotal += clnv.getValorAplicado();
+                        break;
+                    }
                 }
             }
             appointment.setAsignacionTotal(asignacionTotal + appointment.getAsignacionBasica());

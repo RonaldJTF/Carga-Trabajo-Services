@@ -26,7 +26,6 @@ import java.util.List;
 public class BasicInformationController {
 
     private final TipoDocumentoService tipoDocumentoService;
-    private final NivelService nivelService;
     private final GeneroService generoService;
     private final RolService rolService;
     private final TipologiaService tipologiaService;

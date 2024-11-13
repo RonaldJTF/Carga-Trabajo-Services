@@ -22,7 +22,7 @@ public class CompensacionLabNivelVigenciaServiceImpl implements CompensacionLabN
     @Override
     @Transactional(readOnly = true)
     public CompensacionLabNivelVigenciaEntity findById(Long id) throws CiadtiException {
-        return compensacionLabNivelVigenciaDAO.findById(id).orElseThrow(() -> new CiadtiException("Actividad no encontrada para el id :: " + id, 404));
+        return compensacionLabNivelVigenciaDAO.findById(id).orElseThrow(() -> new CiadtiException("CompensacionLabNivelVigencia no encontrada para el id :: " + id, 404));
     }
 
     @Override
@@ -41,8 +41,6 @@ public class CompensacionLabNivelVigenciaServiceImpl implements CompensacionLabN
                 entity.getIdCompensacionLaboral(), 
                 entity.getId(), 
                 entity.getIdVigencia(), 
-                entity.getIdRegla(), 
-                entity.getIdVariable(), 
                 entity.getFechaCambio(), 
                 entity.getRegistradoPor(), 
                 entity.getId());

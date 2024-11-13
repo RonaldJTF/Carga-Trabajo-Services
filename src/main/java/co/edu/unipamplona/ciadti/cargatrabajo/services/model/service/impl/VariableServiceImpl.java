@@ -92,15 +92,22 @@ public class VariableServiceImpl implements VariableService{
         return variableDAO.findAllByIds(variableIds);
     }
 
-    /*@Override
-    @Transactional(readOnly = true)
-    public VariableEntity findByIdAndValidityId(Long idVariable, Long idVigencia) {
-        return variableDAO.findByIdAndValidityId(idVariable, idVigencia);
-    }*/
-
     @Override
+    @Transactional(readOnly = true)
     public Double findValueInValidity(Long variableId, Long validityId) {
         return variableDAO.findValueInValidity(variableId, validityId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VariableEntity> findAllIncludedVariablesInRule(Long ruleId) {
+        return variableDAO.findAllIncludedVariablesInRule(ruleId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VariableEntity> findAllIncludedVariablesInVariable(Long variableId) {
+        return variableDAO.findAllIncludedVariablesInVariable(variableId);
     }
 
     @Override

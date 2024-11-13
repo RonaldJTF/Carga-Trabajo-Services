@@ -56,48 +56,69 @@ public class GeneralExpressionMediator {
     /**
      * Evalúa las condiciones de una regla en una vigencia.
      * @param reglaId
-     * @param idVigencia
-     * @param allVariablesInDB: contiene todas las variables en BD
+     * @param validityId
+     * @param variables: contiene lista de variables
      * @return
      * @throws CiadtiException
      */
-    public boolean evaluateRuleConditions(Long reglaId, Long idVigencia, List<VariableEntity> allVariablesInDB) throws CiadtiException {
+    public boolean evaluateRuleConditions(Long reglaId, Long validityId, List<VariableEntity> variables) throws CiadtiException {
         ReglaEntity regla = reglaService.findById(reglaId);
         String condiciones = regla.getCondiciones();
         if (condiciones == null || condiciones.isEmpty()) {
             throw new IllegalArgumentException("No existen condiciones para la regla con ID: " + reglaId);
         }
-        return evaluateExpressions(condiciones, idVigencia, allVariablesInDB);
+        return evaluateExpressions(condiciones, validityId, variables);
     }
 
     /**
      * Obtiene el valor de una variable en una vigencia, si esta es gestionada por vigencia.
-     * @param idVariable
-     * @param idVigencia
-     * @param allVariablesInDB: Contiene todas las variables en BD
+     * @param variableId
+     * @param validityId
+     * @param variables: contiene lista de variables
      * @return
      * @throws CiadtiException
      */
-    public double getValueOfVariable(Long idVariable, Long idVigencia, List<VariableEntity> allVariablesInDB) throws CiadtiException {
-        String formula = findValueOfVariable(idVariable, idVigencia, allVariablesInDB);
-        return evaluateArithmeticExpression(formula, idVigencia, allVariablesInDB); 
+    public double getValueOfVariable(Long variableId, Long validityId, List<VariableEntity> variables) throws CiadtiException {
+        String formula = findValueOfVariable(variableId, validityId, variables);
+        return evaluateArithmeticExpression(formula, validityId, variables); 
     }
     
+    /**
+     * Obtiene una expresion con relaciones de ids en ella, con sus nombres. 
+     * Ej: pasa de $[1]*0.5 + $[5]/2 a SMMLV*0.5 + Bonificación/2
+     * @param expression
+     * @param variables: contiene lista de variables
+     * @return
+     * @throws CiadtiException
+     */
+    public String getExpressionWithVariableNames(String expression, List<VariableEntity> variables) throws CiadtiException {
+        Pattern pattern = Pattern.compile("\\$\\[(\\d+)]");
+        Matcher matcher = pattern.matcher(expression);
+        StringBuffer expressionWithNames = new StringBuffer();
+        while (matcher.find()) {
+            Long variableId = Long.parseLong(matcher.group(1));
+            VariableEntity variable = this.findVariable(variableId, variables);
+            matcher.appendReplacement(expressionWithNames,  variable.getNombre());
+        }
+        matcher.appendTail(expressionWithNames);
+        return expressionWithNames.toString();
+    }
+
     /**
      * Evalúa una expresion aritmetica para variables que pueden depender de una vigencia.
      * @param expression
      * @param idValidity
-     * @param allVariablesInDB: contiene todas las variables en BD
+     * @param variables: contiene lista de variables
      * @return
      * @throws CiadtiException
      */
-    private double evaluateArithmeticExpression(String expression, Long idValidity, List<VariableEntity> allVariablesInDB) throws CiadtiException {
+    private double evaluateArithmeticExpression(String expression, Long idValidity, List<VariableEntity> variables) throws CiadtiException {
         Pattern pattern = Pattern.compile("\\$\\[(\\d+)]");
         Matcher matcher = pattern.matcher(expression);
         while (matcher.find()) {
             Long referencedId = Long.parseLong(matcher.group(1));
             double referencedValue;
-            referencedValue = this.getValueOfVariable(referencedId, idValidity, allVariablesInDB);
+            referencedValue = this.getValueOfVariable(referencedId, idValidity, variables);
             expression = expression.replace(matcher.group(), String.valueOf(referencedValue));
         }
         Expression expressionBuilder = new ExpressionBuilder(expression).build();
@@ -110,12 +131,12 @@ public class GeneralExpressionMediator {
      * en caso contrario, devuelve la expresión que define su valor.
      * @param variableId
      * @param validityId
-     * @param allVariablesInDB: contiene todas las variables en BD
+     * @param variables: contiene lista de variables
      * @return
      * @throws CiadtiException
      */
-    private String findValueOfVariable(Long variableId, Long validityId, List<VariableEntity> allVariablesInDB) throws CiadtiException{
-        VariableEntity variable = this.findVariable(variableId, allVariablesInDB);
+    private String findValueOfVariable(Long variableId, Long validityId, List<VariableEntity> variables) throws CiadtiException{
+        VariableEntity variable = this.findVariable(variableId, variables);
         if (variable.getValor() != null && !variable.getValor().isEmpty()) {
             return variable.getValor();
         }else{
@@ -125,49 +146,29 @@ public class GeneralExpressionMediator {
 
     /**
      * Encuentra una variable en la lista de variables;
-     * @param allVariablesInDB
+     * @param variables
      * @return
      */
-    private VariableEntity findVariable(Long variableId, List<VariableEntity> allVariablesInDB){
-        return allVariablesInDB.stream()
+    private VariableEntity findVariable(Long variableId, List<VariableEntity> variables){
+        return variables.stream()
         .filter(e -> e.getId() == variableId)
         .findFirst()
         .orElse(null);
     }
 
-    /**
-     * Obtiene una expresion con relaciones de ids en ella, con sus nombres. 
-     * Ej: pasa de $[1]*0.5 + $[5]/2 a SMMLV*0.5 + Bonificación/2
-     * @param expression
-     * @param allVariablesInDB: contiene todas las variables en BD
-     * @return
-     * @throws CiadtiException
-     */
-    private String getExpressionWithVariableNames(String expression, List<VariableEntity> allVariablesInDB) throws CiadtiException {
-        Pattern pattern = Pattern.compile("\\$\\[(\\d+)]");
-        Matcher matcher = pattern.matcher(expression);
-        StringBuffer formulaConNombres = new StringBuffer();
-        while (matcher.find()) {
-            Long idVariable = Long.parseLong(matcher.group(1));
-            VariableEntity variable = this.findVariable(idVariable, allVariablesInDB);
-            matcher.appendReplacement(formulaConNombres,  variable.getNombre());
-        }
-        matcher.appendTail(formulaConNombres);
-        return formulaConNombres.toString();
-    }
     
     /**
      * Evalua multiples condiciones booleanas cuyos valores de variables pueden depender de una vigencia.
      * @param conditions: condiciones
      * @param idValidity: Id de la vigencia
-     * @param allVariablesInDB: contiene todas las variables en BD
+     * @param variables: contiene lista de variables
      * @return
      * @throws CiadtiException
      */
-    private boolean evaluateExpressions(String conditions, Long idValidity, List<VariableEntity> allVariablesInDB) throws CiadtiException {
+    private boolean evaluateExpressions(String conditions, Long idValidity, List<VariableEntity> variables) throws CiadtiException {
         String[] expressions = conditions.split("&");
         for (String expression : expressions) {
-            if (!evaluateBooleanExpression(expression.trim(), idValidity, allVariablesInDB)) {
+            if (!evaluateBooleanExpression(expression.trim(), idValidity, variables)) {
                 return false;
             }
         }
@@ -178,20 +179,20 @@ public class GeneralExpressionMediator {
      * Evalua una expresión booleana en una vigencia
      * @param expression
      * @param validityId
-     * @param allVariablesInDB: contiene todas las variables en BD
+     * @param variables: contiene lista de variables
      * @return
      * @throws CiadtiException
      */
-    private boolean evaluateBooleanExpression(String expression, Long validityId, List<VariableEntity> allVariablesInDB) throws CiadtiException {
+    private boolean evaluateBooleanExpression(String expression, Long validityId, List<VariableEntity> variables) throws CiadtiException {
         String[] partes = expression.split("(?<=\\b|\\W)(?=<=|>=|!=|==|<|>)|(?<=<=|>=|!=|==|<|>)(?=\\b|\\W)");
         double ladoIzquierdo, ladoDerecho;
     
         if (partes.length == 1) { 
-            ladoIzquierdo = evaluateArithmeticExpression(partes[0].trim(), validityId, allVariablesInDB);
+            ladoIzquierdo = evaluateArithmeticExpression(partes[0].trim(), validityId, variables);
             return ladoIzquierdo != 0; 
         } else if (partes.length == 3) {
-            ladoIzquierdo = evaluateArithmeticExpression(partes[0].trim(), validityId, allVariablesInDB);
-            ladoDerecho = evaluateArithmeticExpression(partes[2].trim(), validityId, allVariablesInDB);
+            ladoIzquierdo = evaluateArithmeticExpression(partes[0].trim(), validityId, variables);
+            ladoDerecho = evaluateArithmeticExpression(partes[2].trim(), validityId, variables);
             switch (partes[1].trim()) {
                 case ">":
                     return ladoIzquierdo > ladoDerecho;

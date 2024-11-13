@@ -47,9 +47,37 @@ public interface VariableDAO extends JpaRepository<VariableEntity, Long>, JpaSpe
     VariableEntity findByIdAndValidityId(@Param("id") Long id, @Param("idVigencia") Long idVigencia);
 
     @Query(value="select vv.valor from ValorVigenciaEntity vv where vv.idVariable = :variableId and vv.idVigencia = :validityId")
-    Double findValueInValidity(@Param("variableId") Long variableId, @Param("validityId") Long validityId); 
+    Double findValueInValidity(@Param("variableId") Long variableId, @Param("validityId") Long validityId);
 
     @Query("SELECT v FROM VariableEntity v WHERE v.primaria = '1' AND v.global = '1'")
     List<VariableEntity> findByPrimariaAndGlobal();
 
+
+    @Query(value = "WITH extracted_ids AS ( " + 
+                    "   SELECT unnest( "+
+                    "          array(  " +
+                    "              SELECT regexp_replace((regexp_matches(r.regl_condiciones, '\\[\\d+\\]', 'g'))[1], '[\\[\\]]', '', 'g') " +
+                    "              from fortalecimiento.regla r " +
+                    "              where r.regl_id = :idRegla " +
+                    "         )" +
+                    "   ) AS id" +
+                    ") " +
+                    "SELECT v.* " +
+                    "FROM fortalecimiento.variable v " + 
+                    "WHERE v.vari_id  IN (SELECT CAST(id AS integer) FROM extracted_ids);", nativeQuery = true)
+    List<VariableEntity> findAllIncludedVariablesInRule(@Param("idRegla") Long idRegla); 
+
+    @Query(value = "WITH extracted_ids AS ( " + 
+                    "   SELECT unnest( "+
+                    "          array(  " +
+                    "              SELECT regexp_replace((regexp_matches(v.vari_valor, '\\[\\d+\\]', 'g'))[1], '[\\[\\]]', '', 'g') " +
+                    "              from fortalecimiento.variable v " +
+                    "              where v.vari_id = :idVariable " +
+                    "         )" +
+                    "   ) AS id" +
+                    ") " +
+                    "SELECT v.* " +
+                    "FROM fortalecimiento.variable v " + 
+                    "WHERE v.vari_id  IN (SELECT CAST(id AS integer) FROM extracted_ids);", nativeQuery = true)
+    List<VariableEntity> findAllIncludedVariablesInVariable(@Param("idVariable") Long idVariable); 
 }
