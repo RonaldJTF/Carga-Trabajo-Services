@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportPlainedExcelJXLS;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,68 +54,69 @@ public class StructureController {
     private final ConfigurationMediator configurationMediator;
     private final StructureReportPDF structureReportPDF;
     private final StructureReportExcelJXLS structureReportExcelJXLS;
+    private final StructureReportPlainedExcelJXLS structureReportFlatExcelJXLS;
 
     @Operation(
-        summary = "Obtener o listar las estructuras (Dependencia, Procesos, Procedimientos, Actividad, etc.)",
-        description = "Obtiene o lista las estructuras de acuerdo a ciertas variables o parámetros. " +
-            "Args: id: identificador de la estructura. " +
-            "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase EstructuraEntity). " +
-            "Returns: Objeto o lista de objetos con información de la estructura. " +
-            "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
+            summary = "Obtener o listar las estructuras (Dependencia, Procesos, Procedimientos, Actividad, etc.)",
+            description = "Obtiene o lista las estructuras de acuerdo a ciertas variables o parámetros. " +
+                    "Args: id: identificador de la estructura. " +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase EstructuraEntity). " +
+                    "Returns: Objeto o lista de objetos con información de la estructura. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
     @GetMapping(value = {"", "/{id}"})
-    public ResponseEntity<?> get (@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
+    public ResponseEntity<?> get(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(EstructuraEntity.class);
         EstructuraEntity filter = (EstructuraEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id==null ? filter.getId() : id);
+        filter.setId(id == null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, estructuraService.findAllFilteredBy(filter));
     }
 
     @Operation(
-        summary = "Obtener las dependencias junto a sus subdependencias",
-        description = "Obtiene las dependencias que existen junto a sus subdependencias."
+            summary = "Obtener las dependencias junto a sus subdependencias",
+            description = "Obtiene las dependencias que existen junto a sus subdependencias."
     )
     @GetMapping({"/dependencies"})
-    public ResponseEntity<?> getDependencies() throws CiadtiException{
+    public ResponseEntity<?> getDependencies() throws CiadtiException {
         List<EstructuraEntity> dependencies = this.configurationMediator.getDependencies();
         return new ResponseEntity<>(dependencies, HttpStatus.OK);
     }
 
     @Operation(
-        summary = "Obtener la dependencia con la información de los procesos por su id (O estructuras de la tipologia que lo sigue) junto a sus subdependencias, pero si los procesos para esas subdependencias. ",
-        description = "Obtiene la dependencia con la información de los procesos por el id (O estructuras de la tipologia que lo sigue) junto a sus subdependencias, pero si los procesos para esas subdependencias. "
+            summary = "Obtener la dependencia con la información de los procesos por su id (O estructuras de la tipologia que lo sigue) junto a sus subdependencias, pero si los procesos para esas subdependencias. ",
+            description = "Obtiene la dependencia con la información de los procesos por el id (O estructuras de la tipologia que lo sigue) junto a sus subdependencias, pero si los procesos para esas subdependencias. "
     )
     @GetMapping({"/dependency/{idDependency}"})
     public ResponseEntity<?> getDependencyInformation(@PathVariable(required = true) Long idDependency) throws CiadtiException {
         return new ResponseEntity<>(this.configurationMediator.getDependencyInformation(idDependency), HttpStatus.OK);
     }
 
-    
+
     @Operation(
-        summary="Crear una estructura junto a sus subestructuras",
-        description = "Crea una estructura junto a sus subestructuras si estas son definidas. " + 
-            "Args: estructuraEntity: objeto con información de la estructura. " +
-            "Returns: Objeto con la información asociada.")
+            summary = "Crear una estructura junto a sus subestructuras",
+            description = "Crea una estructura junto a sus subestructuras si estas son definidas. " +
+                    "Args: estructuraEntity: objeto con información de la estructura. " +
+                    "Returns: Objeto con la información asociada.")
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestParam("structure") String estructuraJSON, 
-                                    @RequestParam(value="file", required = false) MultipartFile file) throws IOException, CiadtiException {
+    public ResponseEntity<?> create(@Valid @RequestParam("structure") String estructuraJSON,
+                                    @RequestParam(value = "file", required = false) MultipartFile file) throws IOException, CiadtiException {
         ObjectMapper objectMapper = new ObjectMapper();
         EstructuraEntity estructuraEntity = objectMapper.readValue(estructuraJSON, EstructuraEntity.class);
         TipologiaEntity firstTypology = tipologiaService.findFirstTipology();
         TipologiaEntity dependency = tipologiaService.findDependencyTipology();
-       
+
         estructuraEntity.setIdTipologia(estructuraEntity.getIdTipologia() == null ? firstTypology.getId() : estructuraEntity.getIdTipologia());
         estructuraEntity.setTipologia(tipologiaService.findById(estructuraEntity.getIdTipologia()));
 
-        if (estructuraEntity.getIdTipologia() !=  dependency.getId()){
+        if (estructuraEntity.getIdTipologia() != dependency.getId()) {
             Long lastOrder = estructuraService.findLastOrderByIdPadre(estructuraEntity.getIdPadre());
             estructuraEntity.setOrden(
-                estructuraEntity.getOrden() != null 
-                ? estructuraEntity.getOrden() 
-                : (lastOrder != null ? lastOrder + 1 : 1)
+                    estructuraEntity.getOrden() != null
+                            ? estructuraEntity.getOrden()
+                            : (lastOrder != null ? lastOrder + 1 : 1)
             );
         }
 
-        if(file != null){
+        if (file != null) {
             estructuraEntity.setMimetype(file.getContentType());
             estructuraEntity.setIcono(file.getBytes());
         }
@@ -122,33 +124,33 @@ public class StructureController {
     }
 
     @Operation(
-        summary="Actualizar una estructura junto a sus subestructuras",
-        description = "Actualiza una estructura junto a sus subestructuras si estas son definidas. " + 
-            "Args: estructuraEntity: objeto con información de la estructura. " +
-            "id: identificador de la estructura. " +
-            "Returns: Objeto con la información asociada.")
+            summary = "Actualizar una estructura junto a sus subestructuras",
+            description = "Actualiza una estructura junto a sus subestructuras si estas son definidas. " +
+                    "Args: estructuraEntity: objeto con información de la estructura. " +
+                    "id: identificador de la estructura. " +
+                    "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
-    public ResponseEntity<?> update (@Valid @RequestParam("structure") String estructuraJSON, 
-                                     @RequestParam(value = "file", required = false) MultipartFile file,
-                                     @PathVariable Long id) throws CiadtiException, IOException{
+    public ResponseEntity<?> update(@Valid @RequestParam("structure") String estructuraJSON,
+                                    @RequestParam(value = "file", required = false) MultipartFile file,
+                                    @PathVariable Long id) throws CiadtiException, IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         EstructuraEntity estructuraEntity = objectMapper.readValue(estructuraJSON, EstructuraEntity.class);
 
         EstructuraEntity estructuraEntityBD = estructuraService.findById(id);
         Long previusOrder = estructuraEntityBD.getOrden();
         TipologiaEntity dependency = tipologiaService.findDependencyTipology();
-        if (estructuraEntityBD.getIdTipologia() !=  dependency.getId()){
+        if (estructuraEntityBD.getIdTipologia() != dependency.getId()) {
             Long lastOrder = estructuraService.findLastOrderByIdPadre(estructuraEntityBD.getIdPadre());
             estructuraEntityBD.setOrden(
-                estructuraEntity.getOrden() != null 
-                ? estructuraEntity.getOrden() 
-                : (lastOrder != null ? lastOrder + 1 : 1)
+                    estructuraEntity.getOrden() != null
+                            ? estructuraEntity.getOrden()
+                            : (lastOrder != null ? lastOrder + 1 : 1)
             );
         }
         estructuraEntityBD.setNombre(estructuraEntity.getNombre());
         estructuraEntityBD.setDescripcion(estructuraEntity.getDescripcion());
-        
-        if(file != null){
+
+        if (file != null) {
             estructuraEntityBD.setMimetype(file.getContentType());
             estructuraEntityBD.setIcono(file.getBytes());
         }
@@ -156,15 +158,15 @@ public class StructureController {
     }
 
     @Operation(
-        summary = "Eliminar una estructura por su id",
-        description = "Elimina una estructura y sus subestructuras por su id." + 
-            "Args: id: identificador de la estructura a eliminar." )
+            summary = "Eliminar una estructura por su id",
+            description = "Elimina una estructura y sus subestructuras por su id." +
+                    "Args: id: identificador de la estructura a eliminar.")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete (@PathVariable Long id) throws CiadtiException{
+    public ResponseEntity<?> delete(@PathVariable Long id) throws CiadtiException {
         configurationMediator.deleteStructure(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    
+
 
     @DeleteMapping
     public ResponseEntity<?> deleteStructures(@RequestBody List<Long> structureIds) throws CiadtiException {
@@ -173,37 +175,37 @@ public class StructureController {
     }
 
     @Operation(
-        summary = "Obtener o listar las actividades",
-        description = "Obtiene o lista las actividades de acuerdo a ciertas variables o parámetros. " +
-            "Args: id: identificador de la actividad. " +
-            "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase ActividadEntity). " +
-            "Returns: Objeto o lista de objetos con información de la actividad. " +
-            "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
+            summary = "Obtener o listar las actividades",
+            description = "Obtiene o lista las actividades de acuerdo a ciertas variables o parámetros. " +
+                    "Args: id: identificador de la actividad. " +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase ActividadEntity). " +
+                    "Returns: Objeto o lista de objetos con información de la actividad. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
     @GetMapping(value = {"/activity", "/activity/{id}"})
-    public ResponseEntity<?> getActivity(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
+    public ResponseEntity<?> getActivity(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(ActividadEntity.class);
         ActividadEntity filter = (ActividadEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id==null ? filter.getId() : id);
+        filter.setId(id == null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, actividadService.findAllFilteredBy(filter));
     }
 
     @Operation(
-        summary="Crear una actividad o detalle de la estructura de tipología actividad",
-        description = "Crea una actividad o detalle de la estructura de tipología actividad. " + 
-            "Args: actividadEntity: objeto con información de la actividad. " +
-            "Returns: Objeto con la información asociada.")
+            summary = "Crear una actividad o detalle de la estructura de tipología actividad",
+            description = "Crea una actividad o detalle de la estructura de tipología actividad. " +
+                    "Args: actividadEntity: objeto con información de la actividad. " +
+                    "Returns: Objeto con la información asociada.")
     @PostMapping("/activity")
-    public ResponseEntity<?> createActivity(@Valid @RequestBody ActividadEntity actividadEntity ){
+    public ResponseEntity<?> createActivity(@Valid @RequestBody ActividadEntity actividadEntity) {
         return new ResponseEntity<>(actividadService.save(actividadEntity), HttpStatus.CREATED);
     }
 
     @Operation(
-        summary="Actualizar una actividad o detalle de la estructura de tipología actividad",
-        description = "Actualiza una actividad o detalle de la estructura de tipología actividad. " + 
-            "Args: actividadEntity: objeto con información de la actividad. " +
-            "Returns: Objeto con la información asociada.")
+            summary = "Actualizar una actividad o detalle de la estructura de tipología actividad",
+            description = "Actualiza una actividad o detalle de la estructura de tipología actividad. " +
+                    "Args: actividadEntity: objeto con información de la actividad. " +
+                    "Returns: Objeto con la información asociada.")
     @PutMapping("/activity/{id}")
-    public ResponseEntity<?> updateActivity(@Valid @RequestBody ActividadEntity actividadEntity, @PathVariable Long id ) throws CiadtiException{
+    public ResponseEntity<?> updateActivity(@Valid @RequestBody ActividadEntity actividadEntity, @PathVariable Long id) throws CiadtiException {
         ActividadEntity actividadEntityBD = actividadService.findById(id);
         actividadEntityBD.setFrecuencia(actividadEntity.getFrecuencia());
         actividadEntityBD.setTiempoMinimo(actividadEntity.getTiempoMinimo());
@@ -215,18 +217,18 @@ public class StructureController {
     }
 
     @Operation(
-        summary = "Eliminar una actividad por su id",
-        description = "Elimina una actividad por su id." + 
-            "Args: id: identificador de la actividad a eliminar." )
+            summary = "Eliminar una actividad por su id",
+            description = "Elimina una actividad por su id." +
+                    "Args: id: identificador de la actividad a eliminar.")
     @DeleteMapping("/activity/{id}")
-    public ResponseEntity<?> deleteActivity (@PathVariable Long id) throws CiadtiException{
+    public ResponseEntity<?> deleteActivity(@PathVariable Long id) throws CiadtiException {
         actividadService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/report")
     public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type,
-                                                 @RequestParam(name = "structureIds", required = false) String structureIdsString) throws Exception{   
+                                                 @RequestParam(name = "structureIds", required = false) String structureIdsString) throws Exception {
         structureIdsString = structureIdsString.replaceAll("\\[|\\]|\\s", "");
         List<Long> structureIds = new ArrayList<>();
         if (!structureIdsString.isEmpty()) {
@@ -234,20 +236,53 @@ public class StructureController {
             for (String part : parts) {
                 structureIds.add(Long.parseLong(part));
             }
-        }        
+        }
         byte[] fileBytes = null;
         String extension = null;
         String mediaType = null;
 
-        if(type == null || "EXCEL".equals(type.toUpperCase())){
+        if (type == null || "EXCEL".equals(type.toUpperCase())) {
             extension = "xlsx";
             mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             fileBytes = structureReportExcelJXLS.generate(structureIds);
-        }else if ("PDF".equals(type.toUpperCase())){
+        } else if ("PDF".equals(type.toUpperCase())) {
             extension = "pdf";
             mediaType = "application/pdf";
             fileBytes = structureReportPDF.generate(structureIds);
         }
+
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+        String fileName = String.format("reporte_%s.%s", currentDateTime, extension);
+
+        if (fileBytes != null) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+            headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition, Content-Type");
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.parseMediaType(mediaType))
+                    .body(fileBytes);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/report-plained")
+    public ResponseEntity<?> downloadReportExcelFlat(@RequestParam(name = "type", required = false) String type, @RequestParam(name = "structureIds", required = false) String structureIdsString) throws Exception {
+        structureIdsString = structureIdsString.replaceAll("\\[|\\]|\\s", "");
+        List<Long> structureIds = new ArrayList<>();
+        if (!structureIdsString.isEmpty()) {
+            String[] parts = structureIdsString.split(",");
+            for (String part : parts) {
+                structureIds.add(Long.parseLong(part));
+            }
+        }
+
+        String extension = "xlsx";
+        String mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+        byte[] fileBytes = structureReportFlatExcelJXLS.generateExcel(structureIds);
 
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
         String currentDateTime = dateFormatter.format(new Date());

@@ -216,9 +216,9 @@ public class StructureReportPDF {
                     buildStructureData(structure.getSubEstructuras(), tipologyStructures, level + 1, results);
                 }
             }else{
-                String levl = null;
-                String levelNomenclature = null;
                 Double frecuency = null;
+                String levelNomenclature = null;
+                String levl = null;
                 Double minTime = null;
                 Double meanTime = null;
                 Double maxTime = null;
@@ -230,8 +230,8 @@ public class StructureReportPDF {
                     levelNomenclature = getLevelNomenclature(structure.getActividad().getNivel().getDescripcion());
                     levl = String.format("%s (%s)", structure.getActividad().getNivel().getDescripcion(), levelNomenclature);
                     frecuency = structure.getActividad().getFrecuencia();
-                    minTime = (double) Math.round((structure.getActividad().getTiempoMinimo() / 60.0)*100)/100;
                     meanTime = (double) Math.round((structure.getActividad().getTiempoPromedio() / 60.0)*100)/100;
+                    minTime = (double) Math.round((structure.getActividad().getTiempoMinimo() / 60.0)*100)/100;
                     maxTime = (double) Math.round((structure.getActividad().getTiempoMaximo() / 60.0)*100)/100;
                     standarTime = (double) Math.round((1.07*(minTime + 4*meanTime + maxTime)/6)*100) /100;
                     for (NivelEntity e : levels){

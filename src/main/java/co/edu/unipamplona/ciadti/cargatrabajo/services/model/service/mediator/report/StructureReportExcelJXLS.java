@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ReportStructureDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
 import org.jxls.transform.poi.JxlsPoiTemplateFillerBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -39,7 +42,7 @@ public class StructureReportExcelJXLS {
     private Map<String, Object> registry;
     private Double HOURS_PER_MONTH;
 
-    public byte[] generate(List<Long> structureIds) throws Exception{
+    public byte[] generate(List<Long> structureIds) throws Exception {
         registry = new HashMap<>();
         HOURS_PER_MONTH = 151.3;
         generateDataset(structureIds);
@@ -60,28 +63,28 @@ public class StructureReportExcelJXLS {
         Resource resource = this.staticResourceMediator.getResource(filePath);
 
         byte[] bytes = JxlsPoiTemplateFillerBuilder
-            .newInstance()
-            .withTemplate(resource.getInputStream())
-            .withCommand("merge", MergeCommand.class)
-            .withCommand("image", ImageCommand.class)
-            .withCommand("tree", TreeCommand.class)
-            .needsPublicContext(t)
-            .buildAndFill(contextMap);
+                .newInstance()
+                .withTemplate(resource.getInputStream())
+                .withCommand("merge", MergeCommand.class)
+                .withCommand("image", ImageCommand.class)
+                .withCommand("tree", TreeCommand.class)
+                .needsPublicContext(t)
+                .buildAndFill(contextMap);
         return bytes;
     }
 
-    private void generateDataset(List<Long> structureIds) throws Exception{
+    private void generateDataset(List<Long> structureIds) throws Exception {
         List<NivelEntity> levels = nivelService.findAll();
         TipologiaEntity tipologiaEntity = tipologiaService.findFirstTipology();
-        List<EstructuraEntity> structures = structureIds != null && structureIds.size() > 0 
-                                            ? estructuraService.findAllFilteredByIds(structureIds) 
-                                            : estructuraService.findAllFilteredBy(EstructuraEntity.builder().nombre("").build());
+        List<EstructuraEntity> structures = structureIds != null && structureIds.size() > 0
+                ? estructuraService.findAllFilteredByIds(structureIds)
+                : estructuraService.findAllFilteredBy(EstructuraEntity.builder().nombre("").build());
 
         List<EstructuraEntity> plainedStructures = new ArrayList<>();
         filterAndPlainByIdTypology(structures, plainedStructures, tipologiaEntity.getId());
         filterDistinctOfIdTypology(plainedStructures, tipologiaEntity.getId());
 
-        Map<Long, Integer> levelIndexes = IntStream.range(0, levels.size()).boxed().collect(Collectors.toMap( i -> levels.get(i).getId(), i -> i));
+        Map<Long, Integer> levelIndexes = IntStream.range(0, levels.size()).boxed().collect(Collectors.toMap(i -> levels.get(i).getId(), i -> i));
 
         registry.put("plainedStructures", plainedStructures);
         registry.put("levels", levels);
@@ -90,27 +93,27 @@ public class StructureReportExcelJXLS {
         assignTimePerLevel(plainedStructures);
     }
 
-    private int getTreeDeep(List<EstructuraEntity> structures){
+    private int getTreeDeep(List<EstructuraEntity> structures) {
         int max = 0;
-        if (structures != null){
-            for (EstructuraEntity e : structures){
+        if (structures != null) {
+            for (EstructuraEntity e : structures) {
                 max = Math.max(max, 1 + getTreeDeep(e.getSubEstructuras()));
             }
         }
         return max;
     }
 
-    private void assignTimePerLevel(List<EstructuraEntity> structures){
-        if (structures != null){
-            for (EstructuraEntity e : structures){
-                Map<Long, Integer> levelIndexes  = (Map<Long, Integer>)registry.get("levelIndexes");
-                if ( e.getActividad() != null){
+    private void assignTimePerLevel(List<EstructuraEntity> structures) {
+        if (structures != null) {
+            for (EstructuraEntity e : structures) {
+                Map<Long, Integer> levelIndexes = (Map<Long, Integer>) registry.get("levelIndexes");
+                if (e.getActividad() != null) {
                     List<Double> timePerLevel = new ArrayList<>(Collections.nCopies(levelIndexes.size(), (Double) null));
                     e.getActividad().setTimePerLevel(timePerLevel);
-                    double standarTime = (double) 1.07*(e.getActividad().getTiempoMinimoEnHoras() + 4*e.getActividad().getTiempoPromedioEnHoras() + e.getActividad().getTiempoMaximoEnHoras())/6;
+                    double standarTime = (double) 1.07 * (e.getActividad().getTiempoMinimoEnHoras() + 4 * e.getActividad().getTiempoPromedioEnHoras() + e.getActividad().getTiempoMaximoEnHoras()) / 6;
                     e.getActividad().setTiempoEstandar(standarTime);
                     e.getActividad().getTimePerLevel().set(levelIndexes.get(e.getActividad().getIdNivel()), e.getActividad().getFrecuencia() * standarTime);
-                }else{
+                } else {
                     e.setActividad(ActividadEntity.builder().timePerLevel(new ArrayList<>(Collections.nCopies(levelIndexes.size(), (Double) null))).build());
                 }
                 assignTimePerLevel(e.getSubEstructuras());
@@ -122,39 +125,39 @@ public class StructureReportExcelJXLS {
      * De la lista de todas las estructuras, toma a cada dependencia(definida por idTipology) y las pone en un mismo nivel en la lista plainedStructures,
      * es decir, de esta posible estructura nos queda algo así:
      * ESTRUCTURA INICIAL:
-     *      Dependencia 1 
-     *          Subdependencia 1.1
-     *              Proceso 1
-     *                  Procedimiento 1
-     *                      ...
-     *              Proceso 2
-     *                  ....
-     *          Subdependencia 1.2
-     *              ...
-     *      Dependencia 2
-     *          ...
+     * Dependencia 1
+     * Subdependencia 1.1
+     * Proceso 1
+     * Procedimiento 1
+     * ...
+     * Proceso 2
+     * ....
+     * Subdependencia 1.2
+     * ...
+     * Dependencia 2
+     * ...
      * ESTRUCTURA FINAL:
-     *      Dependencia 1 
-     *          Subdependencia 1.1
-     *              Proceso 1
-     *                  Procedimiento 1
-     *                      ...
-     *              Proceso 2
-     *                  ...
-     *      Subdependencia 1.1
-     *          ...
-     *      Subdependencia 1.2
-     *          ...
-     *      Dependencia 2
-     *          ....
+     * Dependencia 1
+     * Subdependencia 1.1
+     * Proceso 1
+     * Procedimiento 1
+     * ...
+     * Proceso 2
+     * ...
+     * Subdependencia 1.1
+     * ...
+     * Subdependencia 1.2
+     * ...
+     * Dependencia 2
+     * ....
      * @param structures
      * @param plainedStructures
      * @param idTypology
      */
-    private void filterAndPlainByIdTypology(List<EstructuraEntity> structures, List<EstructuraEntity> plainedStructures, Long idTipology){
+    private void filterAndPlainByIdTypology(List<EstructuraEntity> structures, List<EstructuraEntity> plainedStructures, Long idTipology) {
         for (EstructuraEntity e : structures) {
-            if (e.getTipologia().getId() == idTipology && e.getSubEstructuras() != null ){
-                if(e.getSubEstructuras().stream().anyMatch(o -> o.getTipologia().getId() != idTipology)){
+            if (e.getTipologia().getId() == idTipology && e.getSubEstructuras() != null) {
+                if (e.getSubEstructuras().stream().anyMatch(o -> o.getTipologia().getId() != idTipology)) {
                     plainedStructures.add(e);
                 }
                 filterAndPlainByIdTypology(e.getSubEstructuras(), plainedStructures, idTipology);
@@ -167,13 +170,14 @@ public class StructureReportExcelJXLS {
      * @param plainedStructures
      * @param idTypology
      */
-    private void filterDistinctOfIdTypology(List<EstructuraEntity> plainedStructures, Long idTypology){
+    private void filterDistinctOfIdTypology(List<EstructuraEntity> plainedStructures, Long idTypology) {
         for (EstructuraEntity e : plainedStructures) {
             e.setSubEstructuras(
-                e.getSubEstructuras().stream()
-                    .filter(o -> o.getTipologia().getId() != idTypology)
-                    .collect(Collectors.toList())
+                    e.getSubEstructuras().stream()
+                            .filter(o -> o.getTipologia().getId() != idTypology)
+                            .collect(Collectors.toList())
             );
         }
     }
+
 }
