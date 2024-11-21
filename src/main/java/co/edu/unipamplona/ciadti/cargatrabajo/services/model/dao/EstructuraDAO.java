@@ -62,7 +62,7 @@ public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, Jp
     @Query(value = "select e from EstructuraEntity e where e.id in :structureIds")
     List<EstructuraEntity> findAllFilteredByIds(@Param("structureIds") List<Long> structureIds);
 
-    @Query(value = "select Max(e.orden) from EstructuraEntity e where e.idPadre = :idPadre")
+    @Query(value = "select coalesce (Max(e.orden), 0) from EstructuraEntity e where e.idPadre = :idPadre")
     Long findLastOrderByIdPadre(@Param("idPadre") Long idPadre);
 
     @Modifying
@@ -101,4 +101,7 @@ public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, Jp
             + "LEFT JOIN fortalecimiento.tipologia t ON (e.tipo_id = t.tipo_id) "
             + "WHERE t.tipo_esdependencia = '1'", nativeQuery = true)
     List<DependenciaDTO> findAllDependencies();
+
+    @Query(value = "SELECT e FROM EstructuraEntity e where e.idPadre = :idPadre")
+    List<EstructuraEntity> findByIdPadre(@Param("idPadre") Long idPadre);
 }

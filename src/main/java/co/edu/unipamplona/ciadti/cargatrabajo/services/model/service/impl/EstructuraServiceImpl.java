@@ -249,4 +249,9 @@ public class EstructuraServiceImpl implements EstructuraService {
     public List<DependenciaDTO> findAllDependencies() {
         return estructuraDAO.findAllDependencies();
     }
+
+    @Override
+    public List<EstructuraEntity> findByIdPadre(Long idPadre) {
+        return estructuraDAO.findByIdPadre(idPadre);
+    }
 }

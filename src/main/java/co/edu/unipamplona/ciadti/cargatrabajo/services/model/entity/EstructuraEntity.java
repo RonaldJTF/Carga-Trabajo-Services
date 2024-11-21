@@ -1,11 +1,13 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -26,6 +28,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "ESTRUCTURA", schema = "FORTALECIMIENTO")
+//@JsonInclude(JsonInclude.Include.ALWAYS)
 public class EstructuraEntity implements Serializable, Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +41,7 @@ public class EstructuraEntity implements Serializable, Cloneable{
     @Column(name = "estr_descripcion", length = 2000)
     private String descripcion;
 
+    @JsonProperty("idPadre")
     @Column(name = "estr_idpadre")
     private Long idPadre;
 
@@ -108,7 +112,14 @@ public class EstructuraEntity implements Serializable, Cloneable{
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public EstructuraEntity clone() throws CloneNotSupportedException {
+        EstructuraEntity cloned = (EstructuraEntity) super.clone();
+        if (this.subEstructuras != null) {
+            cloned.subEstructuras = new ArrayList<>();
+            for (EstructuraEntity sub : this.subEstructuras) {
+                cloned.subEstructuras.add(sub.clone());
+            }
+        }
+        return cloned;
     }
 }

@@ -15,9 +15,12 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Stat
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -161,6 +164,50 @@ public class ConfigurationMediator {
             }
             estructuraService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
             deletedStructures.add(id);
+        }
+    }
+
+    /**
+     * Crea una copia de una estructura con ids actualizados sus procedimientos, procesos y actividades si este cuanta con ellas.
+     * @param id
+     * @return 
+    * @throws CiadtiException  
+    */
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void updateParentIds(EstructuraEntity copiedStructure, Long newParentId) throws CiadtiException {
+        Long order = estructuraService.findLastOrderByIdPadre(newParentId);
+        copiedStructure.setIdPadre(newParentId);
+        copiedStructure.setOrden(order + 1);
+        estructuraService.save(copiedStructure);
+    }
+
+    /**
+     * Pega las estructuras copiadas respetando las jerarquías de tipología
+     * @param copiedStructure
+     * @param newParentId
+     * @throws CiadtiException
+    * @throws CloneNotSupportedException 
+    */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void pasteStructure(EstructuraEntity copiedStructure, Long newParentId) throws Exception {
+        ActividadEntity activity = (ActividadEntity) copiedStructure.getActividad().clone();
+
+        copiedStructure.setActividad(activity);
+        copiedStructure.setId(null);
+        copiedStructure.setIdPadre(newParentId);
+        estructuraService.save(copiedStructure);
+
+        if(activity != null){
+            activity.setId(null);
+            activity.setIdEstructura(copiedStructure.getId());
+            actividadService.save(activity);
+        }
+        
+        if (copiedStructure.getSubEstructuras() != null && !copiedStructure.getSubEstructuras().isEmpty()) {
+            for (EstructuraEntity subStructure : copiedStructure.getSubEstructuras()) {
+                pasteStructure(subStructure, copiedStructure.getId());
+            }
         }
     }
 

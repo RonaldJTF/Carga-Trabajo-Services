@@ -555,68 +555,6 @@ public class BasicInformationController {
     }
 
     @Operation(
-            summary = "Obtener o listar los tipos de categorías",
-            description = "Obtiene o lista los tipos de categorías de acuerdo a ciertas variables o parámetros." +
-                    "Args: id: identificador del tipo de categoría." +
-                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase CategoriaEntity)." +
-                    "Returns: Objeto o lista de objetos con información de la categoría. " +
-                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
-    @GetMapping(value = {"category", "category/{id}"})
-    public ResponseEntity<?> getCategory(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
-        ParameterConverter parameterConverter = new ParameterConverter(CategoriaEntity.class);
-        CategoriaEntity filter = (CategoriaEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id == null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, categoriaService.findAllFilteredBy(filter));
-    }
-
-    @Operation(
-            summary = "Crear un tipo de categoría",
-            description = "Crea un tipo de categoría" +
-                    "Args: categoriaEntity: objeto con información del tipo de categoría a registrar. " +
-                    "Returns: Objeto con la información asociada.")
-    @PostMapping("/category")
-    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoriaEntity categoriaEntity) {
-        CategoriaEntity categoriaNew = new CategoriaEntity();
-        categoriaNew.setNombre(categoriaEntity.getNombre().toUpperCase());
-        categoriaNew.setDescripcion(Methods.capitalizeFirstLetter(categoriaEntity.getDescripcion()));
-        return new ResponseEntity<>(categoriaService.save(categoriaNew), HttpStatus.CREATED);
-    }
-
-    @Operation(
-            summary = "Actualizar un tipo de categoría",
-            description = "Actualiza un tipo de categoría." +
-                    "Args: categoriaEntity: objeto con información del tipo de categoría." +
-                    "id: identificador del tipo de categoría." +
-                    "Returns: Objeto con la información asociada.")
-    @PutMapping("/category/{id}")
-    public ResponseEntity<?> updateCategory(@Valid @RequestBody CategoriaEntity categoriaEntity, @PathVariable Long id) throws CiadtiException {
-        CategoriaEntity categoriaDB = categoriaService.findById(id);
-        categoriaDB.setDescripcion(Methods.capitalizeFirstLetter(categoriaEntity.getDescripcion()));
-        categoriaDB.setNombre(categoriaEntity.getNombre().toUpperCase());
-        return new ResponseEntity<>(categoriaService.save(categoriaDB), HttpStatus.CREATED);
-    }
-
-    @Operation(
-            summary = "Eliminar tipo de categoría por el id",
-            description = "Elimina un tipo de categoría por su id." +
-                    "Args: id: identificador del tipo de categoría a eliminar.")
-    @DeleteMapping("/category/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable Long id) throws CiadtiException {
-        configurationMediator.deleteCategory(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @Operation(
-            summary = "Eliminar tipos de categorías por el id",
-            description = "Elimina lista de tipos de categorías por su id." +
-                    "Args: documentTypeIds: identificadores de los tipos de categorías a eliminar.")
-    @DeleteMapping("/category")
-    public ResponseEntity<?> deleteCategories(@RequestBody List<Long> categoriesIds) throws CiadtiException {
-        configurationMediator.deleteCategories(categoriesIds);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @Operation(
             summary = "Obtener o listar los tipos de periodicidad",
             description = "Obtiene o lista los tipos de periodicidad de acuerdo a ciertas variables o parámetros." +
                     "Args: id: identificador del tipo de periodicidad." +

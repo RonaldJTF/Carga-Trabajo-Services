@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportPlainedExcelJXLS;
 import org.springframework.http.HttpHeaders;
@@ -267,6 +268,7 @@ public class StructureController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+<<<<<<< Updated upstream
 
     @GetMapping("/report-plained")
     public ResponseEntity<?> downloadReportExcelFlat(@RequestParam(name = "type", required = false) String type, @RequestParam(name = "structureIds", required = false) String structureIdsString) throws Exception {
@@ -299,5 +301,23 @@ public class StructureController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+=======
+    
+    @PutMapping("/move/{newParentId}")
+    public ResponseEntity<?> updateMovedStructure(@PathVariable("newParentId") Long newParentId, @RequestParam("copiedStructureId") Long copiedStructureId) throws CiadtiException {
+        EstructuraEntity movedStructure = estructuraService.findById(copiedStructureId);
+        configurationMediator.updateParentIds(movedStructure, newParentId);
+        return new ResponseEntity<>(movedStructure, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/copy/{newParentId}")
+    public ResponseEntity<?> pasteStructure(@PathVariable Long newParentId, @RequestParam("copiedStructureId") Long copiedStructureId) throws Exception {
+        EstructuraEntity structureToCopy = estructuraService.findById(copiedStructureId);
+        EstructuraEntity copiedStructure = (EstructuraEntity) structureToCopy.clone();
+        Long order = estructuraService.findLastOrderByIdPadre(newParentId);
+        copiedStructure.setOrden(order + 1);
+        configurationMediator.pasteStructure(copiedStructure, newParentId);
+        return new ResponseEntity<>(copiedStructure, HttpStatus.CREATED);
+>>>>>>> Stashed changes
     }
 }

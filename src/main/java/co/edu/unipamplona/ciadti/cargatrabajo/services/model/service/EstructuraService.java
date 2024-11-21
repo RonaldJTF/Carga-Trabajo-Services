@@ -23,4 +23,6 @@ public interface EstructuraService extends CommonService<EstructuraEntity>{
 
     List<DependenciaDTO> findAllDependencies() throws CiadtiException;
 
+    List<EstructuraEntity> findByIdPadre(Long idPadre);
+
 }

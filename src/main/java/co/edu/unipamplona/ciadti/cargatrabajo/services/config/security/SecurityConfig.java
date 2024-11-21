@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/media/**").authenticated()
 
                 .requestMatchers(HttpMethod.GET, "/api/structure/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers(HttpMethod.POST, "/api/structure/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR","DESARROLLADOR")//ojo con esta línea
                 .requestMatchers("/api/structure/**").hasAnyRole("ADMINISTRADOR")
 
                 .requestMatchers(HttpMethod.GET, "/api/workplan/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
