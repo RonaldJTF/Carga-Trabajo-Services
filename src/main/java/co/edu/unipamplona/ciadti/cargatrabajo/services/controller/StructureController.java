@@ -268,7 +268,6 @@ public class StructureController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-<<<<<<< Updated upstream
 
     @GetMapping("/report-plained")
     public ResponseEntity<?> downloadReportExcelFlat(@RequestParam(name = "type", required = false) String type, @RequestParam(name = "structureIds", required = false) String structureIdsString) throws Exception {
@@ -301,7 +300,7 @@ public class StructureController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-=======
+    }
     
     @PutMapping("/move/{newParentId}")
     public ResponseEntity<?> updateMovedStructure(@PathVariable("newParentId") Long newParentId, @RequestParam("copiedStructureId") Long copiedStructureId) throws CiadtiException {
@@ -318,6 +317,5 @@ public class StructureController {
         copiedStructure.setOrden(order + 1);
         configurationMediator.pasteStructure(copiedStructure, newParentId);
         return new ResponseEntity<>(copiedStructure, HttpStatus.CREATED);
->>>>>>> Stashed changes
     }
 }

@@ -191,13 +191,18 @@ public class ConfigurationMediator {
     */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void pasteStructure(EstructuraEntity copiedStructure, Long newParentId) throws Exception {
-        ActividadEntity activity = (ActividadEntity) copiedStructure.getActividad().clone();
+        ActividadEntity activity = null;
+
+        if (copiedStructure.getActividad() != null) {
+            activity = (ActividadEntity) copiedStructure.getActividad().clone();
+        }
 
         copiedStructure.setActividad(activity);
         copiedStructure.setId(null);
+
         copiedStructure.setIdPadre(newParentId);
         estructuraService.save(copiedStructure);
-
+        
         if(activity != null){
             activity.setId(null);
             activity.setIdEstructura(copiedStructure.getId());
