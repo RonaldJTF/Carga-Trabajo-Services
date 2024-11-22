@@ -22,35 +22,33 @@ public class GeneralExpressionMediator {
     private final ReglaService reglaService;
 
     /**
-     * Obtiene las variables con la expresión de los nombres de las variables que relaciona.
-     * @param filter
+     * Completa cada variable con la expresión de los nombres de las variables que relaciona.
+     * @param inputVariables: Lista de variables a completar la expresión de su valor.
+     * @param relatedVariables: Lista de variables relacionadas con la lista de variables de entrada.
      * @return
      * @throws CiadtiException
      */
-    public List<VariableEntity> getVariables(VariableEntity filter) throws CiadtiException{
-        List<VariableEntity> result = variableService.findAllFilteredBy(filter);
-        List<VariableEntity> variables = variableService.findAll();
-        for (VariableEntity e : result){
-            String expresion = this.getExpressionWithVariableNames(e.getValor(), variables);
+    public List<VariableEntity> completeVariableInformation(List<VariableEntity> inputVariables, List<VariableEntity> relatedVariables) throws CiadtiException{
+        for (VariableEntity e : inputVariables){
+            String expresion = this.getExpressionWithVariableNames(e.getValor(), relatedVariables);
             e.setExpresionValor(expresion);
         }
-        return result;
+        return inputVariables;
     }
 
-    /**
-     * Obtiene la lista de reglas con su expresión formateada con los nombres de las variables
-     * @param filter
+     /**
+     * Completa cada regla con la expresión de los nombres de las variables que relaciona en suis condiciones.
+     * @param inputRules: Lista de reglas a completar la expresión de sus condiciones.
+     * @param relatedVariables: Lista de variables relacionadas con la lista de reglas de entrada.
      * @return
      * @throws CiadtiException
-    */
-    public List<ReglaEntity> getRules(ReglaEntity filter) throws CiadtiException{
-        List<ReglaEntity> result = reglaService.findAllFilteredBy(filter);
-        List<VariableEntity> variables = variableService.findAll();
-        for (ReglaEntity e : result){
-            String expresion = this.getExpressionWithVariableNames(e.getCondiciones(), variables);
+     */
+    public List<ReglaEntity> completeRuleInformation(List<ReglaEntity> inputRules, List<VariableEntity> relatedVariables) throws CiadtiException{
+        for (ReglaEntity e : inputRules){
+            String expresion = this.getExpressionWithVariableNames(e.getCondiciones(), relatedVariables);
             e.setExpresionCondiciones(expresion);
         }
-        return result;
+        return inputRules;
     }
 
     /**
@@ -58,16 +56,17 @@ public class GeneralExpressionMediator {
      * @param reglaId
      * @param validityId
      * @param variables: contiene lista de variables
+     * @param primaryVariables: contiene el valor de las variables primarias, por ejemplo, la asignación básica del cargo.
      * @return
      * @throws CiadtiException
      */
-    public boolean evaluateRuleConditions(Long reglaId, Long validityId, List<VariableEntity> variables) throws CiadtiException {
+    public boolean evaluateRuleConditions(Long reglaId, Long validityId, List<VariableEntity> variables, Map<String, Double> primaryVariables) throws CiadtiException {
         ReglaEntity regla = reglaService.findById(reglaId);
         String condiciones = regla.getCondiciones();
         if (condiciones == null || condiciones.isEmpty()) {
             throw new IllegalArgumentException("No existen condiciones para la regla con ID: " + reglaId);
         }
-        return evaluateExpressions(condiciones, validityId, variables);
+        return evaluateExpressions(condiciones, validityId, variables, primaryVariables);
     }
 
     /**
@@ -75,12 +74,13 @@ public class GeneralExpressionMediator {
      * @param variableId
      * @param validityId
      * @param variables: contiene lista de variables
+     * @param primaryVariables: contiene el valor de las variables primarias, por ejemplo, la asignación básica del cargo.
      * @return
      * @throws CiadtiException
      */
-    public double getValueOfVariable(Long variableId, Long validityId, List<VariableEntity> variables) throws CiadtiException {
-        String formula = findValueOfVariable(variableId, validityId, variables);
-        return evaluateArithmeticExpression(formula, validityId, variables); 
+    public double getValueOfVariable(Long variableId, Long validityId, List<VariableEntity> variables, Map<String, Double> primaryVariables) throws CiadtiException {
+        String formula = findValueOfVariable(variableId, validityId, variables, primaryVariables);
+        return evaluateArithmeticExpression(formula, validityId, variables, primaryVariables); 
     }
     
     /**
@@ -109,16 +109,17 @@ public class GeneralExpressionMediator {
      * @param expression
      * @param idValidity
      * @param variables: contiene lista de variables
+     * @param primaryVariables: contiene el valor de las variables primarias, por ejemplo, la asignación básica del cargo.
      * @return
      * @throws CiadtiException
      */
-    private double evaluateArithmeticExpression(String expression, Long idValidity, List<VariableEntity> variables) throws CiadtiException {
+    private double evaluateArithmeticExpression(String expression, Long idValidity, List<VariableEntity> variables, Map<String, Double> primaryVariables) throws CiadtiException {
         Pattern pattern = Pattern.compile("\\$\\[(\\d+)]");
         Matcher matcher = pattern.matcher(expression);
         while (matcher.find()) {
             Long referencedId = Long.parseLong(matcher.group(1));
             double referencedValue;
-            referencedValue = this.getValueOfVariable(referencedId, idValidity, variables);
+            referencedValue = this.getValueOfVariable(referencedId, idValidity, variables, primaryVariables);
             expression = expression.replace(matcher.group(), String.valueOf(referencedValue));
         }
         Expression expressionBuilder = new ExpressionBuilder(expression).build();
@@ -132,12 +133,16 @@ public class GeneralExpressionMediator {
      * @param variableId
      * @param validityId
      * @param variables: contiene lista de variables
+     * @param primaryVariables: contiene el valor de las variables primarias, por ejemplo, la asignación básica del cargo.
      * @return
      * @throws CiadtiException
      */
-    private String findValueOfVariable(Long variableId, Long validityId, List<VariableEntity> variables) throws CiadtiException{
+    private String findValueOfVariable(Long variableId, Long validityId, List<VariableEntity> variables, Map<String, Double> primaryVariables) throws CiadtiException{
         VariableEntity variable = this.findVariable(variableId, variables);
         if (variable.getValor() != null && !variable.getValor().isEmpty()) {
+            if(primaryVariables.get(variable.getValor()) != null){
+                return primaryVariables.get(variable.getValor()).toString();
+            }
             return variable.getValor();
         }else{
             return String.valueOf(variableService.findValueInValidity(variableId, validityId));
@@ -162,13 +167,14 @@ public class GeneralExpressionMediator {
      * @param conditions: condiciones
      * @param idValidity: Id de la vigencia
      * @param variables: contiene lista de variables
+     * @param primaryVariables: contiene el valor de las variables primarias, por ejemplo, la asignación básica del cargo.
      * @return
      * @throws CiadtiException
      */
-    private boolean evaluateExpressions(String conditions, Long idValidity, List<VariableEntity> variables) throws CiadtiException {
+    private boolean evaluateExpressions(String conditions, Long idValidity, List<VariableEntity> variables, Map<String, Double> primaryVariables) throws CiadtiException {
         String[] expressions = conditions.split("&");
         for (String expression : expressions) {
-            if (!evaluateBooleanExpression(expression.trim(), idValidity, variables)) {
+            if (!evaluateBooleanExpression(expression.trim(), idValidity, variables, primaryVariables)) {
                 return false;
             }
         }
@@ -180,19 +186,20 @@ public class GeneralExpressionMediator {
      * @param expression
      * @param validityId
      * @param variables: contiene lista de variables
+     * @param primaryVariables: contiene el valor de las variables primarias, por ejemplo, la asignación básica del cargo.
      * @return
      * @throws CiadtiException
      */
-    private boolean evaluateBooleanExpression(String expression, Long validityId, List<VariableEntity> variables) throws CiadtiException {
+    private boolean evaluateBooleanExpression(String expression, Long validityId, List<VariableEntity> variables, Map<String, Double> primaryVariables) throws CiadtiException {
         String[] partes = expression.split("(?<=\\b|\\W)(?=<=|>=|!=|==|<|>)|(?<=<=|>=|!=|==|<|>)(?=\\b|\\W)");
         double ladoIzquierdo, ladoDerecho;
     
         if (partes.length == 1) { 
-            ladoIzquierdo = evaluateArithmeticExpression(partes[0].trim(), validityId, variables);
+            ladoIzquierdo = evaluateArithmeticExpression(partes[0].trim(), validityId, variables, primaryVariables);
             return ladoIzquierdo != 0; 
         } else if (partes.length == 3) {
-            ladoIzquierdo = evaluateArithmeticExpression(partes[0].trim(), validityId, variables);
-            ladoDerecho = evaluateArithmeticExpression(partes[2].trim(), validityId, variables);
+            ladoIzquierdo = evaluateArithmeticExpression(partes[0].trim(), validityId, variables, primaryVariables);
+            ladoDerecho = evaluateArithmeticExpression(partes[2].trim(), validityId, variables, primaryVariables);
             switch (partes[1].trim()) {
                 case ">":
                     return ladoIzquierdo > ladoDerecho;

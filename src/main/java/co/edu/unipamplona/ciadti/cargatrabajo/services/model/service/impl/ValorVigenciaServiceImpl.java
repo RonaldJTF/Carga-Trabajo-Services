@@ -69,5 +69,11 @@ public class ValorVigenciaServiceImpl implements ValorVigenciaService{
         SpecificationCiadti<ValorVigenciaEntity> specification = new SpecificationCiadti<ValorVigenciaEntity>(filter);
         return valorVigenciaDAO.findAll(specification);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Double findValueInValidity(Long variableId, Long validityId) {
+        return valorVigenciaDAO.findValueInValidity(variableId, validityId);
+    }
  
 }

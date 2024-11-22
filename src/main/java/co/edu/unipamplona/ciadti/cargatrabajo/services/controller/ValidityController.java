@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ValorVigenciaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VigenciaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ValorVigenciaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.VigenciaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
@@ -28,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/validity")
 public class ValidityController {
     private final VigenciaService vigenciaService;
+    private final ValorVigenciaService valorVigenciaService;
     private final ConfigurationMediator configurationMediator;
     
     @Operation(
@@ -42,6 +46,11 @@ public class ValidityController {
         ParameterConverter parameterConverter = new ParameterConverter(VigenciaEntity.class);
         VigenciaEntity filter = (VigenciaEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id==null ? filter.getId() : id);
+        if (id != null){
+            VigenciaEntity validity = vigenciaService.findById(id);
+            validity.setValoresVigencia(valorVigenciaService.findAllFilteredBy(ValorVigenciaEntity.builder().idVigencia(id).build()));
+            return new ResponseEntity<>(validity, HttpStatus.OK);
+        }
         return Methods.getResponseAccordingToId(id, vigenciaService.findAllFilteredBy(filter));
     }
 
@@ -88,6 +97,19 @@ public class ValidityController {
     }
 
     @Operation(
+        summary = "Obtener o listar los valores por cada variable asignados en una vigencia ",
+        description = "Obtiene o lista los valores por cada variable asignados en una vigencia de acuerdo a ciertas variables o parámetros. " +
+            "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase ValorVigenciaEntity). " +
+            "Returns: Objeto o lista de objetos con información de los valores de cada variable en una vigencia. " +
+            "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
+    @GetMapping("/value-in-validity")
+    public ResponseEntity<?> getValueInValidity(HttpServletRequest request) throws CiadtiException{
+        ParameterConverter parameterConverter = new ParameterConverter(ValorVigenciaEntity.class);
+        ValorVigenciaEntity filter = (ValorVigenciaEntity) parameterConverter.converter(request.getParameterMap());
+        return new ResponseEntity<>(valorVigenciaService.findAllFilteredBy(filter), HttpStatus.OK);
+    }
+
+    @Operation(
         summary = "Eliminar un valor de una variable en una vigencia",
         description = "Eliminar un valor d euna variable en una vigencia" + 
             "Args: id: identificador del valor vigencia a eliminar. ")
@@ -95,5 +117,15 @@ public class ValidityController {
     public ResponseEntity<?> deleteValueInValidity(@PathVariable Long id) throws CiadtiException{
         configurationMediator.deleteValueInValidity(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+        summary = "Obtener el valor de una variable que depende de la vigencia.",
+        description = "Obtiene el valor de una variable en una vigencia. " +
+                "Args: variableId: identificador de la variable. " + 
+                "validityId: identificador de la vigencia")
+    @GetMapping("/value-in-validity/value")
+    public ResponseEntity<?> getValueInValidityOfValueByRule(@RequestParam("variableId") Long variableId, @RequestParam("validityId") Long validityId) {
+        return new ResponseEntity<>(valorVigenciaService.findValueInValidity(variableId, validityId), HttpStatus.OK);
     }
 }

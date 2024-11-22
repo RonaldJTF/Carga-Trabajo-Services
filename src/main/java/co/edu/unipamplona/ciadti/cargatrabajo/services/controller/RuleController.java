@@ -1,6 +1,5 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
-
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -12,11 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ReglaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VariableEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ReglaService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.VariableService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.GeneralExpressionMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
@@ -31,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/rule")
 public class RuleController {
     private final ReglaService reglaService;
+    private final VariableService variableService;
     private final ConfigurationMediator configurationMediator;
     private final GeneralExpressionMediator generalExpressionMediator;
 
@@ -49,7 +52,9 @@ public class RuleController {
             ParameterConverter parameterConverter = new ParameterConverter(ReglaEntity.class);
             ReglaEntity filter = (ReglaEntity) parameterConverter.converter(request.getParameterMap());
             filter.setId(id == null ? filter.getId() : id);
-            return Methods.getResponseAccordingToId(id, generalExpressionMediator.getRules(filter));
+            List<ReglaEntity> result = reglaService.findAllFilteredBy(filter);
+            List<VariableEntity> variables = variableService.findAll();
+            return Methods.getResponseAccordingToId(id, generalExpressionMediator.completeRuleInformation(result, variables));
         }
     }
     
@@ -83,7 +88,10 @@ public class RuleController {
         reglaEntityBD.setCondiciones(reglaEntity.getCondiciones()); 
         reglaEntityBD.setGlobal(reglaEntity.getGlobal()); 
         reglaEntityBD.setEstado(reglaEntity.getEstado()); 
-        return new ResponseEntity<>(reglaService.save(reglaEntityBD), HttpStatus.CREATED);
+        reglaService.save(reglaEntityBD);
+        List<VariableEntity> includedVariablesInRule = variableService.findAllIncludedVariablesInRule(reglaEntityBD.getId());
+        reglaEntityBD.setExpresionCondiciones(generalExpressionMediator.getExpressionWithVariableNames(reglaEntityBD.getCondiciones(), includedVariablesInRule));
+        return new ResponseEntity<>(reglaEntityBD, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -106,5 +114,16 @@ public class RuleController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    
+    @Operation(
+        summary = "Obtener la lista de reglas que están activas y son globales. ",
+        description = "Obtiene la lista de reglas que están activas y son globales, pero también obtiene las reglas activas " +
+            "que no se ha configurado como globales y que se han asociado al nivel y que están activas. " +
+            "Nota: Tambien se traen las reglas que se han definido como no globales y que no se han relacionado a ningún nivel en compensacionLabNivenVigencia."
+    )
+    @GetMapping("/active")
+    public ResponseEntity<?> getActiveRules(@RequestParam Long levelId) throws CiadtiException {
+        List<ReglaEntity> result = reglaService.getGlobalAndLevelActiveRules(levelId);
+        List<VariableEntity> variables = variableService.findAll();
+        return new ResponseEntity<>(generalExpressionMediator.completeRuleInformation(result, variables), HttpStatus.OK);
+    }
 }

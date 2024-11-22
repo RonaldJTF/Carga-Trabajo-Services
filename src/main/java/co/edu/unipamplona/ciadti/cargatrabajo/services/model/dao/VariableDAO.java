@@ -80,4 +80,12 @@ public interface VariableDAO extends JpaRepository<VariableEntity, Long>, JpaSpe
                     "FROM fortalecimiento.variable v " + 
                     "WHERE v.vari_id  IN (SELECT CAST(id AS integer) FROM extracted_ids);", nativeQuery = true)
     List<VariableEntity> findAllIncludedVariablesInVariable(@Param("idVariable") Long idVariable); 
+    @Query(value =  " SELECT DISTINCT va FROM VariableEntity va    " + 
+                    " WHERE va.global = '1' AND va.estado = '1' AND va.primaria = '0' " +
+                    " UNION " + 
+                    " SELECT DISTINCT v FROM VariableEntity v " + 
+                    " LEFT OUTER JOIN CompensacionLabNivelVigValorEntity cnvv on (v.id = cnvv.idVariable) " + 
+                    " LEFT OUTER JOIN CompensacionLabNivelVigenciaEntity clnv on (cnvv.idCompensacionLabNivelVigencia = clnv.id) " + 
+                    " WHERE (clnv.idNivel = :idNivel OR clnv.idNivel IS NULL) AND v.global = '0' AND v.estado = '1' AND v.primaria = '0' ")
+    List<VariableEntity> getGlobalAndNoPrimaryAndLevelActiveVariables(@Param("idNivel") Long levelId);
 }

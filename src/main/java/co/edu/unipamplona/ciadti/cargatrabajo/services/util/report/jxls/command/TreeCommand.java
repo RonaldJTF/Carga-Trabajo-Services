@@ -295,20 +295,5 @@ public class TreeCommand extends AbstractCommand {
         XSSFRichTextString richText = new XSSFRichTextString(text1 + (text2.length() > 0 ? "\n" + text2 : " "));
         richText.applyFont(text1.length(), text1.length() + text2.length() + 1, this._subFont);
         cell.setCellValue(richText);
-
-        int nCols = 1;
-        int nRows = 1;
-        if (region != null){
-            nCols = region.getLastColumn()-region.getFirstColumn() + 1;
-            nRows = region.getLastRow()-region.getFirstRow() + 1;
-        }
-        int maxCharsPerLine = this._sheet.getColumnWidth(cell.getColumnIndex())*nCols / 230; //256;
-        int numLinesText1 = (int) Math.ceil((double) (text1).length() / maxCharsPerLine);
-        int numLinesText2 = (int) Math.ceil((double) (text2).length() / maxCharsPerLine);
-        int totalNumLines  = numLinesText1 + numLinesText2;
-        totalNumLines  = Math.max(nRows, totalNumLines);
-        float oldHeight = row.getHeightInPoints();
-        float newHeight = this._defaultHeightInPointToRowOfTree * totalNumLines;
-        row.setHeightInPoints(Math.max(oldHeight, newHeight));
     }
 }

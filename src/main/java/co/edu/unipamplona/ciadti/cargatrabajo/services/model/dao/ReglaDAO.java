@@ -33,4 +33,13 @@ public interface ReglaDAO extends JpaRepository<ReglaEntity, Long>, JpaSpecifica
 
     @Query("SELECT r.id, r.condiciones FROM ReglaEntity r")
     Optional<List<Object[]>> findAllNombresAndCondicionesAndId();
+
+    @Query(value =  " SELECT DISTINCT re FROM ReglaEntity re    " + 
+                    " WHERE re.global = '1' AND re.estado = '1' " +
+                    " UNION " + 
+                    " SELECT DISTINCT r FROM ReglaEntity r " + 
+                    " LEFT OUTER JOIN CompensacionLabNivelVigValorEntity cnvv on (r.id = cnvv.idRegla) " + 
+                    " LEFT OUTER JOIN CompensacionLabNivelVigenciaEntity clnv on (cnvv.idCompensacionLabNivelVigencia = clnv.id) " + 
+                    " WHERE (clnv.idNivel = :idNivel OR clnv.idNivel IS NULL) AND r.global = '0' AND r.estado = '1'")
+    List<ReglaEntity> getGlobalAndLevelActiveRules(@Param("idNivel") Long levelId);
 }

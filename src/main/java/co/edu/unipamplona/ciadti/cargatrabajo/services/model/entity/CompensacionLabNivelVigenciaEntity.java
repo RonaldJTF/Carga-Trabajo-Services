@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.jackson.JacksonCIADTI;
@@ -51,24 +50,19 @@ public class CompensacionLabNivelVigenciaEntity implements Serializable, Cloneab
     @Column(name = "clnv_registradopor", nullable =  false, length = 250)
     private String registradoPor;
 
-    @OneToOne
-    @JoinColumn(name = "nive_id", insertable = false, updatable = false)
+    @Transient
     private NivelEntity nivel;
 
-    @OneToOne
-    @JoinColumn(name = "cola_id", insertable = false, updatable = false)
+    @Transient
     private CompensacionLaboralEntity compensacionLaboral;
 
-    @OneToOne
-    @JoinColumn(name = "essa_id", insertable = false, updatable = false)
+    @Transient
     private EscalaSalarialEntity escalaSalarial;
 
-    @OneToOne
-    @JoinColumn(name = "vige_id", insertable = false, updatable = false)
+    @Transient
     private VigenciaEntity vigencia;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "compensacionLabNivelVigencia")
+    @Transient
     private List<CompensacionLabNivelVigValorEntity> valoresCompensacionLabNivelVigencia;
 
     @Transient

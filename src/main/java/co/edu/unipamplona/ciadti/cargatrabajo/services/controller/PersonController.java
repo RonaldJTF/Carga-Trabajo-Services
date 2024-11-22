@@ -1,6 +1,5 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PersonaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.PersonaService;
@@ -27,7 +26,6 @@ import java.util.List;
 public class PersonController {
     private final PersonaService personaService;
     private final ConfigurationMediator configurationMediator;
-    private final CipherService cipherService;
 
     @Operation(
         summary = "Obtener o listar las personas",
@@ -37,14 +35,11 @@ public class PersonController {
                 "Returns: Objeto o lista de objetos con información de la persona. " +
                 "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
     @GetMapping(value = {"", "/{id}"})
-    public ResponseEntity<?> get(@PathVariable(required = false) String id, HttpServletRequest request) throws CiadtiException, JsonProcessingException {
-
-        Long idPerson = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
-
+    public ResponseEntity<?> get(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException, JsonProcessingException {
         ParameterConverter parameterConverter = new ParameterConverter(PersonaEntity.class);
         PersonaEntity filter = (PersonaEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id == null ? filter.getId() : idPerson);
-        return Methods.getResponseAccordingToId(idPerson, personaService.findAllFilteredBy(filter));
+        filter.setId(id == null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, personaService.findAllFilteredBy(filter));
     }
 
     @Operation(
@@ -54,11 +49,8 @@ public class PersonController {
                     "Returns: Objeto con la información asociada.")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestParam(value = "person") String personaJSON, @RequestParam(value = "file", required = false) MultipartFile photoFile) throws IOException, CloneNotSupportedException {
-
-        String person = cipherService.decryptParam(personaJSON);
-
         ObjectMapper objectMapper = new ObjectMapper();
-        PersonaEntity personaEntity = objectMapper.readValue(person, PersonaEntity.class);
+        PersonaEntity personaEntity = objectMapper.readValue(personaJSON, PersonaEntity.class);
         return new ResponseEntity<>(configurationMediator.savePerson(personaEntity, photoFile), HttpStatus.CREATED);
     }
 
@@ -70,13 +62,10 @@ public class PersonController {
                     "photoFile: archivo de la foto de perfil " +
                     "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestParam(value = "person") String personaJSON, @RequestParam(value = "file", required = false) MultipartFile photoFile) throws IOException, CloneNotSupportedException, CiadtiException {
-        Long idPerson = Long.valueOf(cipherService.decryptParam(id));
-        String person = cipherService.decryptParam(personaJSON);
-
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestParam(value = "person") String personaJSON, @RequestParam(value = "file", required = false) MultipartFile photoFile) throws IOException, CloneNotSupportedException, CiadtiException {
         ObjectMapper objectMapper = new ObjectMapper();
-        PersonaEntity personaEntity = objectMapper.readValue(person, PersonaEntity.class);
-        personaEntity.setId(idPerson);
+        PersonaEntity personaEntity = objectMapper.readValue(personaJSON, PersonaEntity.class);
+        personaEntity.setId(id);
         return new ResponseEntity<>(configurationMediator.savePerson(personaEntity, photoFile), HttpStatus.CREATED);
     }
 
@@ -85,13 +74,13 @@ public class PersonController {
             description = "Elimina una persona por su id. " +
                     "Args: id: identificador de la persona a eliminar. ")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id) {
-        configurationMediator.deletePerson(Long.valueOf(cipherService.decryptParam(id)));
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        configurationMediator.deletePerson(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deletePeople(@RequestBody List<String> personIds) throws CiadtiException {
+    public ResponseEntity<?> deletePeople(@RequestBody List<Long> personIds) throws CiadtiException {
         configurationMediator.deletePeople(personIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -310,7 +310,7 @@ public class WorkplanController {
     @GetMapping("/report")
     public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type,
                                                  @RequestParam(name = "stageIds", required = false) String stageIdsString,
-                                                 @RequestParam(name = "idWorkplan", required = false) Long idWorkplan) throws Exception{         
+                                                 @RequestParam(name = "workplanId", required = false) Long workplanId) throws Exception{         
         List<Long> stageIds = null;
         if(stageIdsString != null){
             stageIdsString = stageIdsString.replaceAll("\\[|\\]|\\s", "");
@@ -330,7 +330,7 @@ public class WorkplanController {
         if(type == null || "EXCEL".equals(type.toUpperCase())){
             extension = "xlsx";
             mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            fileBytes = workplanReportExcelJXLS.generate(stageIds, idWorkplan);
+            fileBytes = workplanReportExcelJXLS.generate(stageIds, workplanId);
         }
 
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");

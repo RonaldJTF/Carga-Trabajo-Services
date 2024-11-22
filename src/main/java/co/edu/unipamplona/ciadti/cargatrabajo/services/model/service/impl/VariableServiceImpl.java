@@ -114,5 +114,10 @@ public class VariableServiceImpl implements VariableService{
     public List<VariableEntity> findByPrimariaAndGlobal() {
         return variableDAO.findByPrimariaAndGlobal();
     }
+
+    @Override
+    public List<VariableEntity> getGlobalAndNoPrimaryAndLevelActiveVariables(Long levelId) {
+        return variableDAO.getGlobalAndNoPrimaryAndLevelActiveVariables(levelId);
+    }
     
 }

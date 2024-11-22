@@ -246,44 +246,15 @@ public class StructureController {
             extension = "xlsx";
             mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             fileBytes = structureReportExcelJXLS.generate(structureIds);
-        } else if ("PDF".equals(type.toUpperCase())) {
+        }else if (type == null || "FLAT-EXCEL".equals(type.toUpperCase())) {
+            extension = "xlsx";
+            mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            fileBytes = structureReportFlatExcelJXLS.generateExcel(structureIds);
+        }else if ("PDF".equals(type.toUpperCase())) {
             extension = "pdf";
             mediaType = "application/pdf";
             fileBytes = structureReportPDF.generate(structureIds);
         }
-
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
-        String currentDateTime = dateFormatter.format(new Date());
-        String fileName = String.format("reporte_%s.%s", currentDateTime, extension);
-
-        if (fileBytes != null) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
-            headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition, Content-Type");
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .contentType(MediaType.parseMediaType(mediaType))
-                    .body(fileBytes);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @GetMapping("/report-plained")
-    public ResponseEntity<?> downloadReportExcelFlat(@RequestParam(name = "type", required = false) String type, @RequestParam(name = "structureIds", required = false) String structureIdsString) throws Exception {
-        structureIdsString = structureIdsString.replaceAll("\\[|\\]|\\s", "");
-        List<Long> structureIds = new ArrayList<>();
-        if (!structureIdsString.isEmpty()) {
-            String[] parts = structureIdsString.split(",");
-            for (String part : parts) {
-                structureIds.add(Long.parseLong(part));
-            }
-        }
-
-        String extension = "xlsx";
-        String mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-        byte[] fileBytes = structureReportFlatExcelJXLS.generateExcel(structureIds);
 
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
         String currentDateTime = dateFormatter.format(new Date());

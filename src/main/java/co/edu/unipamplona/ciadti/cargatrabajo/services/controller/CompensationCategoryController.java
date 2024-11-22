@@ -82,5 +82,5 @@ public class CompensationCategoryController {
     public ResponseEntity<?> deleteCategory(@PathVariable Long id) throws CiadtiException {
         configurationMediator.deleteCategory(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }   
+    } 
 }

@@ -81,5 +81,10 @@ public class ReglaServiceImpl implements ReglaService{
     public List<Object[]> findAllNombresAndCondicionesAndId() throws CiadtiException {
         return reglaDAO.findAllNombresAndCondicionesAndId().orElseThrow(()-> new CiadtiException("No se encontraron reglas"));
     }
+
+    @Override
+    public List<ReglaEntity> getGlobalAndLevelActiveRules(Long levelId) {
+        return reglaDAO.getGlobalAndLevelActiveRules(levelId);
+    }
     
 }

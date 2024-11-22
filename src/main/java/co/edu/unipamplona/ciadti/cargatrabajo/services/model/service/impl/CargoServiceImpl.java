@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.CargoDAO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.CompensacionLabNivelVigValorDAO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.AlcanceEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CargoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CompensacionLabNivelVigValorEntity;
@@ -18,6 +17,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EscalaSalari
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NormatividadEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PeriodicidadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VigenciaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.CargoService;
 import jakarta.persistence.EntityManager;
@@ -104,6 +104,7 @@ public class CargoServiceImpl implements CargoService{
                 " es.nombre, " +
                 " clnv.id, clnv.idVigencia, clnv.idNivel, clnv.idEscalaSalarial, clnv.idCompensacionLaboral, " +
                 " cl.nombre, " +
+                " p.id, p.nombre, p.frecuenciaAnual, " + 
                 " cnvv.id, cnvv.idCompensacionLabNivelVigencia, cnvv.idRegla, cnvv.idVariable " + 
                 " from CargoEntity c  " +
                 " inner join EstructuraEntity e on (c.idEstructura = e.id)    " +
@@ -115,6 +116,7 @@ public class CargoServiceImpl implements CargoService{
                 " left outer join CompensacionLabNivelVigenciaEntity clnv on (v.id = clnv.idVigencia and ni.id = clnv.idNivel and (es.id = clnv.idEscalaSalarial OR clnv.idEscalaSalarial IS NULL)) " +
                 " left outer join CompensacionLabNivelVigValorEntity cnvv on (clnv.id = cnvv.idCompensacionLabNivelVigencia) " +
                 " left outer join CompensacionLaboralEntity cl on (clnv.idCompensacionLaboral = cl.id )   " +
+                " left outer join PeriodicidadEntity p on (cl.idPeriodicidad = p.id )   " +
                 " where 2 > 1  ";
 
         Map<String, Object> parameters = new HashMap<>();
@@ -128,7 +130,7 @@ public class CargoServiceImpl implements CargoService{
             parameters.put("structureIds", Arrays.asList(structureIds));
         }
 
-        jpql += "order by c.idEstructura asc, c.idVigencia asc, c.idAlcance asc, c.idNivel asc, clnv.id asc ";
+        jpql += "order by c.id asc, c.idEstructura asc, c.idVigencia asc, c.idAlcance asc, c.idNivel asc, clnv.id asc ";
 
         Query query = entityManager.createQuery(jpql);
 
@@ -202,22 +204,23 @@ public class CargoServiceImpl implements CargoService{
                         .compensacionLaboral(CompensacionLaboralEntity.builder()
                             .id((Long) row[24])
                             .nombre((String) row[25])
+                            .idPeriodicidad((Long) row[26])
+                            .periodicidad(PeriodicidadEntity.builder().id((Long) row[26]).nombre((String) row[27]).frecuenciaAnual((Long) row[28]).build())
                             .build())
                         .valoresCompensacionLabNivelVigencia(new ArrayList<>())
                         .build();
                     appointment.getCompensacionesLaboralesAplicadas().add(compensacionLabNivelVigencia);
                     clnvId = (Long) row[20];
                 }
-                if(row[26] != null){
+                if(row[29] != null){
                     CompensacionLabNivelVigValorEntity cnvv = CompensacionLabNivelVigValorEntity.builder()
-                        .id((Long) row[26])
-                        .idCompensacionLabNivelVigencia((Long) row[27])
-                        .idRegla((Long) row[28])
-                        .idVariable((Long) row[29])
+                        .id((Long) row[29])
+                        .idCompensacionLabNivelVigencia((Long) row[30])
+                        .idRegla((Long) row[31])
+                        .idVariable((Long) row[32])
                         .build();
                     compensacionLabNivelVigencia.getValoresCompensacionLabNivelVigencia().add(cnvv);
                 }
-                
             }
            
         }

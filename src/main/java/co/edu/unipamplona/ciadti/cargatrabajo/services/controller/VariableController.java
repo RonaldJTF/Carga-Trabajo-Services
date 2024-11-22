@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
@@ -49,7 +50,9 @@ public class VariableController {
             ParameterConverter parameterConverter = new ParameterConverter(VariableEntity.class);
             VariableEntity filter = (VariableEntity) parameterConverter.converter(request.getParameterMap());
             filter.setId(id==null ? filter.getId() : id);
-            return Methods.getResponseAccordingToId(id, generalExpressionMediator.getVariables(filter));
+            List<VariableEntity> result = variableService.findAllFilteredBy(filter);
+            List<VariableEntity> variables = variableService.findAll();
+            return Methods.getResponseAccordingToId(id, generalExpressionMediator.completeVariableInformation(result, variables));
         }
     }
 
@@ -83,7 +86,10 @@ public class VariableController {
         if (Methods.convertToBoolean(variableEntity.getPorVigencia())){
             variableEntityDB.setValor("");
         }
-        return new ResponseEntity<>(variableService.save(variableEntityDB), HttpStatus.CREATED);
+        variableService.save(variableEntityDB);
+        List<VariableEntity> includedVariablesInValue = variableService.findAllIncludedVariablesInVariable(variableEntityDB.getId());
+        variableEntityDB.setExpresionValor(generalExpressionMediator.getExpressionWithVariableNames(variableEntityDB.getValor(), includedVariablesInValue));
+        return new ResponseEntity<>(variableEntityDB, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -114,5 +120,18 @@ public class VariableController {
     @GetMapping(value = "/configured-by-validity")
     private ResponseEntity<?> getVariablesOfValidity(){
         return new ResponseEntity<>(variableService.findAllConfigureByValidityAndActive(), HttpStatus.OK);
+    }
+
+    @Operation(
+        summary = "Obtener la lista de variables que están activas, son globales y no son primarias. ",
+        description = "Obtiene la lista de variables que están activas, son globales y no son primarias, pero también obtiene " +
+            "las variables activas que no se han configurado como globales y que se han asociado al nivel y que están activas. " +
+            "Nota: Tambien se traen las variables que se han definido como no globales y que no se han relacionado a ningún nivel en compensacionLabNivenVigencia."
+    )
+    @GetMapping("/active")
+    public ResponseEntity<?> getActiveRules(@RequestParam Long levelId) throws CiadtiException {
+        List<VariableEntity> variables = variableService.findAll();
+        List<VariableEntity> result = variableService.getGlobalAndNoPrimaryAndLevelActiveVariables(levelId);
+        return new ResponseEntity<>(generalExpressionMediator.completeVariableInformation(result, variables), HttpStatus.OK);
     }
 }

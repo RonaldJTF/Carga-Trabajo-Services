@@ -24,4 +24,8 @@ public interface ValorVigenciaDAO extends JpaRepository<ValorVigenciaEntity, Lon
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_VALORVIGENCIA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    @Query(value = "select vv.valor  from ValorVigenciaEntity vv " + 
+                   "where vv.idVariable = :idVariable and vv.idVigencia  = :idVigencia")
+    Double findValueInValidity(@Param("idVariable") Long variableId, @Param("idVigencia") Long validityId);
 }

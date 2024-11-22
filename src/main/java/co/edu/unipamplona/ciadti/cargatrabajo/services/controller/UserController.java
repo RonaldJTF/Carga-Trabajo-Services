@@ -45,14 +45,11 @@ public class UserController {
             "Returns: Objeto o lista de objetos con información del usuario. " +
             "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
     @GetMapping(value = {"", "/{id}"})
-    public ResponseEntity<?> get(@PathVariable(required = false) String id, HttpServletRequest request) throws CiadtiException{
-
-        Long idUser = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
-
+    public ResponseEntity<?> get(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
         ParameterConverter parameterConverter = new ParameterConverter(UsuarioEntity.class);
         UsuarioEntity filter = (UsuarioEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setId(id==null ? filter.getId() : idUser);
-        return Methods.getResponseAccordingToId(idUser, usuarioService.findAllFilteredBy(filter));
+        filter.setId(id==null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, usuarioService.findAllFilteredBy(filter));
     }
 
     @Operation(
@@ -74,12 +71,9 @@ public class UserController {
             "id: identificador del usuario. " +
             "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody UsuarioEntity usuarioEntity, @PathVariable String  id) throws CiadtiException, CloneNotSupportedException{
-
-        Long idUser = Long.valueOf(cipherService.decryptParam(id));
-
-        usuarioEntity.setId(idUser);
-        UsuarioEntity usuarioEntityBD = usuarioService.findById(idUser);
+    public ResponseEntity<?> update(@Valid @RequestBody UsuarioEntity usuarioEntity, @PathVariable Long id) throws CiadtiException, CloneNotSupportedException{
+        usuarioEntity.setId(id);
+        UsuarioEntity usuarioEntityBD = usuarioService.findById(id);
         usuarioEntityBD.setActivo(usuarioEntity.getActivo());
         usuarioEntityBD.setTokenPassword(usuarioEntity.getTokenPassword());
         return new ResponseEntity<>(configurationMediator.updateUser(usuarioEntityBD, usuarioEntity.getRoles() != null ? usuarioEntity.getRoles() : new ArrayList<>()), HttpStatus.CREATED);
@@ -90,11 +84,8 @@ public class UserController {
         description = "Elimina un usuario por su id junto a su relación con los roles. " +
             "Args: id: identificador del usuario a eliminar. ")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id){
-
-        Long idUser = Long.valueOf(cipherService.decryptParam(id));
-
-        configurationMediator.deleteUser(idUser);
+    public ResponseEntity<?> delete(@PathVariable Long id){
+        configurationMediator.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

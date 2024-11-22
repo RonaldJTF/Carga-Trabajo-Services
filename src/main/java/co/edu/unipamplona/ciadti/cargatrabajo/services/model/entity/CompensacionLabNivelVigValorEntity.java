@@ -3,7 +3,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -66,14 +65,12 @@ public class CompensacionLabNivelVigValorEntity implements Serializable, Cloneab
     @JoinColumn(name = "vari_id", insertable = false, updatable = false)
     private VariableEntity variable;
 
-    @JsonBackReference
-    @OneToOne
-    @JoinColumn(name = "clnv_id", insertable = false, updatable = false)
-    private CompensacionLabNivelVigenciaEntity compensacionLabNivelVigencia;
-
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;
+
+    @Transient
+    private Double valueInValidity;
     
     @PrePersist
     void onCreate() {

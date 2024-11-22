@@ -63,8 +63,21 @@ public class CompensacionLabNivelVigenciaValorServiceImpl implements Compensacio
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CompensacionLabNivelVigValorEntity> findAllFilteredBy(CompensacionLabNivelVigValorEntity filter) {
         SpecificationCiadti<CompensacionLabNivelVigValorEntity> specification = new SpecificationCiadti<CompensacionLabNivelVigValorEntity>(filter);
         return compensacionLabNivelVigValorDAO.findAll(specification);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Double getValueInValidityOfValueByRule(Long valueByRuleId) {
+        return compensacionLabNivelVigValorDAO.getValueInValidityOfValueByRule(valueByRuleId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CompensacionLabNivelVigValorEntity> findValuesByRulesOfLevelCompensation(Long levelCompensationId) {
+       return compensacionLabNivelVigValorDAO.findValuesByRulesOfLevelCompensation(levelCompensationId);
     }
 }

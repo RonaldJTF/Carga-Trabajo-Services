@@ -15,12 +15,9 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Stat
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -67,6 +64,8 @@ public class ConfigurationMediator {
     private final EscalaSalarialService escalaSalarialService;
     private final TipoNormatividadService tipoNormatividadService;
     private final ReglaService reglaService;
+    private final CompensacionLabNivelVigenciaService compensacionLabNivelVigenciaService;
+    private final CompensacionLabNivelVigValorService compensacionLabNivelVigValorService;
     private final GeneralExpressionMediator generalExpressionMediator;
 
     /**
@@ -257,9 +256,9 @@ public class ConfigurationMediator {
      * @throws CiadtiException
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void deletePeople(List<String> personIds) throws CiadtiException {
-        for (String id : personIds) {
-            deletePerson(Long.valueOf(cipherService.decryptParam(id)));
+    public void deletePeople(List<Long> personIds) throws CiadtiException {
+        for (Long id : personIds) {
+            deletePerson(id);
         }
     }
 
@@ -1239,8 +1238,9 @@ public class ConfigurationMediator {
     public void deleteValidity(Long validityId) throws CiadtiException {
         VigenciaEntity vigenciaDB = vigenciaService.findById(validityId);
         if (vigenciaDB != null) {
-            if (vigenciaDB.getValoresVigencia() != null){
-                for (ValorVigenciaEntity e : vigenciaDB.getValoresVigencia()){
+            List<ValorVigenciaEntity> valoresVigencia = valorVigenciaService.findAllFilteredBy(ValorVigenciaEntity.builder().idVigencia(validityId).build());
+            if (valoresVigencia != null){
+                for (ValorVigenciaEntity e : valoresVigencia){
                     valorVigenciaService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
                 }
             }
@@ -1450,7 +1450,6 @@ public class ConfigurationMediator {
         for (ValorVigenciaEntity e : valuesInValidityToDelete) {
             valorVigenciaService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         }     
-
         return vigenciaEntity;
     }
 
@@ -1549,14 +1548,16 @@ public class ConfigurationMediator {
     public List<CargoEntity> findAppointments( Map<String, Long[]> filters) throws CiadtiException{
         List<CargoEntity> appointments = cargoService.findAllBy(filters);
         List<VariableEntity> allVariablesInDB = variableService.findAll();
-        Map<String, Double> primaryValues;
+        Map<String, Double> primaryVariables = new HashMap<>();
         for (CargoEntity appointment : appointments){
             Double asignacionTotal = 0.0;
+            primaryVariables.put("${ASIGNACION_BASICA}", appointment.getAsignacionBasica());
             for (CompensacionLabNivelVigenciaEntity clnv : appointment.getCompensacionesLaboralesAplicadas()){
                 for (CompensacionLabNivelVigValorEntity cnvv : clnv.getValoresCompensacionLabNivelVigencia()){
-                    System.out.println(cnvv);
-                    if(generalExpressionMediator.evaluateRuleConditions(cnvv.getIdRegla(),  appointment.getIdVigencia(), allVariablesInDB)){
-                        clnv.setValorAplicado(generalExpressionMediator.getValueOfVariable(cnvv.getIdVariable(), appointment.getIdVigencia(), allVariablesInDB));
+                    if(cnvv.getIdRegla() == null || generalExpressionMediator.evaluateRuleConditions(cnvv.getIdRegla(),  appointment.getIdVigencia(), allVariablesInDB, primaryVariables)){
+                        Double value = generalExpressionMediator.getValueOfVariable(cnvv.getIdVariable(), appointment.getIdVigencia(), allVariablesInDB, primaryVariables);
+                        Long frecuency =  clnv.getCompensacionLaboral().getPeriodicidad().getFrecuenciaAnual();
+                        clnv.setValorAplicado(value * frecuency);
                         asignacionTotal += clnv.getValorAplicado();
                         break;
                     }
@@ -1565,6 +1566,85 @@ public class ConfigurationMediator {
             appointment.setAsignacionTotal(asignacionTotal + appointment.getAsignacionBasica());
         }
         return appointments;
+    }
 
+
+    /**
+     * Elimina la relacion de la compensación laboral para un nivel ocupacional en una vigencia dada.
+     *
+     * @param id, identificador único de la relacion de la compensación laboral para un nivel ocupacional en una vigencia dada.
+     * @throws CiadtiException, excepción
+     */
+    public void deleteLevelCompensation(Long id) throws CiadtiException {
+        compensacionLabNivelVigenciaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+     }
+ 
+     /**
+      * Elimina lista de relaciones de compensaciones laborales para un nivel ocupacional en vigencias dada.
+      *
+      * @param compensationsIds, lista de identificadores de objetos CompensacionLabNivelVigencia a eliminar.
+      * @throws CiadtiException, excepción
+      */
+    public void deleteLevelCompensations(List<Long> levelCompensationsIds) throws CiadtiException {
+        for (Long id : levelCompensationsIds) {
+        deleteLevelCompensation(id);
+        }
+    }
+
+    /**
+     * Crea o actualiza una relación entre una compensación laboral para un nivel ocupacional en una vigencia 
+     * y los valores que puede tomar bajo una regla.
+     * Aqui se trae la nueva lista de los valores por regla. Si ya no se incluye alguna de los valores por regla existentes, 
+     * entonces se es eliminada de la BD, y si se trae una nueva, entonces se es insertada en BD.
+     * @param compensacionLabNivelVigenciaEntity: Relación entre una compensación laboral para un nivel ocupacional en una vigencia y los valores por reglas.
+     * @return Objeto CompensacionLabNivelVigenciaEntity con la información relacionada de los valores por regla.
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public CompensacionLabNivelVigenciaEntity saveLevelCompensation(CompensacionLabNivelVigenciaEntity compensacionLabNivelVigenciaEntity) throws CiadtiException{
+        List<CompensacionLabNivelVigValorEntity> newValesByRules = compensacionLabNivelVigenciaEntity.getValoresCompensacionLabNivelVigencia();
+        compensacionLabNivelVigenciaEntity = compensacionLabNivelVigenciaService.save(compensacionLabNivelVigenciaEntity);        
+        List<CompensacionLabNivelVigValorEntity> oldValuesByRules = compensacionLabNivelVigValorService.findAllFilteredBy(CompensacionLabNivelVigValorEntity.builder().idCompensacionLabNivelVigencia(compensacionLabNivelVigenciaEntity.getId()).build());
+            
+        List<CompensacionLabNivelVigValorEntity> valuesByRulesToDelete = oldValuesByRules.stream()
+                .filter(e -> !newValesByRules.stream().map(CompensacionLabNivelVigValorEntity :: getId).collect(Collectors.toList()).contains(e.getId()))
+                .collect(Collectors.toList());
+
+        for (CompensacionLabNivelVigValorEntity e : newValesByRules) {
+            e.setIdCompensacionLabNivelVigencia(compensacionLabNivelVigenciaEntity.getId());
+            compensacionLabNivelVigValorService.save(e);
+        }
+
+        for (CompensacionLabNivelVigValorEntity e : valuesByRulesToDelete) {
+            compensacionLabNivelVigValorService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+        return compensacionLabNivelVigenciaEntity;
+    }
+
+    /**
+     * Encuentra cada uno de los valores asociados a una regla (puede no haber regla) para la aplicación
+     * de una compensacion laboral en una vigencia para un nivel ocupacional o escala salarial.
+     * Si la variable que define el valor es configurada por una vigencia, entonces le asocia el valor en esa vigencia.
+     * Asocia el nombre de las variables que se relacionan en las variables y en las reglas.
+     * @param levelCompensationId
+     * @return
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public List<CompensacionLabNivelVigValorEntity> findValuesByRulesOfLevelCompensation(Long levelCompensationId) throws CiadtiException{
+        List<CompensacionLabNivelVigValorEntity> list = compensacionLabNivelVigValorService.findValuesByRulesOfLevelCompensation(levelCompensationId);
+        for (CompensacionLabNivelVigValorEntity cnvv : list){
+            List<VariableEntity> includedVariablesInValue = variableService.findAllIncludedVariablesInVariable(cnvv.getIdVariable());
+            List<VariableEntity> includedVariablesInRule = variableService.findAllIncludedVariablesInRule(cnvv.getIdRegla());
+            cnvv.getVariable().setExpresionValor(generalExpressionMediator.getExpressionWithVariableNames(cnvv.getVariable().getValor(), includedVariablesInValue));
+            if(cnvv.getRegla() != null){
+                cnvv.getRegla().setExpresionCondiciones(generalExpressionMediator.getExpressionWithVariableNames(cnvv.getRegla().getCondiciones(), includedVariablesInRule));
+            }
+            if(Methods.convertToBoolean(cnvv.getVariable().getPorVigencia())){
+                Double valueInValidity = compensacionLabNivelVigValorService.getValueInValidityOfValueByRule(cnvv.getId());
+                cnvv.setValueInValidity(valueInValidity);
+            }
+        }
+        return list;
     }
 }

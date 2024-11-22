@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -23,4 +24,13 @@ public interface CompensacionLabNivelVigValorDAO extends JpaRepository<Compensac
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_COMPENSACIONLABNIVELVIGVALOR(?1, ?2)",nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    @Query(value = "select vv.valor  from ValorVigenciaEntity vv " + 
+                "inner join CompensacionLabNivelVigenciaEntity clnv on (vv.idVigencia  = clnv.idVigencia) " + 
+                "inner join CompensacionLabNivelVigValorEntity cnvv on (clnv.id  = cnvv.idCompensacionLabNivelVigencia  and cnvv.idVariable  = vv.idVariable)" + 
+                "where cnvv.id  = :valueByRuleId")
+    Double getValueInValidityOfValueByRule(@Param("valueByRuleId") Long valueByRuleId);
+
+    @Query(value="select cnvv from CompensacionLabNivelVigValorEntity cnvv where cnvv.idCompensacionLabNivelVigencia = :levelCompensationId")
+    List<CompensacionLabNivelVigValorEntity> findValuesByRulesOfLevelCompensation(Long levelCompensationId);
 }

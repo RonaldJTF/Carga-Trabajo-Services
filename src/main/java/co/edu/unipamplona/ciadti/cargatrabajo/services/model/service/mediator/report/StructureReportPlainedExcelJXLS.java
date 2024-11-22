@@ -14,8 +14,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.functions.TreeFunction;
 import lombok.RequiredArgsConstructor;
 import org.jxls.transform.poi.JxlsPoiTemplateFillerBuilder;
-import org.springdoc.core.service.RequestBodyService;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
