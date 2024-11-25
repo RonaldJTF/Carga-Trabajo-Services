@@ -66,7 +66,8 @@ public class GeneralExpressionMediator {
         if (condiciones == null || condiciones.isEmpty()) {
             throw new IllegalArgumentException("No existen condiciones para la regla con ID: " + reglaId);
         }
-        return evaluateExpressions(condiciones, validityId, variables, primaryVariables);
+        boolean r = evaluateExpressions(condiciones, validityId, variables, primaryVariables);
+        return r;
     }
 
     /**
@@ -80,7 +81,7 @@ public class GeneralExpressionMediator {
      */
     public double getValueOfVariable(Long variableId, Long validityId, List<VariableEntity> variables, Map<String, Double> primaryVariables) throws CiadtiException {
         String formula = findValueOfVariable(variableId, validityId, variables, primaryVariables);
-        return evaluateArithmeticExpression(formula, validityId, variables, primaryVariables); 
+        return evaluateArithmeticExpression(formula, validityId, variables, primaryVariables);
     }
     
     /**
@@ -145,7 +146,8 @@ public class GeneralExpressionMediator {
             }
             return variable.getValor();
         }else{
-            return String.valueOf(variableService.findValueInValidity(variableId, validityId));
+            Double valueInValidity = variableService.findValueInValidity(variableId, validityId);
+            return String.valueOf(valueInValidity);
         }
     }
 
@@ -191,9 +193,10 @@ public class GeneralExpressionMediator {
      * @throws CiadtiException
      */
     private boolean evaluateBooleanExpression(String expression, Long validityId, List<VariableEntity> variables, Map<String, Double> primaryVariables) throws CiadtiException {
-        String[] partes = expression.split("(?<=\\b|\\W)(?=<=|>=|!=|==|<|>)|(?<=<=|>=|!=|==|<|>)(?=\\b|\\W)");
+        String[] partes = expression.split("(?<=[^=!<>])(?=<=|>=|!=|==|<|>)|(?<=<=|>=|!=|==|<|>)(?=[^=!<>])");
+
         double ladoIzquierdo, ladoDerecho;
-    
+
         if (partes.length == 1) { 
             ladoIzquierdo = evaluateArithmeticExpression(partes[0].trim(), validityId, variables, primaryVariables);
             return ladoIzquierdo != 0; 

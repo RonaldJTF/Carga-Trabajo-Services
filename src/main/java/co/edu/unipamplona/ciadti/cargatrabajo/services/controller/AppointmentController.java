@@ -102,7 +102,6 @@ public class AppointmentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete (@PathVariable Long id) throws CiadtiException{
         configurationMediator.deleteAppointment(id);
-        configurationMediator.deleteAppointment(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

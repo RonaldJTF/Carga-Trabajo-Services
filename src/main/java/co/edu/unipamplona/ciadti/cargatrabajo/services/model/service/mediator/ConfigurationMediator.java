@@ -1551,7 +1551,7 @@ public class ConfigurationMediator {
         Map<String, Double> primaryVariables = new HashMap<>();
         for (CargoEntity appointment : appointments){
             Double asignacionTotal = 0.0;
-            primaryVariables.put("${ASIGNACION_BASICA}", appointment.getAsignacionBasica());
+            primaryVariables.put("${ASIGNACION_BASICA_MENSUAL}", appointment.getAsignacionBasica());
             for (CompensacionLabNivelVigenciaEntity clnv : appointment.getCompensacionesLaboralesAplicadas()){
                 for (CompensacionLabNivelVigValorEntity cnvv : clnv.getValoresCompensacionLabNivelVigencia()){
                     if(cnvv.getIdRegla() == null || generalExpressionMediator.evaluateRuleConditions(cnvv.getIdRegla(),  appointment.getIdVigencia(), allVariablesInDB, primaryVariables)){
@@ -1575,7 +1575,12 @@ public class ConfigurationMediator {
      * @param id, identificador único de la relacion de la compensación laboral para un nivel ocupacional en una vigencia dada.
      * @throws CiadtiException, excepción
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteLevelCompensation(Long id) throws CiadtiException {
+        List<CompensacionLabNivelVigValorEntity> valuesByRules = compensacionLabNivelVigValorService.findValuesByRulesOfLevelCompensation(id);
+        for(CompensacionLabNivelVigValorEntity e : valuesByRules){
+            compensacionLabNivelVigValorService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
         compensacionLabNivelVigenciaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
      }
  
@@ -1585,9 +1590,10 @@ public class ConfigurationMediator {
       * @param compensationsIds, lista de identificadores de objetos CompensacionLabNivelVigencia a eliminar.
       * @throws CiadtiException, excepción
       */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteLevelCompensations(List<Long> levelCompensationsIds) throws CiadtiException {
         for (Long id : levelCompensationsIds) {
-        deleteLevelCompensation(id);
+            deleteLevelCompensation(id);
         }
     }
 

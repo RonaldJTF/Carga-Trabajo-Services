@@ -37,7 +37,6 @@ public class BasicInformationController {
     private final CipherService cipherService;
     private final AlcanceService alcanceService;
     private final TipoNormatividadService tipoNormatividadService;
-    private final CategoriaService categoriaService;
     private final PeriodicidadService periodicidadService;
     private final VariableService variableService;
 
@@ -175,7 +174,7 @@ public class BasicInformationController {
     @PostMapping("/role")
     public ResponseEntity<?> createRole(@Valid @RequestBody RolEntity rolEntity) {
         RolEntity rolNew = new RolEntity();
-        rolNew.setNombre(Methods.capitalizeFirstLetter(rolEntity.getNombre()));
+        rolNew.setNombre(rolEntity.getNombre());
         rolNew.setCodigo(rolEntity.getCodigo().toUpperCase());
         return new ResponseEntity<>(rolService.save(rolNew), HttpStatus.CREATED);
     }
@@ -189,7 +188,7 @@ public class BasicInformationController {
     @PutMapping("/role/{id}")
     public ResponseEntity<?> updateRole(@Valid @RequestBody RolEntity rolEntity, @PathVariable Long id) throws CiadtiException {
         RolEntity rolDB = rolService.findById(id);
-        rolDB.setNombre(Methods.capitalizeFirstLetter(rolEntity.getNombre()));
+        rolDB.setNombre(rolEntity.getNombre());
         rolDB.setCodigo(rolEntity.getCodigo().toUpperCase());
         return new ResponseEntity<>(rolService.save(rolDB), HttpStatus.CREATED);
     }
@@ -222,7 +221,7 @@ public class BasicInformationController {
     @PostMapping("/gender")
     public ResponseEntity<?> createGender(@Valid @RequestBody GeneroEntity generoEntity) {
         GeneroEntity genderNew = new GeneroEntity();
-        genderNew.setNombre(Methods.capitalizeFirstLetter(generoEntity.getNombre()));
+        genderNew.setNombre(generoEntity.getNombre());
         return new ResponseEntity<>(generoService.save(genderNew), HttpStatus.CREATED);
     }
 
@@ -236,7 +235,7 @@ public class BasicInformationController {
     public ResponseEntity<?> updateGender(@Valid @RequestBody GeneroEntity generoEntity, @PathVariable String id) throws CiadtiException {
         Long idGender = id != null ? Long.valueOf(cipherService.decryptParam(id)) : null;
         GeneroEntity generoDB = generoService.findById(idGender);
-        generoDB.setNombre(Methods.capitalizeFirstLetter(generoEntity.getNombre()));
+        generoDB.setNombre(generoEntity.getNombre());
         return new ResponseEntity<>(generoService.save(generoDB), HttpStatus.CREATED);
     }
 
@@ -268,7 +267,7 @@ public class BasicInformationController {
     @PostMapping("/document-type")
     public ResponseEntity<?> createDocumentType(@Valid @RequestBody TipoDocumentoEntity tipoDocumentoEntity) {
         TipoDocumentoEntity tipoDocumentoNew = new TipoDocumentoEntity();
-        tipoDocumentoNew.setDescripcion(Methods.capitalizeFirstLetter(tipoDocumentoEntity.getDescripcion()));
+        tipoDocumentoNew.setDescripcion(tipoDocumentoEntity.getDescripcion());
         tipoDocumentoNew.setAbreviatura(tipoDocumentoEntity.getAbreviatura().toUpperCase());
         return new ResponseEntity<>(tipoDocumentoService.save(tipoDocumentoNew), HttpStatus.CREATED);
     }
@@ -282,7 +281,7 @@ public class BasicInformationController {
     @PutMapping("/document-type/{id}")
     public ResponseEntity<?> updateDocumentType(@Valid @RequestBody TipoDocumentoEntity tipoDocumentoEntity, @PathVariable Long id) throws CiadtiException {
         TipoDocumentoEntity tipoDocumentoDB = tipoDocumentoService.findById(id);
-        tipoDocumentoDB.setDescripcion(Methods.capitalizeFirstLetter(tipoDocumentoEntity.getDescripcion()));
+        tipoDocumentoDB.setDescripcion(tipoDocumentoEntity.getDescripcion());
         tipoDocumentoDB.setAbreviatura(tipoDocumentoEntity.getAbreviatura().toUpperCase());
         return new ResponseEntity<>(tipoDocumentoService.save(tipoDocumentoDB), HttpStatus.CREATED);
     }
@@ -513,11 +512,7 @@ public class BasicInformationController {
                     "Returns: Objeto con la información asociada.")
     @PostMapping("/scope")
     public ResponseEntity<?> createScope(@Valid @RequestBody AlcanceEntity alcanceEntity) {
-
-        AlcanceEntity alcanceNew = new AlcanceEntity();
-        alcanceNew.setNombre(alcanceEntity.getNombre().toUpperCase());
-        alcanceNew.setDescripcion(Methods.capitalizeFirstLetter(alcanceEntity.getDescripcion()));
-        return new ResponseEntity<>(alcanceService.save(alcanceNew), HttpStatus.CREATED);
+        return new ResponseEntity<>(alcanceService.save(alcanceEntity), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -529,8 +524,8 @@ public class BasicInformationController {
     @PutMapping("/scope/{id}")
     public ResponseEntity<?> updateScope(@Valid @RequestBody AlcanceEntity alcanceEntity, @PathVariable Long id) throws CiadtiException {
         AlcanceEntity alcanceDB = alcanceService.findById(id);
-        alcanceDB.setDescripcion(Methods.capitalizeFirstLetter(alcanceEntity.getDescripcion()));
-        alcanceDB.setNombre(alcanceEntity.getNombre().toUpperCase());
+        alcanceDB.setDescripcion(alcanceEntity.getDescripcion());
+        alcanceDB.setNombre(alcanceEntity.getNombre());
         return new ResponseEntity<>(alcanceService.save(alcanceDB), HttpStatus.CREATED);
     }
 
@@ -576,11 +571,7 @@ public class BasicInformationController {
                     "Returns: Objeto con la información asociada.")
     @PostMapping("/periodicity")
     public ResponseEntity<?> createPeriodicity(@Valid @RequestBody PeriodicidadEntity periodicidadEntity) {
-        PeriodicidadEntity periodicidadNew = new PeriodicidadEntity();
-        periodicidadNew.setNombre(periodicidadEntity.getNombre().toUpperCase());
-        periodicidadNew.setFrecuenciaAnual(periodicidadEntity.getFrecuenciaAnual());
-        System.out.println("CREAR: " + periodicidadNew);
-        return new ResponseEntity<>(periodicidadService.save(periodicidadNew), HttpStatus.CREATED);
+        return new ResponseEntity<>(periodicidadService.save(periodicidadEntity), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -592,7 +583,7 @@ public class BasicInformationController {
     @PutMapping("/periodicity/{id}")
     public ResponseEntity<?> updatePeriodicity(@Valid @RequestBody PeriodicidadEntity periodicidadEntity, @PathVariable Long id) throws CiadtiException {
         PeriodicidadEntity periodicidadDB = periodicidadService.findById(id);
-        periodicidadDB.setNombre(periodicidadEntity.getNombre().toUpperCase());
+        periodicidadDB.setNombre(periodicidadEntity.getNombre());
         periodicidadDB.setFrecuenciaAnual(periodicidadEntity.getFrecuenciaAnual());
         return new ResponseEntity<>(periodicidadService.save(periodicidadDB), HttpStatus.CREATED);
     }
@@ -639,11 +630,7 @@ public class BasicInformationController {
                     "Returns: Objeto con la información asociada.")
     @PostMapping("/normativity-type")
     public ResponseEntity<?> createNormativityType(@Valid @RequestBody TipoNormatividadEntity tipoNormatividadEntity) {
-        TipoNormatividadEntity tipoNormatividadNew = new TipoNormatividadEntity();
-        tipoNormatividadNew.setNombre(tipoNormatividadEntity.getNombre().toUpperCase());
-        tipoNormatividadNew.setDescripcion(tipoNormatividadEntity.getDescripcion());
-        System.out.println("funciona el controller de crear");
-        return new ResponseEntity<>(tipoNormatividadService.save(tipoNormatividadNew), HttpStatus.CREATED);
+        return new ResponseEntity<>(tipoNormatividadService.save(tipoNormatividadEntity), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -655,7 +642,7 @@ public class BasicInformationController {
     @PutMapping("/normativity-type/{id}")
     public ResponseEntity<?> updateNormativityType(@Valid @RequestBody TipoNormatividadEntity tipoNormatividadEntity, @PathVariable Long id) throws CiadtiException {
         TipoNormatividadEntity tipoNormatividadDB = tipoNormatividadService.findById(id);
-        tipoNormatividadDB.setNombre(tipoNormatividadEntity.getNombre().toUpperCase());
+        tipoNormatividadDB.setNombre(tipoNormatividadEntity.getNombre());
         tipoNormatividadDB.setDescripcion(tipoNormatividadEntity.getDescripcion());
         return new ResponseEntity<>(tipoNormatividadService.save(tipoNormatividadDB), HttpStatus.CREATED);
     }

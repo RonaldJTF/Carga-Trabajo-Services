@@ -46,7 +46,7 @@ public interface VariableDAO extends JpaRepository<VariableEntity, Long>, JpaSpe
             "where v.id = :id and (vv.idVigencia = :idVigencia or vv.idVigencia is null)")
     VariableEntity findByIdAndValidityId(@Param("id") Long id, @Param("idVigencia") Long idVigencia);
 
-    @Query(value="select vv.valor from ValorVigenciaEntity vv where vv.idVariable = :variableId and vv.idVigencia = :validityId")
+    @Query(value="SELECT COALESCE((SELECT vv.valor FROM ValorVigenciaEntity vv WHERE vv.idVariable = :variableId AND vv.idVigencia = :validityId), 0)")
     Double findValueInValidity(@Param("variableId") Long variableId, @Param("validityId") Long validityId);
 
     @Query("SELECT v FROM VariableEntity v WHERE v.primaria = '1' AND v.global = '1'")
