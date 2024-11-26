@@ -288,4 +288,14 @@ public class StructureController {
         configurationMediator.pasteStructure(copiedStructure, newParentId);
         return new ResponseEntity<>(copiedStructure, HttpStatus.CREATED);
     }
+
+    @PutMapping("/reasign/{newParentId}")
+    public ResponseEntity<?> updateReasignatedStructure(@PathVariable("newParentId") Long newParentId, @RequestParam("copiedStructureId") Long copiedStructureId) throws Exception {
+        EstructuraEntity movedStructure = estructuraService.findById(copiedStructureId);
+        Long order = estructuraService.findLastOrderByIdPadre(newParentId);
+        movedStructure.setOrden(order + 1);
+        configurationMediator.updateTypologyId(movedStructure, newParentId);
+        return new ResponseEntity<>(movedStructure, HttpStatus.CREATED);
+    }
+
 }

@@ -216,6 +216,34 @@ public class ConfigurationMediator {
     }
 
     /**
+     * Copia y actualiza el id de la tipologia
+     * @param copiedStructure
+     * @param newParentId
+     * @throws CiadtiException
+    * @throws CloneNotSupportedException 
+    */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void updateTypologyId(EstructuraEntity copiedStructure, Long newParentId) throws Exception {
+        
+        copiedStructure.setIdPadre(newParentId);
+        TipologiaEntity parentTypology = tipologiaService.findById(estructuraService.findTypologyById(newParentId));
+
+        if (parentTypology != null && parentTypology.getTipologiaSiguiente() != null) {
+            TipologiaEntity newTypology = parentTypology.getTipologiaSiguiente();
+            copiedStructure.setIdTipologia(newTypology.getId());
+            copiedStructure.setTipologia(newTypology);
+        }
+        
+        if (copiedStructure.getSubEstructuras() != null && !copiedStructure.getSubEstructuras().isEmpty()) {
+            for (EstructuraEntity subStructure : copiedStructure.getSubEstructuras()) {
+                updateTypologyId(subStructure, copiedStructure.getId());
+            }
+        }
+
+        estructuraService.save(copiedStructure);
+    }
+
+    /**
      * Crea o actualiza la información de una persona con su respectiva foto de perfil
      * @param personaEntity
      * @param photoFile

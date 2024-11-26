@@ -254,4 +254,9 @@ public class EstructuraServiceImpl implements EstructuraService {
     public List<EstructuraEntity> findByIdPadre(Long idPadre) {
         return estructuraDAO.findByIdPadre(idPadre);
     }
+
+    @Override
+    public Long findTypologyById(Long id) {
+        return estructuraDAO.findTypologyById(id);
+    }
 }

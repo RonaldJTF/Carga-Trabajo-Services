@@ -25,4 +25,6 @@ public interface EstructuraService extends CommonService<EstructuraEntity>{
 
     List<EstructuraEntity> findByIdPadre(Long idPadre);
 
+    Long findTypologyById(Long id);
+
 }
