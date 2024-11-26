@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportPlainedExcelJXLS;
 import org.springframework.http.HttpHeaders;

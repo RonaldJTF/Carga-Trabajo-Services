@@ -42,7 +42,7 @@ public class CargoEntity implements Serializable, Cloneable {
     private Long id;
 
     @Column(name = "carg_asignacionbasica", nullable = false, length = 30)
-    private Double asignacionBasica;
+    private Double asignacionBasicaMensual;
 
     @Column(name = "carg_totalcargo", nullable = false, length = 30)
     private Integer totalCargos;
@@ -103,6 +103,9 @@ public class CargoEntity implements Serializable, Cloneable {
 
     @Transient
     private Double asignacionTotal;
+
+    @Transient
+    private Double asignacionBasicaAnual;
     
     @JsonIgnore
     @Transient

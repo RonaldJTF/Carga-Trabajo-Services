@@ -51,7 +51,7 @@ public class CargoServiceImpl implements CargoService{
         if (entity.getId() != null) {
             entity.onUpdate();
             cargoDAO.update(
-                entity.getAsignacionBasica(), 
+                entity.getAsignacionBasicaMensual(), 
                 entity.getTotalCargos(), 
                 entity.getIdEstructura(), 
                 entity.getIdNivel(), 
@@ -95,7 +95,7 @@ public class CargoServiceImpl implements CargoService{
         Long[] structureIds = filter.get("dependencies");
         Long[] validitiesIds = filter.get("validities");
 
-        String jpql= " select c.id, c.asignacionBasica, c.totalCargos, c.idEstructura, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial, " + 
+        String jpql= " select c.id, c.asignacionBasicaMensual, c.totalCargos, c.idEstructura, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial, " + 
                 " e.nombre, e.icono, e.mimetype, e.idPadre, " +
                 " v.nombre, v.anio, v.estado, " + 
                 " a.nombre, " +
@@ -150,7 +150,7 @@ public class CargoServiceImpl implements CargoService{
             if (((Long) row[0]) != appointmentId){
                 appointment = CargoEntity.builder()
                     .id((Long) row[0])
-                    .asignacionBasica((Double) row[1])
+                    .asignacionBasicaMensual((Double) row[1])
                     .totalCargos((Integer) row[2])
                     .idEstructura((Long) row[3])
                     .idVigencia((Long) row[4])
@@ -230,7 +230,7 @@ public class CargoServiceImpl implements CargoService{
     @Override
     @Transactional(readOnly = true)
     public CargoEntity findByAppointmentId(Long id) {
-        String jpql= " select c.id, c.asignacionBasica, c.totalCargos, c.idEstructura, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial, " + 
+        String jpql= " select c.id, c.asignacionBasicaMensual, c.totalCargos, c.idEstructura, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial, " + 
                 " e.nombre, e.icono, e.mimetype, e.idPadre, " +
                 " v.nombre, v.anio, v.estado, " + 
                 " a.nombre, " +
@@ -268,7 +268,7 @@ public class CargoServiceImpl implements CargoService{
         for (Object[] row : results) {
             appointment = CargoEntity.builder()
                 .id((Long) row[0])
-                .asignacionBasica((Double) row[1])
+                .asignacionBasicaMensual((Double) row[1])
                 .totalCargos((Integer) row[2])
                 .idEstructura((Long) row[3])
                 .idVigencia((Long) row[4])

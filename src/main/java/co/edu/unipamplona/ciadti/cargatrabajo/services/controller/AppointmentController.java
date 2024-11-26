@@ -84,7 +84,7 @@ public class AppointmentController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update (@Valid @RequestBody CargoEntity cargoEntity, @PathVariable Long id) throws CiadtiException{
         CargoEntity cargoEntityBD = cargoService.findById(id);
-        cargoEntityBD.setAsignacionBasica(cargoEntity.getAsignacionBasica());
+        cargoEntityBD.setAsignacionBasicaMensual(cargoEntity.getAsignacionBasicaMensual());
         cargoEntityBD.setTotalCargos(cargoEntity.getTotalCargos());
         cargoEntityBD.setIdEstructura(cargoEntity.getIdEstructura());
         cargoEntityBD.setIdVigencia(cargoEntity.getIdVigencia());

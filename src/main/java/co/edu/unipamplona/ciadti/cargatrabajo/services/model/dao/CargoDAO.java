@@ -11,10 +11,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CargoEntity;
 
 public interface CargoDAO extends JpaRepository<CargoEntity, Long>, JpaSpecificationExecutor<CargoEntity>{
     @Modifying
-    @Query(value = "update CargoEntity c set c.asignacionBasica =:asignacionBasica, c.totalCargos =:totalCargos, " +
+    @Query(value = "update CargoEntity c set c.asignacionBasicaMensual =:asignacionBasicaMensual, c.totalCargos =:totalCargos, " +
                     "c.idEstructura =:idEstructura, c.idNivel =:idNivel, c.idNormatividad =:idNormatividad, c.idEscalaSalarial =:idEscalaSalarial, " + 
                     "c.idAlcance =:idAlcance, c.idVigencia =:idVigencia, c.fechaCambio =:fechaCambio, c.registradoPor =:registradoPor where c.id =:id")
-    int update (@Param("asignacionBasica") Double asiganacionBasica,
+    int update (@Param("asignacionBasicaMensual") Double asignacionBasicaMensual,
                 @Param("totalCargos") Integer totalCargos,
                 @Param("idEstructura") Long idEstructura,
                 @Param("idNivel") Long idNivel,

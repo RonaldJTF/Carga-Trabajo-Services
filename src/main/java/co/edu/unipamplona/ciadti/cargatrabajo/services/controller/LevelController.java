@@ -2,8 +2,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
 import java.util.List;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CompensacionLabNivelVigenciaEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.CompensacionLabNivelVigenciaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 public class LevelController {
     private final NivelService nivelService;
     private final EscalaSalarialService escalaSalarialService;
-    private final CompensacionLabNivelVigenciaService compensacionLabNivelVigenciaService;
     private final ConfigurationMediator configurationMediator;
 
     @Operation(

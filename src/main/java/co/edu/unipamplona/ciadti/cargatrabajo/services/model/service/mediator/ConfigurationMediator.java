@@ -1551,7 +1551,7 @@ public class ConfigurationMediator {
         Map<String, Double> primaryVariables = new HashMap<>();
         for (CargoEntity appointment : appointments){
             Double asignacionTotal = 0.0;
-            primaryVariables.put("${ASIGNACION_BASICA_MENSUAL}", appointment.getAsignacionBasica());
+            primaryVariables.put("${ASIGNACION_BASICA_MENSUAL}", appointment.getAsignacionBasicaMensual());
             for (CompensacionLabNivelVigenciaEntity clnv : appointment.getCompensacionesLaboralesAplicadas()){
                 for (CompensacionLabNivelVigValorEntity cnvv : clnv.getValoresCompensacionLabNivelVigencia()){
                     if(cnvv.getIdRegla() == null || generalExpressionMediator.evaluateRuleConditions(cnvv.getIdRegla(),  appointment.getIdVigencia(), allVariablesInDB, primaryVariables)){
@@ -1563,7 +1563,8 @@ public class ConfigurationMediator {
                     }
                 }
             }
-            appointment.setAsignacionTotal(asignacionTotal + appointment.getAsignacionBasica());
+            appointment.setAsignacionBasicaAnual( appointment.getAsignacionBasicaMensual()*12);
+            appointment.setAsignacionTotal(asignacionTotal +  appointment.getAsignacionBasicaAnual());
         }
         return appointments;
     }

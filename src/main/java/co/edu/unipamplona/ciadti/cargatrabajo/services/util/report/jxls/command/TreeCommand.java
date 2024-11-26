@@ -45,7 +45,6 @@ public class TreeCommand extends AbstractCommand {
 
     private Map<Object, Integer> _deeps = new LinkedHashMap<>();
     private int _finalColumnSectionOfTree = 0;
-    private float _defaultHeightInPointToRowOfTree = 0;
     private XSSFSheet _sheet;
     private XSSFFont _subFont;
 
@@ -109,7 +108,6 @@ public class TreeCommand extends AbstractCommand {
         this._subFont.setBold(false);
         this._subFont.setItalic(true);
         this._subFont.setFontName(rowOfTree.getRowStyle().getFont().getFontName());
-        this._defaultHeightInPointToRowOfTree = rowOfTree.getHeightInPoints();
         
         getMaxDeeps((List<?>) context.getVar(this.tree), getField(((List<?>) context.getVar(this.tree)).get(0), this.adjustBy), 0, this._deeps);
         int treeWidth =  this._deeps.values().stream().mapToInt(Integer::intValue).sum() ;
