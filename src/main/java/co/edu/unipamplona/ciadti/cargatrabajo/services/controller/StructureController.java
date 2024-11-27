@@ -226,6 +226,7 @@ public class StructureController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @SuppressWarnings("null")
     @GetMapping("/report")
     public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type,
                                                  @RequestParam(name = "structureIds", required = false) String structureIdsString) throws Exception {
@@ -272,29 +273,33 @@ public class StructureController {
         }
     }
     
+    @Operation(
+            summary = "Mover una estructura a un nuevo padre",
+            description = "Mueve una estructura a un nuevo padre." +
+                    "Args: id: identificador de la actividad a eliminar.")
     @PutMapping("/move/{newParentId}")
-    public ResponseEntity<?> updateMovedStructure(@PathVariable("newParentId") Long newParentId, @RequestParam("copiedStructureId") Long copiedStructureId) throws CiadtiException {
-        EstructuraEntity movedStructure = estructuraService.findById(copiedStructureId);
-        configurationMediator.updateParentIds(movedStructure, newParentId);
+    public ResponseEntity<?> updateMovedStructure(@PathVariable("newParentId") Long newParentId, @RequestParam("movedStructureId") Long structureId) throws CiadtiException {
+        EstructuraEntity movedStructure = estructuraService.findById(structureId);
+        configurationMediator.moveStructure(movedStructure, newParentId);
         return new ResponseEntity<>(movedStructure, HttpStatus.CREATED);
     }
 
     @PostMapping("/copy/{newParentId}")
-    public ResponseEntity<?> pasteStructure(@PathVariable Long newParentId, @RequestParam("copiedStructureId") Long copiedStructureId) throws Exception {
-        EstructuraEntity structureToCopy = estructuraService.findById(copiedStructureId);
+    public ResponseEntity<?> pasteStructure(@PathVariable Long newParentId, @RequestParam("copiedStructureId") Long structureId) throws Exception {
+        EstructuraEntity structureToCopy = estructuraService.findById(structureId);
         EstructuraEntity copiedStructure = (EstructuraEntity) structureToCopy.clone();
         Long order = estructuraService.findLastOrderByIdPadre(newParentId);
         copiedStructure.setOrden(order + 1);
-        configurationMediator.pasteStructure(copiedStructure, newParentId);
+        configurationMediator.copyStructure(copiedStructure, newParentId);
         return new ResponseEntity<>(copiedStructure, HttpStatus.CREATED);
     }
 
     @PutMapping("/reasign/{newParentId}")
-    public ResponseEntity<?> updateReasignatedStructure(@PathVariable("newParentId") Long newParentId, @RequestParam("copiedStructureId") Long copiedStructureId) throws Exception {
-        EstructuraEntity movedStructure = estructuraService.findById(copiedStructureId);
+    public ResponseEntity<?> updateReasignatedStructure(@PathVariable("newParentId") Long newParentId, @RequestParam("reassignedStructureId") Long structureId) throws Exception {
+        EstructuraEntity movedStructure = estructuraService.findById(structureId);
         Long order = estructuraService.findLastOrderByIdPadre(newParentId);
         movedStructure.setOrden(order + 1);
-        configurationMediator.updateTypologyId(movedStructure, newParentId);
+        configurationMediator.reasignStructure(movedStructure, newParentId);
         return new ResponseEntity<>(movedStructure, HttpStatus.CREATED);
     }
 

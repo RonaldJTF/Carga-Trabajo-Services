@@ -9,10 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ReportStructureDTO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
 import org.jxls.transform.poi.JxlsPoiTemplateFillerBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;

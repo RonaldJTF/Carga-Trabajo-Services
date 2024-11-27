@@ -167,80 +167,77 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Crea una copia de una estructura con ids actualizados sus procedimientos, procesos y actividades si este cuanta con ellas.
-     * @param id
+     * Mueve la estructura a un nuevo padre.
+     * @param newParentId: Id de la nueva estructura padre
+     * @param structure: Estructura a mover de padre
      * @return 
     * @throws CiadtiException  
     */
 
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void updateParentIds(EstructuraEntity copiedStructure, Long newParentId) throws CiadtiException {
+    public void moveStructure(EstructuraEntity structure, Long newParentId) throws CiadtiException {
         Long order = estructuraService.findLastOrderByIdPadre(newParentId);
-        copiedStructure.setIdPadre(newParentId);
-        copiedStructure.setOrden(order + 1);
-        estructuraService.save(copiedStructure);
+        structure.setIdPadre(newParentId);
+        structure.setOrden(order + 1);
+        estructuraService.save(structure);
     }
 
     /**
-     * Pega las estructuras copiadas respetando las jerarquías de tipología
-     * @param copiedStructure
-     * @param newParentId
+     * Copia una estructura en otra estructura respetando las jerarquías de tipología.
+     * @param structure: Estructura a copiar
+     * @param newParentId:  Id de la nueva estructura padre donde se va a pegar la copia.
      * @throws CiadtiException
     * @throws CloneNotSupportedException 
     */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void pasteStructure(EstructuraEntity copiedStructure, Long newParentId) throws Exception {
+    public void copyStructure(EstructuraEntity structure, Long newParentId) throws Exception {
         ActividadEntity activity = null;
 
-        if (copiedStructure.getActividad() != null) {
-            activity = (ActividadEntity) copiedStructure.getActividad().clone();
+        if (structure.getActividad() != null) {
+            activity = (ActividadEntity) structure.getActividad().clone();
         }
 
-        copiedStructure.setActividad(activity);
-        copiedStructure.setId(null);
+        structure.setActividad(activity);
+        structure.setId(null);
 
-        copiedStructure.setIdPadre(newParentId);
-        estructuraService.save(copiedStructure);
+        structure.setIdPadre(newParentId);
+        estructuraService.save(structure);
         
         if(activity != null){
             activity.setId(null);
-            activity.setIdEstructura(copiedStructure.getId());
+            activity.setIdEstructura(structure.getId());
             actividadService.save(activity);
         }
         
-        if (copiedStructure.getSubEstructuras() != null && !copiedStructure.getSubEstructuras().isEmpty()) {
-            for (EstructuraEntity subStructure : copiedStructure.getSubEstructuras()) {
-                pasteStructure(subStructure, copiedStructure.getId());
+        if (structure.getSubEstructuras() != null && !structure.getSubEstructuras().isEmpty()) {
+            for (EstructuraEntity subStructure : structure.getSubEstructuras()) {
+                copyStructure(subStructure, structure.getId());
             }
         }
     }
 
     /**
-     * Copia y actualiza el id de la tipologia
-     * @param copiedStructure
-     * @param newParentId
+     * Reasigna una estructura a otra. Aqui se ajusta la tipología en funcion del padre.
+     * @param structure: Structura a reasignar al nuevo padre.
+     * @param newParentId: Id del padre donde se reasigna la estructura.
      * @throws CiadtiException
     * @throws CloneNotSupportedException 
     */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void updateTypologyId(EstructuraEntity copiedStructure, Long newParentId) throws Exception {
-        
-        copiedStructure.setIdPadre(newParentId);
+    public void reasignStructure(EstructuraEntity structure, Long newParentId) throws Exception {
+        structure.setIdPadre(newParentId);
         TipologiaEntity parentTypology = tipologiaService.findById(estructuraService.findTypologyById(newParentId));
-
         if (parentTypology != null && parentTypology.getTipologiaSiguiente() != null) {
             TipologiaEntity newTypology = parentTypology.getTipologiaSiguiente();
-            copiedStructure.setIdTipologia(newTypology.getId());
-            copiedStructure.setTipologia(newTypology);
+            structure.setIdTipologia(newTypology.getId());
+            structure.setTipologia(newTypology);
         }
-        
-        if (copiedStructure.getSubEstructuras() != null && !copiedStructure.getSubEstructuras().isEmpty()) {
-            for (EstructuraEntity subStructure : copiedStructure.getSubEstructuras()) {
-                updateTypologyId(subStructure, copiedStructure.getId());
+        if (structure.getSubEstructuras() != null && !structure.getSubEstructuras().isEmpty()) {
+            for (EstructuraEntity subStructure : structure.getSubEstructuras()) {
+                reasignStructure(subStructure, structure.getId());
             }
         }
-
-        estructuraService.save(copiedStructure);
+        estructuraService.save(structure);
     }
 
     /**
