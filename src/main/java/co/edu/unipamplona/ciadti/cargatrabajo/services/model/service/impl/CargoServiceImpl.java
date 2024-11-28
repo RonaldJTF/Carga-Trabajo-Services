@@ -93,7 +93,9 @@ public class CargoServiceImpl implements CargoService{
     @Transactional(readOnly = true)
     public List<CargoEntity> findAllBy(Map<String, Long[]> filter) {
         Long[] structureIds = filter.get("dependencies");
-        Long[] validitiesIds = filter.get("validities");
+        Long[] validityIds = filter.get("validities");
+        Long[] scopeIds = filter.get("scopes");
+        Long[] levelIds = filter.get("levels");
 
         String jpql= " select c.id, c.asignacionBasicaMensual, c.totalCargos, c.idEstructura, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial, " + 
                 " e.nombre, e.icono, e.mimetype, e.idPadre, " +
@@ -121,13 +123,21 @@ public class CargoServiceImpl implements CargoService{
 
         Map<String, Object> parameters = new HashMap<>();
 
-        if (validitiesIds != null && validitiesIds.length > 0){
-            jpql += "AND c.idVigencia IN :validitiesIds ";
-            parameters.put("validitiesIds", Arrays.asList(validitiesIds));
+        if (validityIds != null && validityIds.length > 0){
+            jpql += "AND c.idVigencia IN :validityIds ";
+            parameters.put("validityIds", Arrays.asList(validityIds));
         }
         if (structureIds != null && structureIds.length > 0){
             jpql += "AND c.idEstructura IN :structureIds ";
             parameters.put("structureIds", Arrays.asList(structureIds));
+        }
+        if (scopeIds != null && scopeIds.length > 0){
+            jpql += "AND c.idAlcance IN :scopeIds ";
+            parameters.put("scopeIds", Arrays.asList(scopeIds));
+        }
+        if (levelIds != null && levelIds.length > 0){
+            jpql += "AND c.idNivel IN :levelIds ";
+            parameters.put("levelIds", Arrays.asList(levelIds));
         }
 
         jpql += "order by c.id asc, c.idEstructura asc, c.idVigencia asc, c.idAlcance asc, c.idNivel asc, clnv.id asc ";
