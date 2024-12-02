@@ -22,6 +22,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.St
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Corporate;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jasperReport.ReportJR;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
@@ -44,10 +45,8 @@ public class StructureReportPDF {
 
     public byte[] generate(List<Long> structureIds) throws JRException, CiadtiException{
         registry = new HashMap<>();
-        HOURS_PER_MONTH = 151.3;
-
-
-
+        HOURS_PER_MONTH = Corporate.MONTHLY_WORKING_TIME.getValue();
+        
         byte[] logo = staticResourceMediator.getResourceBytes(this.LOGO_URL);
         String filePath = "reports/structures/Structures.jrxml";
         String filePathChart = "reports/structures/Charts.jrxml";

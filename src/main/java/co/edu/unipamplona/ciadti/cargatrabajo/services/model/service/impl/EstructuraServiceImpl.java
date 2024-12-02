@@ -2,7 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.*;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ActividadOutDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.TimeStatisticDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.ActividadDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.DependenciaDTO;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,6 +17,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraS
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Corporate;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -152,72 +153,62 @@ public class EstructuraServiceImpl implements EstructuraService {
     }
 
     /**
-     * Método que para consultar la información de las actividades por nivel de ocupación
-     * para una dependencia
-     *
-     * @param entity, objeto con el identificador único de la dependencia
-     * @return list, objeto con información para la dependencia consultada
+     * Obtiene la información estadística de los tiempos laborados para una estructura por niveles ocupacionales.
+     * @param entity, objeto con el identificador único de la estructura.
+     * @return lista de objetos con información estadística para la estructura consultada.
      */
     @Override
     @Transactional(readOnly = true)
-    public List<ActividadOutDTO> statisticsDependence(EstructuraEntity entity) {
-        List<ActividadDTO> actividadesLista = estructuraDAO.statisticsDependence(entity.getId());
-        return buildStactic(actividadesLista);
+    public List<TimeStatisticDTO> getTimeStatistic(EstructuraEntity entity) {
+        List<ActividadDTO> actividadesLista = estructuraDAO.getTimeStatistic(entity.getId());
+        return buildTimeStatistic(actividadesLista);
     }
 
     /**
-     * Método para construir estadísticas basadas en lista de actividades para una dependencia
-     *
-     * @param actividades, lista de actidades registradas para una dependencia
-     * @return estadistica, objeto con la infomacion procesada
+     * Calcula las estadísticas de tiempos laborados basadas en lista de actividades en una estructura.
+     * @param activities, lista de actividades registradas para una estructura.
+     * @return: objeto con la infomación estadística asociada por nivel.
      */
-    private List<ActividadOutDTO> buildStactic(List<ActividadDTO> actividades) {
-        List<ActividadOutDTO> estadistica = new ArrayList<>();
-        Map<String, ActividadOutDTO> estadisticaMap = new HashMap<>();
+    private List<TimeStatisticDTO> buildTimeStatistic(List<ActividadDTO> activities) {
+        List<TimeStatisticDTO> timeStatistics = new ArrayList<>();
+        Map<String, TimeStatisticDTO> statisticsByLevel = new HashMap<>();
 
-        List<NivelEntity> niveles = nivelService.findAll();
+        List<NivelEntity> levels = nivelService.findAll();
 
-        for (NivelEntity nivel : niveles) {
-            ActividadOutDTO actividad = initializeActividadOutDTO(nivel);
-            estadistica.add(actividad);
-            estadisticaMap.put(nivel.getDescripcion(), actividad);
+        for (NivelEntity level : levels) {
+            TimeStatisticDTO e = TimeStatisticDTO
+                .builder()
+                .nivel(level.getDescripcion())
+                .frecuencia(0.0)
+                .tiempoMinimo(0.0)
+                .tiempoMaximo(0.0)
+                .tiempoUsual(0.0)
+                .tiempoTotal(0.0)
+                .personalTotal(0.0)
+                .build();
+            timeStatistics.add(e);
+            statisticsByLevel.put(level.getDescripcion(), e);
         }
 
-        for (ActividadDTO act : actividades) {
-            double tiempoEstandar = 0.0;
-            double tiempoTarea = 0.0;
-            if (act.getTiempoMaximo() != null && act.getTiempoMaximo() > 0 && act.getTiempoMinimo() != null && act.getTiempoMinimo() > 0 && act.getFrecuencia() != null && act.getFrecuencia() > 0) {
+        double tiempoEstandar = 0.0;
+        double tiempoTotal = 0.0;
+        double personalTotal = 0.0;
+        for (ActividadDTO act : activities) {
+            if (act.getTiempoMaximo() != null && act.getTiempoMinimo() != null && act.getFrecuencia() != null) {
                 tiempoEstandar = (1.07 * ((act.getTiempoMinimo() + (4.0 * act.getTiempoPromedio()) + act.getTiempoMaximo()) / 6.0));
-                tiempoTarea = Math.round((act.getFrecuencia() * tiempoEstandar) * 100.0) / 100.0;
-                ActividadOutDTO actividadOutDTO = estadisticaMap.get(act.getNivel());
-                actividadOutDTO.setFrecuencia(actividadOutDTO.getFrecuencia() + act.getFrecuencia());
-                actividadOutDTO.setTiempoMaximo(actividadOutDTO.getTiempoMaximo() + act.getTiempoMaximo());
-                actividadOutDTO.setTiempoMinimo(actividadOutDTO.getTiempoMinimo() + act.getTiempoMinimo());
-                actividadOutDTO.setTiempoUsual(actividadOutDTO.getTiempoUsual() + act.getTiempoPromedio());
-                actividadOutDTO.setTiempoEstandar(actividadOutDTO.getTiempoEstandar() + tiempoEstandar);
-                actividadOutDTO.setTiempoTotalTarea(actividadOutDTO.getTiempoTotalTarea() + tiempoTarea);
+                tiempoTotal = (act.getFrecuencia() * tiempoEstandar) / 60.0;
+                personalTotal = tiempoTotal / Corporate.MONTHLY_WORKING_TIME.getValue();
+                
+                TimeStatisticDTO dto = statisticsByLevel.get(act.getNivel());
+                dto.setFrecuencia(dto.getFrecuencia() + act.getFrecuencia());
+                dto.setTiempoMaximo(dto.getTiempoMaximo() + act.getTiempoMaximo());
+                dto.setTiempoMinimo(dto.getTiempoMinimo() + act.getTiempoMinimo());
+                dto.setTiempoUsual(dto.getTiempoUsual() + act.getTiempoPromedio());
+                dto.setTiempoTotal(dto.getTiempoTotal() + tiempoTotal);
+                dto.setPersonalTotal(dto.getPersonalTotal() + personalTotal);
             }
         }
-        return estadistica;
-    }
-
-    /**
-     * Método que permite inicializar un objeto tipo ActividadOutDTO para poder realizar los calculos
-     *
-     * @param nivel, objetos con los informacion de los niveles profesionales
-     * @return actividad, lista con los valores iniciales del objeto
-     */
-    private static ActividadOutDTO initializeActividadOutDTO(NivelEntity nivel) {
-        ActividadOutDTO actividad = new ActividadOutDTO();
-        actividad.setNivel(nivel.getDescripcion());
-        actividad.setExtrae(nivel.getDescripcion().substring(0, Math.min(nivel.getDescripcion().length(), 3)).toUpperCase());
-        actividad.setFrecuencia(0.0);
-        actividad.setTiempoMaximo(0.0);
-        actividad.setTiempoMinimo(0.0);
-        actividad.setTiempoUsual(0.0);
-        actividad.setTiempoEstandar(0.0);
-        actividad.setTiempoTotalTarea(0.0);
-        return actividad;
+        return timeStatistics;
     }
 
     @Override

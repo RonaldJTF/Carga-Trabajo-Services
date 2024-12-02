@@ -93,6 +93,9 @@ public class GeneralExpressionMediator {
      * @throws CiadtiException
      */
     public String getExpressionWithVariableNames(String expression, List<VariableEntity> variables) throws CiadtiException {
+        if(expression == null){
+            return null;
+        }
         Pattern pattern = Pattern.compile("\\$\\[(\\d+)]");
         Matcher matcher = pattern.matcher(expression);
         StringBuffer expressionWithNames = new StringBuffer();

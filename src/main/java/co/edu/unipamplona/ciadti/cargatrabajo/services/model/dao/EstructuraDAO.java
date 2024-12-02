@@ -55,8 +55,8 @@ public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, Jp
             + "AND act.estr_id IN ( "
             + "SELECT estr_id "
             + "FROM fortalecimiento.estructura "
-            + "WHERE tipo_id = ( SELECT tipo_id FROM fortalecimiento.tipologia WHERE tipo_nombre = 'Actividad' ) )", nativeQuery = true)
-    List<ActividadDTO> statisticsDependence(@Param("id") Long id);
+            + "WHERE tipo_id = ( SELECT tipo_id FROM fortalecimiento.tipologia WHERE tipo_idtipologiasiguiente is null) )", nativeQuery = true)
+    List<ActividadDTO> getTimeStatistic(@Param("id") Long id);
 
 
     @Query(value = "select e from EstructuraEntity e where e.id in :structureIds")

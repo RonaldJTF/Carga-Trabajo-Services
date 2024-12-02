@@ -28,6 +28,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelServic
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Corporate;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.BlockPOI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.CellPOI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.poi.Position;
@@ -56,7 +57,7 @@ public class StructureReportExcel {
 
     public byte[] generate(List<Long> structureIds) throws CiadtiException{
         registry = new HashMap<>();
-        HOURS_PER_MONTH = 151.3;
+        HOURS_PER_MONTH = Corporate.MONTHLY_WORKING_TIME.getValue();
         generateDataset(structureIds);
 
         BlockPOI titleBlock = buildDependencyReportTitle(Position.builder().x(1).y(1).build());

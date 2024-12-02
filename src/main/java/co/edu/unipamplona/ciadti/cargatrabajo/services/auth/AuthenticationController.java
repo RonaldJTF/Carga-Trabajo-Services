@@ -1,6 +1,6 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.auth;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ChangePasswordDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.NewPasswordDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PersonaEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -39,7 +39,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDTO data) throws CiadtiException {
+    public ResponseEntity<?> changePassword(@Valid @RequestBody NewPasswordDTO data) throws CiadtiException {
         service.changePassword(data);
         Map<String, String> response = new HashMap<String, String>();
         response.put("message", "Contraseña actualizada");

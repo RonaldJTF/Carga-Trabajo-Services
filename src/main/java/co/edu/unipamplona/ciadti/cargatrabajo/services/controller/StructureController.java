@@ -90,7 +90,6 @@ public class StructureController {
         return new ResponseEntity<>(this.configurationMediator.getDependencyInformation(idDependency), HttpStatus.OK);
     }
 
-
     @Operation(
             summary = "Crear una estructura junto a sus subestructuras",
             description = "Crea una estructura junto a sus subestructuras si estas son definidas. " +
@@ -276,7 +275,9 @@ public class StructureController {
     @Operation(
             summary = "Mover una estructura a un nuevo padre",
             description = "Mueve una estructura a un nuevo padre." +
-                    "Args: id: identificador de la actividad a eliminar.")
+                    "Args: newParentId: identificador de la nueva estructura padre. " + 
+                    "structureId: Identificador de la estructura a ser movida. " + 
+                    "Returns: Objeto movido con nueva información asociada.")
     @PutMapping("/move/{newParentId}")
     public ResponseEntity<?> updateMovedStructure(@PathVariable("newParentId") Long newParentId, @RequestParam("movedStructureId") Long structureId) throws CiadtiException {
         EstructuraEntity movedStructure = estructuraService.findById(structureId);
@@ -284,6 +285,12 @@ public class StructureController {
         return new ResponseEntity<>(movedStructure, HttpStatus.CREATED);
     }
 
+    @Operation(
+            summary = "Copiar una estructura a otra",
+            description = "Copia una estructura en otra estructura." +
+                    "Args: newParentId: identificador de la estructura padre donde será copiada. " + 
+                    "structureId: Identificador de la estructura a ser copiada. " + 
+                    "Returns: Objeto copiado con nueva información asociada al padre.")
     @PostMapping("/copy/{newParentId}")
     public ResponseEntity<?> pasteStructure(@PathVariable Long newParentId, @RequestParam("copiedStructureId") Long structureId) throws Exception {
         EstructuraEntity structureToCopy = estructuraService.findById(structureId);
@@ -294,6 +301,13 @@ public class StructureController {
         return new ResponseEntity<>(copiedStructure, HttpStatus.CREATED);
     }
 
+    @Operation(
+        summary = "Reasignar una estructura en otra",
+        description = "Reasigna una estructura en otra estructura." +
+                "Args: newParentId: identificador de la estructura padre donde será reasignada. " + 
+                "structureId: Identificador de la estructura a ser reasignada. " + 
+                "Returns: Objeto reasignado con nueva información asociada al padre. " +
+                "Nota: Al ser reasignada, la tipología de la estructura pasa a ser de la tipología siguiente del nuevo padre.")
     @PutMapping("/reasign/{newParentId}")
     public ResponseEntity<?> updateReasignatedStructure(@PathVariable("newParentId") Long newParentId, @RequestParam("reassignedStructureId") Long structureId) throws Exception {
         EstructuraEntity movedStructure = estructuraService.findById(structureId);
@@ -302,5 +316,4 @@ public class StructureController {
         configurationMediator.reasignStructure(movedStructure, newParentId);
         return new ResponseEntity<>(movedStructure, HttpStatus.CREATED);
     }
-
 }

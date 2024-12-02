@@ -2,6 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -55,6 +56,9 @@ public class CategoriaEntity implements Serializable, Cloneable{
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;
+
+    @Transient
+    private List<CompensacionLaboralEntity> compensaciones;
 
     @PrePersist
     void onCreate() {

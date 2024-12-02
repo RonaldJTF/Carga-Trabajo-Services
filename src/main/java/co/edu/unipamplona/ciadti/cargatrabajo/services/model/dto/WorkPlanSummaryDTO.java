@@ -9,16 +9,23 @@ import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonGetter;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.PlanTrabajoEntity;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class ConsolidatedOfWorkplanDTO {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class WorkPlanSummaryDTO {
     private PlanTrabajoEntity planTrabajo;
     private List<DateAdvance> dateAdvances;
 
     @Data
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class DateAdvance implements Serializable{
         private Date date;
         private Double advance;

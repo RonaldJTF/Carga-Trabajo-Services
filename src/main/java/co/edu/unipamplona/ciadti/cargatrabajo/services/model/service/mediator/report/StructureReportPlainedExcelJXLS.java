@@ -9,6 +9,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraS
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.StaticResourceMediator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Corporate;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.ImageCommand;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.MergeCommand;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.functions.TreeFunction;
@@ -35,7 +36,7 @@ public class StructureReportPlainedExcelJXLS {
 
     public byte[] generateExcel(List<Long> structureIds) throws Exception {
         registry = new HashMap<>();
-        HOURS_PER_MONTH = 151.3;
+        HOURS_PER_MONTH = Corporate.MONTHLY_WORKING_TIME.getValue();
         String filePath = "reports/structures/PlainedStructures.xlsx";
         Map<String, Object> contextMap = new HashMap<String, Object>();
 

@@ -105,21 +105,18 @@ public class BasicInformationController {
     }
 
     @Operation(
-            summary = "Obtener información de las actividades por nivel de ocupación de una dependencia",
-            description = "Obtiene la información de las actividades por nivel de ocupación de una dependencia" +
-                    "Args: id: identificador de la dependencia." +
+            summary = "Obtener información estadística de los tiempos laborados por niveles ocupacionales para una estructura. ",
+            description = "Obtiene información estadística de los tiempos laborados por niveles ocupacionales para una estructura. " +
+                    "Args: id: identificador de la estructura." +
                     "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase EstructuraEntity)." +
-                    "Returns: Lista de objetos (ActividadOutDTO) con las estadísticas de la dependencia.")
-    @GetMapping(value = {"statistics", "statistics/{id}"})
-    public ResponseEntity<?> getStatistics(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+                    "Returns: Lista de objetos (ActividadOutDTO) con las estadísticas de tiempos laborados de la estructura.")
+    @GetMapping(value = {"time-statistics", "time-statistics/{id}"})
+    public ResponseEntity<?> getTimeStatistic(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(EstructuraEntity.class);
         EstructuraEntity filter = (EstructuraEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id == null ? filter.getId() : id);
-        return new ResponseEntity<>(estructuraService.statisticsDependence(filter), HttpStatus.OK);
+        return new ResponseEntity<>(estructuraService.getTimeStatistic(filter), HttpStatus.OK);
     }
-
-
-    //LPR: 18 de julio de 2024
 
     @Operation(
             summary = "Obtener o listar las tipologías",

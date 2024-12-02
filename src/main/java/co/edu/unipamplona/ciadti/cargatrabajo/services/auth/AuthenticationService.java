@@ -2,7 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.auth;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.email.MailService;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ChangePasswordDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.NewPasswordDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.RegistradorDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +78,7 @@ public class AuthenticationService {
         this.usuarioService.updateTokenPassword(usuario);
     }
 
-    public void changePassword(ChangePasswordDTO data) throws CiadtiException {
+    public void changePassword(NewPasswordDTO data) throws CiadtiException {
         String password = cipherService.decryptCredential(data.getPassword());
         String confirmPassword = cipherService.decryptCredential(data.getConfirmPassword());
         if(!password.equals(confirmPassword)) {

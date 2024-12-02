@@ -50,12 +50,11 @@ public class MergeAreaListener implements AreaListener {
         int lastRow = sheet.getMergedRegions().stream()
                 .filter(address -> address.isInRange(this.lastRowCellRef.getRow(), this.lastRowCellRef.getCol()))
                 .mapToInt(CellRangeAddressBase::getLastRow).findFirst().orElse(this.lastRowCellRef.getRow());
-
-        log.debug("this :{}, merged start row : {} | end row : {} | col :{} ", this.toString(), from, lastRow, cellRef.getCol());
-
-        CellRangeAddress region = new CellRangeAddress(from, lastRow, cellRef.getCol(), cellRef.getCol());
-        sheet.addMergedRegion(region);
-        applyStyle(sheet.getRow(cellRef.getRow()).getCell(cellRef.getCol()));
+        if(lastRow - from > 0){
+            CellRangeAddress region = new CellRangeAddress(from, lastRow, cellRef.getCol(), cellRef.getCol());
+            sheet.addMergedRegion(region);
+            applyStyle(sheet.getRow(cellRef.getRow()).getCell(cellRef.getCol()), region);
+        }
     }
 
     private void setLastRowCellRef(CellRef cellRef) {
@@ -64,11 +63,21 @@ public class MergeAreaListener implements AreaListener {
         }
     }
 
-    private void applyStyle(Cell cell) {
+    private void applyStyle(Cell cell, CellRangeAddress region) {
         CellStyle cellStyle = cell.getCellStyle();
-
-        cellStyle.setAlignment(HorizontalAlignment.CENTER);
-        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        for (int i = region.getFirstRow(); i <= region.getLastRow(); i++) {
+            Row r = this.sheet.getRow(i);
+            if (r == null) {
+                r = this.sheet.createRow(i);
+            }
+            for (int j = region.getFirstColumn(); j <= region.getLastColumn(); j++) {
+                Cell c = r.getCell(j);
+                if (c == null) {
+                    c = r.createCell(j);
+                }
+                c.setCellStyle(cellStyle);
+            }
+        }
     }
 
     @Override

@@ -53,7 +53,6 @@ public class AppointmentController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
     
-
     @Operation(
         summary = "Obtener informacion de un cargo por su id",
         description = "Obtiene la información de una asignación laboral" +
@@ -71,8 +70,8 @@ public class AppointmentController {
                     "Args: categoriaEntity: objeto con información del tipo de cargo a registrar. " +
                     "Returns: Objeto con la información asociada.")
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody CargoEntity cargoEntity) {
-        return new ResponseEntity<>(cargoService.save(cargoEntity), HttpStatus.CREATED);
+    public ResponseEntity<?> create(@Valid @RequestBody CargoEntity cargoEntity) throws CiadtiException {
+        return new ResponseEntity<>(configurationMediator.saveAppointment(cargoEntity), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -92,7 +91,7 @@ public class AppointmentController {
         cargoEntityBD.setIdEscalaSalarial(cargoEntity.getIdEscalaSalarial());
         cargoEntityBD.setIdNormatividad(cargoEntity.getIdNormatividad());
         cargoEntityBD.setIdAlcance(cargoEntity.getIdAlcance());
-        return new ResponseEntity<>(cargoService.save(cargoEntityBD), HttpStatus.CREATED);
+        return new ResponseEntity<>(configurationMediator.saveAppointment(cargoEntityBD), HttpStatus.CREATED);
     }
 
     @Operation(

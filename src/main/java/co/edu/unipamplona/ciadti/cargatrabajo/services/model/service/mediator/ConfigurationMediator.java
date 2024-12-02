@@ -3,8 +3,8 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ConsolidatedOfWorkplanDTO.DateAdvance;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.WorkPlanSummaryDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.WorkPlanSummaryDTO.DateAdvance;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.DependenciaDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.*;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.*;
@@ -619,7 +619,7 @@ public class ConfigurationMediator {
         PlanTrabajoEntity workplan = planTrabajoService.findById(idWorkplan);
         List<EtapaEntity> stages = etapaService.findAllFilteredBy(EtapaEntity.builder().idPlanTrabajo(idWorkplan).build());
 
-        ConsolidatedOfWorkplanDTO consolidated = new ConsolidatedOfWorkplanDTO();
+        WorkPlanSummaryDTO consolidated = new WorkPlanSummaryDTO();
         consolidated.setPlanTrabajo(workplan);
         List<DateAdvance> dateAdvances = new ArrayList<DateAdvance>();
 
@@ -1545,6 +1545,7 @@ public class ConfigurationMediator {
      * @param normativityTypeId, identificador único del tipo de normatividad que se desea eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteNormativityType(Long normativityTypeId) throws CiadtiException {
         TipoNormatividadEntity tipoNormatividadDB = tipoNormatividadService.findById(normativityTypeId);
         if (tipoNormatividadDB != null) {
@@ -1557,6 +1558,7 @@ public class ConfigurationMediator {
      * @param validityValueIds, lista de identificadores de los tipos de normatividades a eliminar
      * @throws CiadtiException
      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteNormativityTypes(List<Long> validityValueIds) throws CiadtiException {
         for (Long id : validityValueIds) {
             deleteNormativityType(id);
@@ -1573,30 +1575,58 @@ public class ConfigurationMediator {
     public List<CargoEntity> findAppointments( Map<String, Long[]> filters) throws CiadtiException{
         List<CargoEntity> appointments = cargoService.findAllBy(filters);
         List<VariableEntity> allVariablesInDB = variableService.findAll();
-        Map<String, Double> primaryVariables = new HashMap<>();
         for (CargoEntity appointment : appointments){
-            Double asignacionTotal = 0.0;
-            primaryVariables.put("${ASIGNACION_BASICA_MENSUAL}", appointment.getAsignacionBasicaMensual());
-            for (CompensacionLabNivelVigenciaEntity clnv : appointment.getCompensacionesLaboralesAplicadas()){
-                for (CompensacionLabNivelVigValorEntity cnvv : clnv.getValoresCompensacionLabNivelVigencia()){
-                    if(cnvv.getIdRegla() == null || generalExpressionMediator.evaluateRuleConditions(cnvv.getIdRegla(),  appointment.getIdVigencia(), allVariablesInDB, primaryVariables)){
-                        Double value = generalExpressionMediator.getValueOfVariable(cnvv.getIdVariable(), appointment.getIdVigencia(), allVariablesInDB, primaryVariables);
-                        Long frecuency =  clnv.getCompensacionLaboral().getPeriodicidad().getFrecuenciaAnual();
-                        clnv.setValorAplicado(value * frecuency);
-                        asignacionTotal += clnv.getValorAplicado();
-                        break;
-                    }
-                }
-            }
-            appointment.setAsignacionBasicaAnual( appointment.getAsignacionBasicaMensual()*12);
-            appointment.setAsignacionTotal(asignacionTotal +  appointment.getAsignacionBasicaAnual());
+            completeAppointmentInformation(appointment, allVariablesInDB);
         }
         return appointments;
     }
 
+    /**
+     * Obtiene una asignación laboral con sus respectivos valores por cada compenación laboral.
+     * @param filters
+     * @return
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public CargoEntity saveAppointment(CargoEntity appointment) throws CiadtiException{
+        cargoService.save(appointment);
+        appointment = cargoService.findByAppointmentId(appointment.getId());
+        List<VariableEntity> allVariablesInDB = variableService.findAll();
+        completeAppointmentInformation(appointment, allVariablesInDB);
+        return appointment;
+    }
 
     /**
-     * Elimina la relacion de la compensación laboral para un nivel ocupacional en una vigencia dada.
+     * Completa la información de una asignación laboral con las compensaciones laborales que se aplican.
+     * Para saber el valor aplicado, se evalúa la regla de esa compensación laboral en la vigencia para el 
+     * nivel/escala salarial asociado.
+     * @param appointment: Objeto con información relacionada de la asignación laboral een la vigencia para un nivel/escala salarial.
+     * @param variables: Variables relacionadas en las reglas / formulas que definen el valor de una 
+     * compensación laboral en una vigencia para un nivel o escala salarial.
+     * @throws CiadtiException
+     */
+    @Transactional(readOnly = true)
+    private void completeAppointmentInformation(CargoEntity appointment, List<VariableEntity> variables) throws CiadtiException{
+        Map<String, Double> primaryVariables = new HashMap<>();
+        primaryVariables.put("${ASIGNACION_BASICA_MENSUAL}", appointment.getAsignacionBasicaMensual());
+        Double asignacionTotal = 0.0;
+        for (CompensacionLabNivelVigenciaEntity clnv : appointment.getCompensacionesLaboralesAplicadas()){
+            for (CompensacionLabNivelVigValorEntity cnvv : clnv.getValoresCompensacionLabNivelVigencia()){
+                if(cnvv.getIdRegla() == null || generalExpressionMediator.evaluateRuleConditions(cnvv.getIdRegla(),  appointment.getIdVigencia(), variables, primaryVariables)){
+                    Double value = generalExpressionMediator.getValueOfVariable(cnvv.getIdVariable(), appointment.getIdVigencia(), variables, primaryVariables);
+                    Long frecuency =  clnv.getCompensacionLaboral().getPeriodicidad().getFrecuenciaAnual();
+                    clnv.setValorAplicado(value * frecuency);
+                    asignacionTotal += clnv.getValorAplicado();
+                    break;
+                }
+            }
+        }
+        appointment.setAsignacionBasicaAnual( appointment.getAsignacionBasicaMensual()*12);
+        appointment.setAsignacionTotal(asignacionTotal +  appointment.getAsignacionBasicaAnual());
+    }
+
+    /**
+     * Elimina la relación de la compensación laboral para un nivel ocupacional en una vigencia dada.
      *
      * @param id, identificador único de la relacion de la compensación laboral para un nivel ocupacional en una vigencia dada.
      * @throws CiadtiException, excepción

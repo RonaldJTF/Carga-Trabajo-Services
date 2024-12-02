@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .requestMatchers("/doc/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
 
-                .requestMatchers(HttpMethod.GET, "/api/statistics/**", "/api/structure/report").hasAnyRole("SUPERADMINISTRADOR")
+                .requestMatchers(HttpMethod.GET, "/api/time-statistics/**", "/api/structure/report").hasAnyRole("SUPERADMINISTRADOR")
                 .requestMatchers(HttpMethod.GET, "/api/inventory/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
 
                 .requestMatchers(HttpMethod.PUT, "/api/person/**").authenticated()
