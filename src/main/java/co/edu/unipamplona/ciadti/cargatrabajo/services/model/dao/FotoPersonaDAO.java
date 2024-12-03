@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.FotoPersonaE
 public interface FotoPersonaDAO extends JpaRepository<FotoPersonaEntity, Long>, JpaSpecificationExecutor<FotoPersonaEntity>{
 
     @Modifying
-    @Query(value = "update FotoPersonaEntity fp set fp.idPersona = :idPersona, fp.archivo =:archivo, fp.mimetype = :mimetype, " + 
-                    "fp.fechaCambio = :fechaCambio, fp.registradoPor = :registradoPor where fp.id=:id")
+    @Query(value = """
+        update FotoPersonaEntity fp set fp.idPersona = :idPersona, fp.archivo =:archivo, fp.mimetype = :mimetype, 
+        fp.fechaCambio = :fechaCambio, fp.registradoPor = :registradoPor where fp.id=:id
+    """)
     int update (@Param("idPersona") Long idPersona,
                 @Param("archivo") byte[] archivo,
                 @Param("mimetype") String mimetype, 

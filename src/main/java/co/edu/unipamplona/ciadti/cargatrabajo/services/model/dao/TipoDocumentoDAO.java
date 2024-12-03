@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipoDocument
 public interface TipoDocumentoDAO  extends JpaRepository<TipoDocumentoEntity, Long>, JpaSpecificationExecutor<TipoDocumentoEntity>{
 
     @Modifying
-    @Query(value = "update TipoDocumentoEntity r set r.descripcion =:descripcion, r.abreviatura =:abreviatura, " +
-                   "r.fechaCambio = :fechaCambio, r.registradoPor = :registradoPor where r.id=:id")
+    @Query(value = """
+        update TipoDocumentoEntity r set r.descripcion =:descripcion, r.abreviatura =:abreviatura, 
+        r.fechaCambio = :fechaCambio, r.registradoPor = :registradoPor where r.id=:id
+    """)
     int update (@Param("descripcion") String descripcion,
                 @Param("abreviatura") String abreviatura,
                 @Param("fechaCambio") Date fechaCambio,

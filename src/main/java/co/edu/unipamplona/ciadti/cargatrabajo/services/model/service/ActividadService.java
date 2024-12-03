@@ -4,4 +4,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEnt
 
 public interface ActividadService extends CommonService<ActividadEntity>{
     ActividadEntity findByIdEstructura(Long id);
+
+    Double getGlobalTotalTime();
 }

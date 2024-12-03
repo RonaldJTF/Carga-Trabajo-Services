@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.AlcanceEntit
 public interface AlcanceDAO extends JpaRepository<AlcanceEntity, Long>, JpaSpecificationExecutor<AlcanceEntity>{
     
     @Modifying
-    @Query(value = "update AlcanceEntity a set a.nombre =:nombre, a.descripcion =:descripcion, " + 
-                    "a.fechaCambio =:fechaCambio,  a.registradoPor =:registradoPor where a.id =:id")
+    @Query(value = """
+        update AlcanceEntity a set a.nombre =:nombre, a.descripcion =:descripcion, 
+        a.fechaCambio =:fechaCambio,  a.registradoPor =:registradoPor where a.id =:id
+    """)
     int update  (@Param("nombre") String nombre,
                  @Param("descripcion") String descripcion,
                  @Param("fechaCambio") Date fechaCambio,

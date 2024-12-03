@@ -14,9 +14,11 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VariableEnti
 public interface VariableDAO extends JpaRepository<VariableEntity, Long>, JpaSpecificationExecutor<VariableEntity>{
     
     @Modifying
-    @Query(value = "update VariableEntity v set v.nombre =:nombre, v.descripcion =:descripcion, v.valor =:valor, " +
-                    "v.primaria =:primaria, v.global =:global, v.porVigencia =:porVigencia, v.estado =:estado, " +
-                    "v.fechaCambio =:fechaCambio, v.registradoPor =:registradoPor where v.id =:id")
+    @Query(value = """
+        update VariableEntity v set v.nombre =:nombre, v.descripcion =:descripcion, v.valor =:valor, 
+        v.primaria =:primaria, v.global =:global, v.porVigencia =:porVigencia, v.estado =:estado,
+        v.fechaCambio =:fechaCambio, v.registradoPor =:registradoPor where v.id =:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("descripcion") String descripcion,
                 @Param("valor") String valor,
@@ -41,9 +43,11 @@ public interface VariableDAO extends JpaRepository<VariableEntity, Long>, JpaSpe
     @Query("SELECT v FROM VariableEntity v WHERE v.nombre = :nombre")
     VariableEntity findByNombre(@Param("nombre") String nombre);
 
-    @Query(value="SELECT v FROM VariableEntity v " +
-            "left outer join ValorVigenciaEntity vv on (v.id = vv.idVariable) " + 
-            "where v.id = :id and (vv.idVigencia = :idVigencia or vv.idVigencia is null)")
+    @Query(value="""
+        SELECT v FROM VariableEntity v 
+        left outer join ValorVigenciaEntity vv on (v.id = vv.idVariable) 
+        where v.id = :id and (vv.idVigencia = :idVigencia or vv.idVigencia is null)
+    """)
     VariableEntity findByIdAndValidityId(@Param("id") Long id, @Param("idVigencia") Long idVigencia);
 
     @Query(value="SELECT COALESCE((SELECT vv.valor FROM ValorVigenciaEntity vv WHERE vv.idVariable = :variableId AND vv.idVigencia = :validityId), 0)")
@@ -53,39 +57,45 @@ public interface VariableDAO extends JpaRepository<VariableEntity, Long>, JpaSpe
     List<VariableEntity> findByPrimariaAndGlobal();
 
 
-    @Query(value = "WITH extracted_ids AS ( " + 
-                    "   SELECT unnest( "+
-                    "          array(  " +
-                    "              SELECT regexp_replace((regexp_matches(r.regl_condiciones, '\\[\\d+\\]', 'g'))[1], '[\\[\\]]', '', 'g') " +
-                    "              from fortalecimiento.regla r " +
-                    "              where r.regl_id = :idRegla " +
-                    "         )" +
-                    "   ) AS id" +
-                    ") " +
-                    "SELECT v.* " +
-                    "FROM fortalecimiento.variable v " + 
-                    "WHERE v.vari_id  IN (SELECT CAST(id AS integer) FROM extracted_ids);", nativeQuery = true)
+    @Query(value = """
+        WITH extracted_ids AS ( 
+            SELECT unnest( 
+                array( 
+                    SELECT regexp_replace((regexp_matches(r.regl_condiciones, '\\[\\d+\\]', 'g'))[1], '[\\[\\]]', '', 'g') 
+                    from fortalecimiento.regla r
+                    where r.regl_id = :idRegla 
+                )
+            ) AS id
+        ) 
+        SELECT v.* 
+        FROM fortalecimiento.variable v 
+        WHERE v.vari_id  IN (SELECT CAST(id AS integer) FROM extracted_ids)
+    """, nativeQuery = true)
     List<VariableEntity> findAllIncludedVariablesInRule(@Param("idRegla") Long idRegla); 
 
-    @Query(value = "WITH extracted_ids AS ( " + 
-                    "   SELECT unnest( "+
-                    "          array(  " +
-                    "              SELECT regexp_replace((regexp_matches(v.vari_valor, '\\[\\d+\\]', 'g'))[1], '[\\[\\]]', '', 'g') " +
-                    "              from fortalecimiento.variable v " +
-                    "              where v.vari_id = :idVariable " +
-                    "         )" +
-                    "   ) AS id" +
-                    ") " +
-                    "SELECT v.* " +
-                    "FROM fortalecimiento.variable v " + 
-                    "WHERE v.vari_id  IN (SELECT CAST(id AS integer) FROM extracted_ids);", nativeQuery = true)
+    @Query(value = """
+        WITH extracted_ids AS ( 
+           SELECT unnest( 
+                array(  
+                    SELECT regexp_replace((regexp_matches(v.vari_valor, '\\[\\d+\\]', 'g'))[1], '[\\[\\]]', '', 'g') 
+                    from fortalecimiento.variable v 
+                    where v.vari_id = :idVariable 
+                )
+            ) AS id
+        )
+        SELECT v.* 
+        FROM fortalecimiento.variable v 
+        WHERE v.vari_id  IN (SELECT CAST(id AS integer) FROM extracted_ids);
+    """, nativeQuery = true)
     List<VariableEntity> findAllIncludedVariablesInVariable(@Param("idVariable") Long idVariable); 
-    @Query(value =  " SELECT DISTINCT va FROM VariableEntity va    " + 
-                    " WHERE va.global = '1' AND va.estado = '1' AND va.primaria = '0' " +
-                    " UNION " + 
-                    " SELECT DISTINCT v FROM VariableEntity v " + 
-                    " LEFT OUTER JOIN CompensacionLabNivelVigValorEntity cnvv on (v.id = cnvv.idVariable) " + 
-                    " LEFT OUTER JOIN CompensacionLabNivelVigenciaEntity clnv on (cnvv.idCompensacionLabNivelVigencia = clnv.id) " + 
-                    " WHERE (clnv.idNivel = :idNivel OR clnv.idNivel IS NULL) AND v.global = '0' AND v.estado = '1' AND v.primaria = '0' ")
+    @Query(value =  """
+        SELECT DISTINCT va FROM VariableEntity va    
+        WHERE va.global = '1' AND va.estado = '1' AND va.primaria = '0' 
+        UNION 
+        SELECT DISTINCT v FROM VariableEntity v 
+        LEFT OUTER JOIN CompensacionLabNivelVigValorEntity cnvv on (v.id = cnvv.idVariable) 
+        LEFT OUTER JOIN CompensacionLabNivelVigenciaEntity clnv on (cnvv.idCompensacionLabNivelVigencia = clnv.id) 
+        WHERE (clnv.idNivel = :idNivel OR clnv.idNivel IS NULL) AND v.global = '0' AND v.estado = '1' AND v.primaria = '0' 
+    """)
     List<VariableEntity> getGlobalAndNoPrimaryAndLevelActiveVariables(@Param("idNivel") Long levelId);
 }

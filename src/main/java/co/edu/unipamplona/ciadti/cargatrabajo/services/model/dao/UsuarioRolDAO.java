@@ -14,18 +14,18 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.UsuarioRolEn
 public interface UsuarioRolDAO extends JpaRepository<UsuarioRolEntity, Long>, JpaSpecificationExecutor<UsuarioRolEntity>{
 
     @Modifying
-    @Query(value = "update UsuarioRolEntity ur set ur.idUsuario =:idUsuario, ur.idRol =:idRol, " + 
-                    "ur.fechaCambio = :fechaCambio, ur.registradoPor = :registradoPor where  ur.id = :id")
+    @Query(value = """
+        update UsuarioRolEntity ur set ur.idUsuario =:idUsuario, ur.idRol =:idRol, 
+        ur.fechaCambio = :fechaCambio, ur.registradoPor = :registradoPor where  ur.id = :id
+    """)
     void update(@Param("idUsuario") Long idUsuario,
                 @Param("idRol") Long idRol,
                 @Param("fechaCambio") Date fechaCambio,
                 @Param("registradoPor") String registradoPor,
                 @Param("id") Long id);
 
-
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_USUARIOROL(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
-
 
     List<UsuarioRolEntity> findAllByIdUsuario(Long idUsuario);
 

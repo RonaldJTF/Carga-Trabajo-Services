@@ -13,10 +13,12 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EscalaSalari
 public interface EscalaSalarialDAO extends JpaRepository<EscalaSalarialEntity, Long>, JpaSpecificationExecutor<EscalaSalarialEntity>{
     
     @Modifying
-    @Query(value = "update EscalaSalarialEntity es set es.nombre =:nombre, es.codigo =:codigo, " +
-                    "es.incrementoPorcentual =:incrementoPorcentual, es.idNivel =:idNivel, " +
-                    "es.idNormatividad =:idNormatividad, es.estado =:estado, es.fechaCambio =:fechaCambio, " +
-                    "es.registradoPor =:registradoPor where es.id =:id")
+    @Query(value = """
+        update EscalaSalarialEntity es set es.nombre =:nombre, es.codigo =:codigo, 
+        es.incrementoPorcentual =:incrementoPorcentual, es.idNivel =:idNivel, 
+        es.idNormatividad =:idNormatividad, es.estado =:estado, es.fechaCambio =:fechaCambio, 
+        es.registradoPor =:registradoPor where es.id =:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("codigo") String codigo,
                 @Param("incrementoPorcentual") Long incrementoPorcentual,
@@ -31,8 +33,10 @@ public interface EscalaSalarialDAO extends JpaRepository<EscalaSalarialEntity, L
     Integer deleteByProcedure(Long id, String registradoPor);
 
     @Modifying
-    @Query(value = "update EscalaSalarialEntity es set es.estado = :estado, " +
-                   "es.fechaCambio = :fechaCambio, es.registradoPor = :registradoPor where es.idNormatividad = :idNormatividad ")
+    @Query(value = """
+        update EscalaSalarialEntity es set es.estado = :estado, 
+        es.fechaCambio = :fechaCambio, es.registradoPor = :registradoPor where es.idNormatividad = :idNormatividad 
+    """)
     int updateStatusByNormativityId(@Param("estado") String estado,
                                     @Param("idNormatividad") Long idNormatividad,
                                     @Param("registradoPor")  String registradoPor,

@@ -14,8 +14,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ReglaEntity;
 public interface ReglaDAO extends JpaRepository<ReglaEntity, Long>, JpaSpecificationExecutor<ReglaEntity>{
     
     @Modifying
-    @Query(value = "update ReglaEntity r set r.nombre =:nombre, r.descripcion =:descripcion, r.condiciones =:condiciones, " +
-                    "r.global =:global, r.estado =:estado, r.fechaCambio =:fechaCambio, r.registradoPor =:registradoPor where r.id =:id")
+    @Query(value = """
+        update ReglaEntity r set r.nombre =:nombre, r.descripcion =:descripcion, r.condiciones =:condiciones, 
+        r.global =:global, r.estado =:estado, r.fechaCambio =:fechaCambio, r.registradoPor =:registradoPor where r.id =:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("descripcion") String descripcion,
                 @Param("condiciones") String condiciones,
@@ -34,12 +36,14 @@ public interface ReglaDAO extends JpaRepository<ReglaEntity, Long>, JpaSpecifica
     @Query("SELECT r.id, r.condiciones FROM ReglaEntity r")
     Optional<List<Object[]>> findAllNombresAndCondicionesAndId();
 
-    @Query(value =  " SELECT DISTINCT re FROM ReglaEntity re    " + 
-                    " WHERE re.global = '1' AND re.estado = '1' " +
-                    " UNION " + 
-                    " SELECT DISTINCT r FROM ReglaEntity r " + 
-                    " LEFT OUTER JOIN CompensacionLabNivelVigValorEntity cnvv on (r.id = cnvv.idRegla) " + 
-                    " LEFT OUTER JOIN CompensacionLabNivelVigenciaEntity clnv on (cnvv.idCompensacionLabNivelVigencia = clnv.id) " + 
-                    " WHERE (clnv.idNivel = :idNivel OR clnv.idNivel IS NULL) AND r.global = '0' AND r.estado = '1'")
+    @Query(value =  """
+        SELECT DISTINCT re FROM ReglaEntity re   
+        WHERE re.global = '1' AND re.estado = '1' 
+        UNION 
+        SELECT DISTINCT r FROM ReglaEntity r
+        LEFT OUTER JOIN CompensacionLabNivelVigValorEntity cnvv on (r.id = cnvv.idRegla) 
+        LEFT OUTER JOIN CompensacionLabNivelVigenciaEntity clnv on (cnvv.idCompensacionLabNivelVigencia = clnv.id) 
+        WHERE (clnv.idNivel = :idNivel OR clnv.idNivel IS NULL) AND r.global = '0' AND r.estado = '1'
+    """)
     List<ReglaEntity> getGlobalAndLevelActiveRules(@Param("idNivel") Long levelId);
 }

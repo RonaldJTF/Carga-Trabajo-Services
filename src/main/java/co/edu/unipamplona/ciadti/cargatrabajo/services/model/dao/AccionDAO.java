@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.AccionEntity
 public interface AccionDAO extends JpaRepository<AccionEntity, Long>, JpaSpecificationExecutor<AccionEntity> {
 
     @Modifying
-    @Query(value = "update AccionEntity a set a.nombre =:nombre, a.claseIcono =:claseIcono,  a.claseEstado = :claseEstado, " +
-            "a.path =:path,  a.fechaCambio = :fechaCambio, a.registradoPor = :registradoPor where a.id = :id")
+    @Query(value = """
+        update AccionEntity a set a.nombre =:nombre, a.claseIcono =:claseIcono,  a.claseEstado = :claseEstado,
+        a.path =:path,  a.fechaCambio = :fechaCambio, a.registradoPor = :registradoPor where a.id = :id
+    """)
     int update(@Param("nombre") String nombre,
                @Param("claseIcono") String claseIcono,
                @Param("claseEstado") String claseEstado,

@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
 public interface NivelDAO extends JpaRepository<NivelEntity, Long>, JpaSpecificationExecutor<NivelEntity>{
 
     @Modifying
-    @Query(value = "update NivelEntity n set n.descripcion =:descripcion, " +
-                   "n.fechaCambio = :fechaCambio, n.registradoPor = :registradoPor where n.id=:id")
+    @Query(value = """
+        update NivelEntity n set n.descripcion =:descripcion, 
+        n.fechaCambio = :fechaCambio, n.registradoPor = :registradoPor where n.id=:id
+    """)
     int update (@Param("descripcion") String descripcion,
                 @Param("fechaCambio") Date fechaCambio,
                 @Param("registradoPor") String registradoPor,

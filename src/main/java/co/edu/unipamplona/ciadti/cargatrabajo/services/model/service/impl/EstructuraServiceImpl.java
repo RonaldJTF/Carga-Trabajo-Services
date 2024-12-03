@@ -2,7 +2,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.*;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.TimeStatisticDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.ActividadDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.DependenciaDTO;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,12 +11,9 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.Spec
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.EstructuraDAO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Corporate;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 public class EstructuraServiceImpl implements EstructuraService {
 
     private final EstructuraDAO estructuraDAO;
-    private final NivelService nivelService;
 
     @Override
     @Transactional(readOnly = true)
@@ -151,64 +146,11 @@ public class EstructuraServiceImpl implements EstructuraService {
             }
         }
     }
-
-    /**
-     * Obtiene la información estadística de los tiempos laborados para una estructura por niveles ocupacionales.
-     * @param entity, objeto con el identificador único de la estructura.
-     * @return lista de objetos con información estadística para la estructura consultada.
-     */
+    
     @Override
     @Transactional(readOnly = true)
-    public List<TimeStatisticDTO> getTimeStatistic(EstructuraEntity entity) {
-        List<ActividadDTO> actividadesLista = estructuraDAO.getTimeStatistic(entity.getId());
-        return buildTimeStatistic(actividadesLista);
-    }
-
-    /**
-     * Calcula las estadísticas de tiempos laborados basadas en lista de actividades en una estructura.
-     * @param activities, lista de actividades registradas para una estructura.
-     * @return: objeto con la infomación estadística asociada por nivel.
-     */
-    private List<TimeStatisticDTO> buildTimeStatistic(List<ActividadDTO> activities) {
-        List<TimeStatisticDTO> timeStatistics = new ArrayList<>();
-        Map<String, TimeStatisticDTO> statisticsByLevel = new HashMap<>();
-
-        List<NivelEntity> levels = nivelService.findAll();
-
-        for (NivelEntity level : levels) {
-            TimeStatisticDTO e = TimeStatisticDTO
-                .builder()
-                .nivel(level.getDescripcion())
-                .frecuencia(0.0)
-                .tiempoMinimo(0.0)
-                .tiempoMaximo(0.0)
-                .tiempoUsual(0.0)
-                .tiempoTotal(0.0)
-                .personalTotal(0.0)
-                .build();
-            timeStatistics.add(e);
-            statisticsByLevel.put(level.getDescripcion(), e);
-        }
-
-        double tiempoEstandar = 0.0;
-        double tiempoTotal = 0.0;
-        double personalTotal = 0.0;
-        for (ActividadDTO act : activities) {
-            if (act.getTiempoMaximo() != null && act.getTiempoMinimo() != null && act.getFrecuencia() != null) {
-                tiempoEstandar = (1.07 * ((act.getTiempoMinimo() + (4.0 * act.getTiempoPromedio()) + act.getTiempoMaximo()) / 6.0));
-                tiempoTotal = (act.getFrecuencia() * tiempoEstandar) / 60.0;
-                personalTotal = tiempoTotal / Corporate.MONTHLY_WORKING_TIME.getValue();
-                
-                TimeStatisticDTO dto = statisticsByLevel.get(act.getNivel());
-                dto.setFrecuencia(dto.getFrecuencia() + act.getFrecuencia());
-                dto.setTiempoMaximo(dto.getTiempoMaximo() + act.getTiempoMaximo());
-                dto.setTiempoMinimo(dto.getTiempoMinimo() + act.getTiempoMinimo());
-                dto.setTiempoUsual(dto.getTiempoUsual() + act.getTiempoPromedio());
-                dto.setTiempoTotal(dto.getTiempoTotal() + tiempoTotal);
-                dto.setPersonalTotal(dto.getPersonalTotal() + personalTotal);
-            }
-        }
-        return timeStatistics;
+    public List<ActividadDTO> getTimeStatistics(Long structureId) {
+        return estructuraDAO.getTimeStatistics(structureId);
     }
 
     @Override

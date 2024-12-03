@@ -13,31 +13,39 @@ import java.util.List;
 
 public interface PersonaDAO extends JpaRepository<PersonaEntity, Long>, JpaSpecificationExecutor<PersonaEntity> {
 
-    @Query( "select p from PersonaEntity p " +
-            "inner join UsuarioEntity u on (p.id = u.idPersona) " +
-            "where u.id =:idUsuario")
+    @Query( """
+        select p from PersonaEntity p 
+        inner join UsuarioEntity u on (p.id = u.idPersona) 
+        where u.id =:idUsuario
+    """)
     PersonaEntity findByIdUsuario(@Param("idUsuario") Long idUsuario);
 
-    @Query( "SELECT p FROM PersonaEntity p " +
-            "INNER JOIN UsuarioEntity u ON (p.id = u.idPersona) " +
-            "WHERE LOWER(p.primerNombre || ' ' || p.segundoNombre || ' ' || p.primerApellido || ' ' || p.segundoApellido) " + 
-            "LIKE LOWER(CONCAT('%', :filter, '%')) OR LOWER(p.documento) LIKE LOWER(CONCAT('%', :filter, '%') )")
+    @Query( """
+        SELECT p FROM PersonaEntity p 
+        INNER JOIN UsuarioEntity u ON (p.id = u.idPersona) 
+        WHERE LOWER(p.primerNombre || ' ' || p.segundoNombre || ' ' || p.primerApellido || ' ' || p.segundoApellido) 
+        LIKE LOWER(CONCAT('%', :filter, '%')) OR LOWER(p.documento) LIKE LOWER(CONCAT('%', :filter, '%') )
+    """)
     List<PersonaEntity> findAllPeopleWithUserByFilter(@Param("filter") String filter);
 
-    @Query( "SELECT p FROM PersonaEntity p " +
-            "INNER JOIN UsuarioEntity u ON (p.id = u.idPersona) " +
-            "WHERE u.activo = :active " +
-            "AND (" +
-            "   LOWER (p.primerNombre || ' ' || p.segundoNombre || ' ' || p.primerApellido || ' ' || p.segundoApellido) LIKE LOWER(CONCAT('%', :filter, '%')) " +
-            "   OR LOWER(p.documento) LIKE LOWER(CONCAT('%', :filter, '%')) " +
-            ")")
+    @Query( """
+        SELECT p FROM PersonaEntity p 
+        INNER JOIN UsuarioEntity u ON (p.id = u.idPersona) 
+        WHERE u.activo = :active 
+        AND (
+           LOWER (p.primerNombre || ' ' || p.segundoNombre || ' ' || p.primerApellido || ' ' || p.segundoApellido) LIKE LOWER(CONCAT('%', :filter, '%'))
+           OR LOWER(p.documento) LIKE LOWER(CONCAT('%', :filter, '%')) 
+        )
+    """)
     List<PersonaEntity> findAllPeopleWithUserByFilterAndActive(@Param("filter") String filter, @Param("active") String active);
 
     @Modifying
-    @Query(value = "update PersonaEntity p set p.idTipoDocumento = :idTipoDocumento, p.idGenero = :idGenero, p.primerNombre = :primerNombre, " +
-            "p.segundoNombre = :segundoNombre, p.primerApellido = :primerApellido, p.segundoApellido = :segundoApellido, " +
-            "p.documento = :documento, p.correo = :correo, p.telefono = :telefono, p.fechaCambio = :fechaCambio, " + 
-            "p.registradoPor = :registradoPor where p.id = :id")
+    @Query(value = """
+        update PersonaEntity p set p.idTipoDocumento = :idTipoDocumento, p.idGenero = :idGenero, p.primerNombre = :primerNombre,
+        p.segundoNombre = :segundoNombre, p.primerApellido = :primerApellido, p.segundoApellido = :segundoApellido,
+        p.documento = :documento, p.correo = :correo, p.telefono = :telefono, p.fechaCambio = :fechaCambio,
+        p.registradoPor = :registradoPor where p.id = :id
+    """)
     int update(@Param("idTipoDocumento") Long idTipoDocumento,
                @Param("idGenero") Long idGenero,
                @Param("primerNombre") String primerNombre,

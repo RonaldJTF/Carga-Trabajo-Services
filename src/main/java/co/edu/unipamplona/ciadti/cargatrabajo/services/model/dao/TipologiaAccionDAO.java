@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaAcc
 public interface TipologiaAccionDAO extends JpaRepository<TipologiaAccionEntity, Long>, JpaSpecificationExecutor<TipologiaAccionEntity>{
 
     @Modifying
-    @Query(value = "update TipologiaAccionEntity ta set ta.idTipologia =:idTipologia, ta.idAccion =:idAccion, " + 
-                    "ta.fechaCambio = :fechaCambio,  ta.registradoPor = :registradoPor where ta.id = :id")
+    @Query(value = """
+        update TipologiaAccionEntity ta set ta.idTipologia =:idTipologia, ta.idAccion =:idAccion, 
+        ta.fechaCambio = :fechaCambio,  ta.registradoPor = :registradoPor where ta.id = :id
+    """)
     int update (@Param("idTipologia") Long idTipologia,
                 @Param("idAccion") Long idAccion,
                 @Param("fechaCambio") Date fechaCambio,

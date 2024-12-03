@@ -14,8 +14,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.FtpEntity;
 public interface FtpDAO extends JpaRepository<FtpEntity, Long>, JpaSpecificationExecutor<FtpEntity>{
     
     @Modifying
-    @Query(value = "update FtpEntity f set f.nombre =:nombre, f.descripcion =:descripcion, f.codigo = :codigo, " +
-                   "f.activo =:activo, f.fechaCambio = :fechaCambio, f.registradoPor = :registradoPor where f.id=:id")
+    @Query(value = """
+        update FtpEntity f set f.nombre =:nombre, f.descripcion =:descripcion, f.codigo = :codigo,
+        f.activo =:activo, f.fechaCambio = :fechaCambio, f.registradoPor = :registradoPor where f.id=:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("descripcion") String descripcion,
                 @Param("codigo") String codigo,

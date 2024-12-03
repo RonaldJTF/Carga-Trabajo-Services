@@ -14,18 +14,22 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEnt
 
 public interface TipologiaDAO extends JpaRepository<TipologiaEntity, Long>, JpaSpecificationExecutor<TipologiaEntity> {
 
-    @Query(value = "select t from TipologiaEntity t " +
-            "left join TipologiaEntity t2 on (t.id = t2.idTipologiaSiguiente) " +
-            "where t2.idTipologiaSiguiente is null")
+    @Query(value = """
+        select t from TipologiaEntity t 
+        left join TipologiaEntity t2 on (t.id = t2.idTipologiaSiguiente) 
+        where t2.idTipologiaSiguiente is null
+    """)
     TipologiaEntity findFirstTipology();
 
     @Query(value = "select t from TipologiaEntity t where t.esDependencia = '1'")
     TipologiaEntity findDependencyTipology();
 
     @Modifying
-    @Query(value = "update TipologiaEntity t set t.idTipologiaSiguiente =:idTipologiaSiguiente, t.nombre =:nombre,  t.claseIcono = :claseIcono, " +
-            "t.nombreColor =:nombreColor, t.esDependencia =:esDependencia,  t.fechaCambio = :fechaCambio, " +
-            "t.registradoPor = :registradoPor where  t.id = :id")
+    @Query(value = """
+        update TipologiaEntity t set t.idTipologiaSiguiente =:idTipologiaSiguiente, t.nombre =:nombre,  t.claseIcono = :claseIcono,
+        t.nombreColor =:nombreColor, t.esDependencia =:esDependencia,  t.fechaCambio = :fechaCambio, 
+        t.registradoPor = :registradoPor where  t.id = :id
+    """)
     int update(@Param("idTipologiaSiguiente") Long idTipologiaSiguiente,
                @Param("nombre") String nombre,
                @Param("claseIcono") String claseIcono,
@@ -38,16 +42,20 @@ public interface TipologiaDAO extends JpaRepository<TipologiaEntity, Long>, JpaS
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_TIPOLOGIA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
 
-    @Query(value = "select distinct(t) from TipologiaEntity t " +
-            "inner join EstructuraEntity e on (t.id = e.idTipologia) order by t.id desc")
+    @Query(value = """
+        select distinct(t) from TipologiaEntity t 
+        inner join EstructuraEntity e on (t.id = e.idTipologia) order by t.id desc
+    """)
     List<TipologiaEntity> findAllManagement();
 
-    @Query(value = "SELECT t.tipo_nombre AS nombre, t.tipo_claseicono AS claseIcono, t.tipo_nombrecolor AS nombreColor, COUNT(e.estr_id) AS cantidad " +
-            "FROM fortalecimiento.tipologia t " +
-            "JOIN fortalecimiento.estructura e ON t.tipo_id = e.tipo_id " +
-            "WHERE (t.tipo_esdependencia  = '1') OR  NOT EXISTS (" +
-            "SELECT 1 FROM fortalecimiento.estructura e2 WHERE e2.tipo_id = e.tipo_id AND e2.estr_idpadre  = e.estr_id) " +
-            "GROUP BY t.tipo_id, t.tipo_nombre, t.tipo_claseicono, t.tipo_nombrecolor " +
-            "ORDER BY t.tipo_id DESC;", nativeQuery = true)
+    @Query(value = """
+        SELECT t.tipo_nombre AS nombre, t.tipo_claseicono AS claseIcono, t.tipo_nombrecolor AS nombreColor, COUNT(e.estr_id) AS cantidad 
+        FROM fortalecimiento.tipologia t 
+        JOIN fortalecimiento.estructura e ON t.tipo_id = e.tipo_id 
+        WHERE (t.tipo_esdependencia  = '1') OR  NOT EXISTS (
+            SELECT 1 FROM fortalecimiento.estructura e2 WHERE e2.tipo_id = e.tipo_id AND e2.estr_idpadre  = e.estr_id) 
+        GROUP BY t.tipo_id, t.tipo_nombre, t.tipo_claseicono, t.tipo_nombrecolor
+        ORDER BY t.tipo_id DESC;
+    """, nativeQuery = true)
     List<InventarioTipologiaDTO> findInventarioTipologia();
 }

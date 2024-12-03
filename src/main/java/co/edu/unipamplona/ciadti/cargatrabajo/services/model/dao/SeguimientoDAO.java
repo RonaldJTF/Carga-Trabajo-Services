@@ -14,8 +14,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.SeguimientoE
 public interface SeguimientoDAO extends JpaRepository<SeguimientoEntity, Long>, JpaSpecificationExecutor<SeguimientoEntity>{
     
     @Modifying
-    @Query(value = "update SeguimientoEntity s set s.idTarea = :idTarea, s.porcentajeAvance =:porcentajeAvance, s.observacion =:observacion, " +
-                   "s.activo =:activo, s.fechaCambio = :fechaCambio, s.registradoPor = :registradoPor where s.id=:id")
+    @Query(value = """
+        update SeguimientoEntity s set s.idTarea = :idTarea, s.porcentajeAvance =:porcentajeAvance, s.observacion =:observacion, 
+        s.activo =:activo, s.fechaCambio = :fechaCambio, s.registradoPor = :registradoPor where s.id=:id
+    """)
     int update (@Param("idTarea") Long idTarea,
                 @Param("porcentajeAvance") Double porcentajeAvance,
                 @Param("observacion") String observacion,

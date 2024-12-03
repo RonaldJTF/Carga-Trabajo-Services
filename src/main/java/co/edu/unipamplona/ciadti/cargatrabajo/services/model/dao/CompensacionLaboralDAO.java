@@ -13,9 +13,11 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.Compensacion
 public interface CompensacionLaboralDAO extends JpaRepository<CompensacionLaboralEntity, Long>, JpaSpecificationExecutor<CompensacionLaboralEntity>{
     
     @Modifying
-    @Query(value = "update CompensacionLaboralEntity cl set cl.nombre =:nombre, cl.descripcion =:descripcion, " +
-                    "cl.estado =:estado, cl.idCategoria =:idCategoria, cl.idPeriodicidad =:idPeriodicidad, " +
-                    "cl.fechaCambio =:fechaCambio, cl.registradoPor =:registradoPor where cl.id =:id")
+    @Query(value = """
+        update CompensacionLaboralEntity cl set cl.nombre =:nombre, cl.descripcion =:descripcion, 
+        cl.estado =:estado, cl.idCategoria =:idCategoria, cl.idPeriodicidad =:idPeriodicidad, 
+        cl.fechaCambio =:fechaCambio, cl.registradoPor =:registradoPor where cl.id =:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("descripcion") String descripcion,
                 @Param("estado") String estado,

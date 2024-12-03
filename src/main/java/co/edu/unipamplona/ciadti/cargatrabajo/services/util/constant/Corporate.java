@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Corporate {
-    MONTHLY_WORKING_TIME (151.4, "Tiempo laboral mensual");
+    MONTHLY_WORKING_TIME (151.3, "Tiempo laboral mensual");
 
     private final Double value;
     private final String description;

@@ -14,8 +14,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EtapaEntity;
 public interface EtapaDAO extends JpaRepository<EtapaEntity, Long>, JpaSpecificationExecutor<EtapaEntity> {
     
     @Modifying
-    @Query(value = "update EtapaEntity e set e.nombre =:nombre, e.descripcion =:descripcion, e.idPadre = :idPadre, " +
-                   "e.idPlanTrabajo =:idPlanTrabajo, e.fechaCambio = :fechaCambio, e.registradoPor = :registradoPor where e.id=:id")
+    @Query(value = """
+        update EtapaEntity e set e.nombre =:nombre, e.descripcion =:descripcion, e.idPadre = :idPadre,
+        e.idPlanTrabajo =:idPlanTrabajo, e.fechaCambio = :fechaCambio, e.registradoPor = :registradoPor where e.id=:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("descripcion") String descripcion,
                 @Param("idPadre") Long idPadre,

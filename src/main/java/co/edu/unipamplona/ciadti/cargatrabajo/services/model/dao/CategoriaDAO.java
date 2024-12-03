@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CategoriaEnt
 public interface CategoriaDAO extends JpaRepository<CategoriaEntity, Long>, JpaSpecificationExecutor<CategoriaEntity>{
     
     @Modifying
-    @Query(value = "update CategoriaEntity c set c.nombre =:nombre, c.descripcion =:descripcion, " +
-                    "c.fechaCambio =:fechaCambio, c.registradoPor =:registradoPor where c.id =:id")
+    @Query(value = """
+        update CategoriaEntity c set c.nombre =:nombre, c.descripcion =:descripcion, 
+        c.fechaCambio =:fechaCambio, c.registradoPor =:registradoPor where c.id =:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("descripcion") String descripcion,
                 @Param("fechaCambio") Date fechaCambio,

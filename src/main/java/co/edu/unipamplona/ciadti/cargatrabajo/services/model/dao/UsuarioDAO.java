@@ -16,8 +16,10 @@ public interface UsuarioDAO extends JpaRepository<UsuarioEntity, Long>, JpaSpeci
     Optional<UsuarioEntity> findByUsername (String username);
 
     @Modifying
-    @Query(value = "update UsuarioEntity u set u.idPersona = :idPersona, u.username = :username, u.password = :password, " +
-                    "u.activo = :activo, u.tokenPassword = :tokenPassword, u.fechaCambio = :fechaCambio, u.registradoPor = :registradoPor where u.id = :id ")
+    @Query(value = """
+        update UsuarioEntity u set u.idPersona = :idPersona, u.username = :username, u.password = :password, 
+        u.activo = :activo, u.tokenPassword = :tokenPassword, u.fechaCambio = :fechaCambio, u.registradoPor = :registradoPor where u.id = :id 
+    """)
     int update(@Param("idPersona") Long idPersona,
                @Param("username") String username,
                @Param("password") String password,
@@ -46,8 +48,10 @@ public interface UsuarioDAO extends JpaRepository<UsuarioEntity, Long>, JpaSpeci
                             @Param("fechaCambio")  Date fechaCambio);
 
     @Modifying
-    @Query(value = "update UsuarioEntity u set u.password = :password, u.tokenPassword = :tokenPassword, " +
-                   "u.fechaCambio = :fechaCambio, u.registradoPor = :registradoPor where u.id = :id ")
+    @Query(value = """
+        update UsuarioEntity u set u.password = :password, u.tokenPassword = :tokenPassword,
+        u.fechaCambio = :fechaCambio, u.registradoPor = :registradoPor where u.id = :id 
+    """)
     int updatePasswordAndTokenPassword(@Param("id") Long id,
                                         @Param("password")  String password,
                                         @Param("tokenPassword")  String tokenPassword,

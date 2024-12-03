@@ -13,9 +13,11 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.Compensacion
 public interface CompensacionLabNivelVigenciaDAO extends JpaRepository<CompensacionLabNivelVigenciaEntity, Long>, JpaSpecificationExecutor<CompensacionLabNivelVigenciaEntity>{
     
     @Modifying
-    @Query(value = "update CompensacionLabNivelVigenciaEntity clnv set clnv.idNivel =:idNivel, clnv.idCompensacionLaboral=:idCompensacionLaboral, " +
-                    "clnv.idEscalaSalarial =:idEscalaSalarial, clnv.idVigencia =:idVigencia, " +
-                    "clnv.fechaCambio =:fechaCambio, clnv.registradoPor =:registradoPor where clnv.id =:id")
+    @Query(value = """
+        update CompensacionLabNivelVigenciaEntity clnv set clnv.idNivel =:idNivel, clnv.idCompensacionLaboral=:idCompensacionLaboral, 
+        clnv.idEscalaSalarial =:idEscalaSalarial, clnv.idVigencia =:idVigencia, 
+        clnv.fechaCambio =:fechaCambio, clnv.registradoPor =:registradoPor where clnv.id =:id
+    """)
     int update (@Param("idNivel") Long idNivel,
                 @Param("idCompensacionLaboral") Long idCompensacionLaboral,
                 @Param("idEscalaSalarial") Long idEscalaSalarial,

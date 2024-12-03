@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.Periodicidad
 public interface PeriodicidadDAO extends JpaRepository<PeriodicidadEntity, Long>, JpaSpecificationExecutor<PeriodicidadEntity>{
 
     @Modifying
-    @Query(value = "update PeriodicidadEntity p set p.nombre =:nombre, p.frecuenciaAnual =:frecuenciaAnual, " +
-                    "p.fechaCambio =:fechaCambio, p.registradoPor =:registradoPor where p.id =:id")
+    @Query(value = """
+        update PeriodicidadEntity p set p.nombre =:nombre, p.frecuenciaAnual =:frecuenciaAnual,
+        p.fechaCambio =:fechaCambio, p.registradoPor =:registradoPor where p.id =:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("frecuenciaAnual") Long frecuenciaAnual,
                 @Param("fechaCambio") Date fechaCambio,

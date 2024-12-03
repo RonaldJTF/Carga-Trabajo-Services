@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipoNormativ
 public interface TipoNormatividadDAO extends JpaRepository<TipoNormatividadEntity, Long>, JpaSpecificationExecutor<TipoNormatividadEntity>{
     
     @Modifying
-    @Query(value = "update TipoNormatividadEntity tn set tn.nombre =:nombre, tn.descripcion =:descripcion, " +
-                    "tn.fechaCambio =:fechaCambio, tn.registradoPor =:registradoPor where tn.id =:id")
+    @Query(value = """
+        update TipoNormatividadEntity tn set tn.nombre =:nombre, tn.descripcion =:descripcion, 
+        tn.fechaCambio =:fechaCambio, tn.registradoPor =:registradoPor where tn.id =:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("descripcion") String descripcion,
                 @Param("fechaCambio") Date fechaCambio,

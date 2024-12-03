@@ -17,4 +17,6 @@ public class TimeStatisticDTO {
     private Double tiempoUsual;
     private Double tiempoTotal;
     private Double personalTotal;
+    private Double tiempoTotalGlobal;
+    private Double personalTotalGlobal;
 }

@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GeneroEntity
 public interface GeneroDAO extends JpaRepository<GeneroEntity, Long>, JpaSpecificationExecutor<GeneroEntity>{
 
     @Modifying
-    @Query(value = "update GeneroEntity g set g.nombre =:nombre, " +
-                    "g.fechaCambio = :fechaCambio, g.registradoPor = :registradoPor where g.id=:id")
+    @Query(value = """
+        update GeneroEntity g set g.nombre =:nombre, g.fechaCambio = :fechaCambio, g.registradoPor = :registradoPor 
+        where g.id=:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("fechaCambio") Date fechaCambio,
                 @Param("registradoPor") String registradoPor,

@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VigenciaEnti
 public interface VigenciaDAO extends JpaRepository<VigenciaEntity, Long>, JpaSpecificationExecutor<VigenciaEntity>{
     
     @Modifying
-    @Query(value = "update VigenciaEntity v set v.nombre =:nombre, v.anio =:anio, " + 
-                    "v.estado =:estado, v.fechaCambio =:fechaCambio, v.registradoPor =:registradoPor where v.id =:id")
+    @Query(value = """
+        update VigenciaEntity v set v.nombre =:nombre, v.anio =:anio, 
+        v.estado =:estado, v.fechaCambio =:fechaCambio, v.registradoPor =:registradoPor where v.id =:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("anio") String anio,
                 @Param("estado") String estado,

@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ArchivoEntit
 public interface ArchivoDAO extends JpaRepository<ArchivoEntity, Long>, JpaSpecificationExecutor<ArchivoEntity>{
     
     @Modifying
-    @Query(value = "update ArchivoEntity a set a.idFtp = :idFtp, a.nombre =:nombre, a.path =:path, a.tamanio = :tamanio, " +
-                   "a.mimetype =:mimetype, a.fechaCambio = :fechaCambio, a.registradoPor = :registradoPor where a.id=:id")
+    @Query(value = """
+        update ArchivoEntity a set a.idFtp = :idFtp, a.nombre =:nombre, a.path =:path, a.tamanio = :tamanio, 
+        a.mimetype =:mimetype, a.fechaCambio = :fechaCambio, a.registradoPor = :registradoPor where a.id=:id
+    """)
     int update (@Param("idFtp") Long idFtp,
                 @Param("nombre") String nombre,
                 @Param("path") String path,

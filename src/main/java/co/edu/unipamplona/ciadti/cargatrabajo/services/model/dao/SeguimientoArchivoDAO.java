@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.SeguimientoA
 public interface SeguimientoArchivoDAO extends JpaRepository<SeguimientoArchivoEntity, Long>, JpaSpecificationExecutor<SeguimientoArchivoEntity>{
     
     @Modifying
-    @Query(value = "update SeguimientoArchivoEntity sa set sa.idSeguimiento = :idSeguimiento, sa.idArchivo =:idArchivo, " + 
-                   "sa.fechaCambio = :fechaCambio, sa.registradoPor = :registradoPor where sa.id=:id")
+    @Query(value = """
+        update SeguimientoArchivoEntity sa set sa.idSeguimiento = :idSeguimiento, sa.idArchivo =:idArchivo, 
+        sa.fechaCambio = :fechaCambio, sa.registradoPor = :registradoPor where sa.id=:id
+    """)
     int update (@Param("idSeguimiento") Long idSeguimiento,
                 @Param("idArchivo") Long idArchivo,
                 @Param("fechaCambio") Date fechaCambio,

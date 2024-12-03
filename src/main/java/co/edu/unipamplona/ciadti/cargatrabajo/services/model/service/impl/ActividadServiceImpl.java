@@ -78,4 +78,10 @@ public class ActividadServiceImpl implements ActividadService{
     public ActividadEntity findByIdEstructura(Long idEstructura) {
         return actividadDAO.findByIdEstructura(idEstructura);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Double getGlobalTotalTime() {
+        return actividadDAO.getGlobalTotalTime();
+    }
 }

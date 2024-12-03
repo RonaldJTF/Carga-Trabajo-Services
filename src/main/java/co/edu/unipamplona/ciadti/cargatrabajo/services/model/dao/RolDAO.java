@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.RolEntity;
 public interface RolDAO extends JpaRepository<RolEntity, Long>, JpaSpecificationExecutor<RolEntity>{
 
     @Modifying
-    @Query(value = "update RolEntity r set r.nombre =:nombre, r.codigo =:codigo, " +
-                   "r.fechaCambio = :fechaCambio, r.registradoPor = :registradoPor where r.id=:id")
+    @Query(value = """
+        update RolEntity r set r.nombre =:nombre, r.codigo =:codigo,
+        r.fechaCambio = :fechaCambio, r.registradoPor = :registradoPor where r.id=:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("codigo") String codigo,
                 @Param("fechaCambio") Date fechaCambio,

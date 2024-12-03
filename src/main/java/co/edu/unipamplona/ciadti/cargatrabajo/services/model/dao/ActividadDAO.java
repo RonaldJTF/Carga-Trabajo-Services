@@ -13,9 +13,11 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEnt
 public interface ActividadDAO extends JpaRepository<ActividadEntity, Long>, JpaSpecificationExecutor<ActividadEntity>{
 
     @Modifying
-    @Query(value = "update ActividadEntity a set a.idNivel = :idNivel, a.idEstructura = :idEstructura, a.frecuencia =:frecuencia, " + 
-                    "a.tiempoMaximo = :tiempoMaximo, a.tiempoMinimo =:tiempoMinimo, a.tiempoPromedio = :tiempoPromedio, " + 
-                    " a.fechaCambio = :fechaCambio, a.registradoPor =:registradoPor where a.id = :id")
+    @Query(value = """
+        update ActividadEntity a set a.idNivel = :idNivel, a.idEstructura = :idEstructura, a.frecuencia =:frecuencia,
+        a.tiempoMaximo = :tiempoMaximo, a.tiempoMinimo =:tiempoMinimo, a.tiempoPromedio = :tiempoPromedio, 
+        a.fechaCambio = :fechaCambio, a.registradoPor =:registradoPor where a.id = :id
+    """)
     int update(@Param("idNivel") Long idNivel,
                @Param("idEstructura") Long idEstructura,
                @Param("frecuencia") Double frecuencia,
@@ -30,4 +32,16 @@ public interface ActividadDAO extends JpaRepository<ActividadEntity, Long>, JpaS
     Integer deleteByProcedure(Long id, String registradoPor);
 
     ActividadEntity findByIdEstructura(Long idEstructura);
+
+    @Query(value = """
+        SELECT COALESCE(
+            SUM(
+                a.frecuencia * 
+                (1.07 * (a.tiempoMinimo + 4.0 * a.tiempoPromedio + a.tiempoMaximo) / 6.0)
+            ),
+            0.0
+        )
+        FROM ActividadEntity a
+    """)
+    Double getGlobalTotalTime();
 }

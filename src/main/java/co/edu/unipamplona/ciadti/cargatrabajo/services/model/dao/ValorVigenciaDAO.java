@@ -13,8 +13,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ValorVigenci
 public interface ValorVigenciaDAO extends JpaRepository<ValorVigenciaEntity, Long>, JpaSpecificationExecutor<ValorVigenciaEntity>{
     
     @Modifying
-    @Query(value = "update ValorVigenciaEntity vv set vv.idVariable =:idVariable, vv.idVigencia =:idVigencia, " +
-                    "vv.valor =:valor, vv.fechaCambio =:fechaCambio, vv.registradoPor =:registradoPor where vv.id =:id")
+    @Query(value = """
+        update ValorVigenciaEntity vv set vv.idVariable =:idVariable, vv.idVigencia =:idVigencia,
+        vv.valor =:valor, vv.fechaCambio =:fechaCambio, vv.registradoPor =:registradoPor where vv.id =:id
+    """)
     int update (@Param("idVariable") Long idVariable,
                 @Param("idVigencia") Long idVigencia,
                 @Param("valor") Long valor,
@@ -25,7 +27,9 @@ public interface ValorVigenciaDAO extends JpaRepository<ValorVigenciaEntity, Lon
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_VALORVIGENCIA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
 
-    @Query(value = "select vv.valor  from ValorVigenciaEntity vv " + 
-                   "where vv.idVariable = :idVariable and vv.idVigencia  = :idVigencia")
+    @Query(value = """
+        select vv.valor  from ValorVigenciaEntity vv 
+        where vv.idVariable = :idVariable and vv.idVigencia  = :idVigencia
+    """)
     Double findValueInValidity(@Param("idVariable") Long variableId, @Param("idVigencia") Long validityId);
 }

@@ -14,9 +14,11 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TareaEntity;
 public interface TareaDAO extends JpaRepository<TareaEntity, Long>, JpaSpecificationExecutor<TareaEntity>{
     
     @Modifying
-    @Query(value = "update TareaEntity t set t.nombre =:nombre, t.descripcion =:descripcion, t.idEtapa = :idEtapa, " +
-                   "t.fechaInicio =:fechaInicio, t.fechaFin = :fechaFin, t.entregable = :entregable, t.responsable = :responsable, " + 
-                   "t.activo = :activo, t.fechaCambio = :fechaCambio, t.registradoPor = :registradoPor where t.id=:id")
+    @Query(value = """
+        update TareaEntity t set t.nombre =:nombre, t.descripcion =:descripcion, t.idEtapa = :idEtapa, 
+        t.fechaInicio =:fechaInicio, t.fechaFin = :fechaFin, t.entregable = :entregable, t.responsable = :responsable, 
+        t.activo = :activo, t.fechaCambio = :fechaCambio, t.registradoPor = :registradoPor where t.id=:id
+    """)
     int update (@Param("nombre") String nombre,
                 @Param("descripcion") String descripcion,
                 @Param("idEtapa") Long idEtapa,

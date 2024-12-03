@@ -12,10 +12,12 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.Normatividad
 public interface NormatividadDAO extends JpaRepository<NormatividadEntity, Long>, JpaSpecificationExecutor<NormatividadEntity> {
     
     @Modifying
-    @Query(value = "update NormatividadEntity n set n.nombre =:nombre, n.descripcion =:descripcion, " +
-                    "n.emisor =:emisor, n.fechaInicioVigencia =:fechaInicioVigencia, n.fechaFinVigencia =:fechaFinVigencia, " +
-                    "n.estado =:estado, n.esEscalaSalarial =:esEscalaSalarial, n.idAlcance =:idAlcance, n.idTipoNormatividad =:idTipoNormatividad, " +
-                    "n.fechaCambio =:fechaCambio, n.registradoPor =:registradoPor where n.id =:id")
+    @Query(value = """
+        update NormatividadEntity n set n.nombre =:nombre, n.descripcion =:descripcion, 
+        n.emisor =:emisor, n.fechaInicioVigencia =:fechaInicioVigencia, n.fechaFinVigencia =:fechaFinVigencia, 
+        n.estado =:estado, n.esEscalaSalarial =:esEscalaSalarial, n.idAlcance =:idAlcance, n.idTipoNormatividad =:idTipoNormatividad, 
+        n.fechaCambio =:fechaCambio, n.registradoPor =:registradoPor where n.id =:id
+    """)
     int update(@Param("nombre") String nombre,
                @Param("descripcion") String descripcion,
                @Param("emisor") String emisor,
