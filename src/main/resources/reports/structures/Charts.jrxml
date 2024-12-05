@@ -42,18 +42,28 @@
 	<parameter name="chartBarHoursDataset" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<parameter name="chartPieDataset" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<parameter name="chartBarPeopleDataset" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
-	<parameter name="logo" class="java.io.InputStream"/>
+	<parameter name="headerImage" class="java.io.InputStream"/>
 	<parameter name="chartPieGlobalDataset" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="infoIcon" class="java.io.InputStream"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
 	<detail>
 		<band height="483">
+			<image>
+				<reportElement x="0" y="-187" width="828" height="269" uuid="d565eb99-a1a3-4ab3-8969-803f27c445a2"/>
+				<imageExpression><![CDATA[$P{headerImage}]]></imageExpression>
+			</image>
 			<pieChart>
 				<chart evaluationTime="Report">
-					<reportElement x="400" y="80" width="410" height="119" uuid="d90d44e0-47fa-4c10-add1-d04e52b048f6">
+					<reportElement x="280" y="52" width="530" height="157" uuid="d90d44e0-47fa-4c10-add1-d04e52b048f6">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="net.sf.jasperreports.style.box.right.pen.lineColor" value="#FFFFFF"/>
+						<property name="net.sf.jasperreports.style.box.pen.lineColor" value="#FFFFFF"/>
 					</reportElement>
+					<box>
+						<pen lineColor="rgba(255, 255, 255, 0.0)"/>
+					</box>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -69,50 +79,88 @@
 					<labelExpression><![CDATA[Math.round(($F{valor})*10.0)/10.0 + "h" + " / " + Math.round(($F{valor} /$F{horasPorMes})*10.0)/10.0 + "p"]]></labelExpression>
 				</pieDataset>
 				<piePlot>
-					<plot backgroundAlpha="1.0" foregroundAlpha="1.0">
-						<seriesColor seriesOrder="0" color="#6A5CFA"/>
-						<seriesColor seriesOrder="1" color="#FAB62F"/>
-						<seriesColor seriesOrder="2" color="#42C761"/>
-						<seriesColor seriesOrder="3" color="#CC3DBB"/>
-						<seriesColor seriesOrder="4" color="#59D4D2"/>
-						<seriesColor seriesOrder="5" color="#F57971"/>
-						<seriesColor seriesOrder="6" color="#9D2EBF"/>
-						<seriesColor seriesOrder="7" color="#E6E035"/>
-						<seriesColor seriesOrder="8" color="#B54326"/>
+					<plot backgroundAlpha="0.56" foregroundAlpha="1.0">
+						<seriesColor seriesOrder="0" color="#F8D0A7"/>
+						<seriesColor seriesOrder="1" color="#B8E0D2"/>
+						<seriesColor seriesOrder="2" color="#E0C3FC"/>
+						<seriesColor seriesOrder="3" color="#FF9A8B"/>
+						<seriesColor seriesOrder="4" color="#D6F4F2"/>
+						<seriesColor seriesOrder="5" color="#F2C3D1"/>
+						<seriesColor seriesOrder="6" color="#C4F5D9"/>
+						<seriesColor seriesOrder="7" color="#FFC2B4"/>
+						<seriesColor seriesOrder="8" color="#B2E2A4"/>
+						<seriesColor seriesOrder="9" color="#FFB2B2"/>
+						<seriesColor seriesOrder="10" color="#A6D8F7"/>
+						<seriesColor seriesOrder="11" color="#E8FFFB"/>
+						<seriesColor seriesOrder="12" color="#F7F8D4"/>
+						<seriesColor seriesOrder="13" color="#F9A8C8"/>
+						<seriesColor seriesOrder="14" color="#A1D1A8"/>
+						<seriesColor seriesOrder="15" color="#D3D4F1"/>
+						<seriesColor seriesOrder="16" color="#FFDB9B"/>
+						<seriesColor seriesOrder="17" color="#C9F3E0"/>
+						<seriesColor seriesOrder="18" color="#F6B9FF"/>
+						<seriesColor seriesOrder="19" color="#C6A7D8"/>
+						<seriesColor seriesOrder="20" color="#FF99CC"/>
+						<seriesColor seriesOrder="21" color="#D1E5FF"/>
+						<seriesColor seriesOrder="22" color="#F1E5A1"/>
+						<seriesColor seriesOrder="23" color="#FAD8D4"/>
+						<seriesColor seriesOrder="24" color="#A3F0E9"/>
+						<seriesColor seriesOrder="25" color="#E4E6FF"/>
+						<seriesColor seriesOrder="26" color="#FCB9A3"/>
+						<seriesColor seriesOrder="27" color="#C5FF92"/>
+						<seriesColor seriesOrder="28" color="#FF93B7"/>
+						<seriesColor seriesOrder="29" color="#DAFFED"/>
+						<seriesColor seriesOrder="30" color="#B1B2F6"/>
+						<seriesColor seriesOrder="31" color="#D3F8B6"/>
+						<seriesColor seriesOrder="32" color="#F2D5FF"/>
+						<seriesColor seriesOrder="33" color="#F8F1B5"/>
+						<seriesColor seriesOrder="34" color="#FF67B4"/>
+						<seriesColor seriesOrder="35" color="#A8B3F3"/>
+						<seriesColor seriesOrder="36" color="#D1F2A5"/>
+						<seriesColor seriesOrder="37" color="#A3D1FC"/>
+						<seriesColor seriesOrder="38" color="#FF93AF"/>
+						<seriesColor seriesOrder="39" color="#B4E7B8"/>
+						<seriesColor seriesOrder="40" color="#C8DFF2"/>
+						<seriesColor seriesOrder="41" color="#F2F4D5"/>
+						<seriesColor seriesOrder="42" color="#D9F3DB"/>
+						<seriesColor seriesOrder="43" color="#B6FFCE"/>
+						<seriesColor seriesOrder="44" color="#F7C3DB"/>
+						<seriesColor seriesOrder="45" color="#CCB9FF"/>
+						<seriesColor seriesOrder="46" color="#F9B1A9"/>
+						<seriesColor seriesOrder="47" color="#94D3F3"/>
+						<seriesColor seriesOrder="48" color="#DAF7B8"/>
+						<seriesColor seriesOrder="49" color="#FFE5A1"/>
 					</plot>
-					<itemLabel/>
+					<itemLabel color="#030303"/>
 				</piePlot>
 			</pieChart>
 			<staticText>
-				<reportElement mode="Transparent" x="-11" y="40" width="821" height="20" backcolor="#E6E6E6" uuid="6f5f5e63-854f-4a47-a7fb-cbb1f9bd5c42"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
-					<font fontName="SansSerif" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[RESUMEN]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Table_TD" mode="Transparent" x="-11" y="60" width="411" height="20" forecolor="#787878" backcolor="#E6E6E6" uuid="0ad44700-dbff-464f-84dd-7f32391f2205"/>
+				<reportElement style="Table_TD" mode="Transparent" x="-10" y="82" width="290" height="20" forecolor="#96ABBD" backcolor="#E6E6E6" uuid="0ad44700-dbff-464f-84dd-7f32391f2205"/>
 				<box>
 					<pen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="false"/>
+					<font fontName="Cambria" size="12" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Horas y personal requerido por nivel de ocupación]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="-12" y="210" width="822" height="15" forecolor="#787878" backcolor="#E6E6E6" uuid="e2825406-3d99-4da2-babc-a4db07bf7f13">
+				<reportElement mode="Transparent" x="-10" y="216" width="820" height="15" forecolor="#96ABBD" backcolor="#E6E6E6" uuid="e2825406-3d99-4da2-babc-a4db07bf7f13">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="false"/>
+					<font fontName="Cambria" size="12" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Horas requeridas por nivel en cada dependencia]]></text>
 			</staticText>
 			<barChart>
 				<chart evaluationTime="Report">
-					<reportElement x="-12" y="225" width="822" height="120" uuid="c5bcc97d-9240-43cc-ab95-b1b8d6e09c61">
+					<reportElement x="-10" y="225" width="820" height="120" uuid="c5bcc97d-9240-43cc-ab95-b1b8d6e09c61">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					</reportElement>
 					<chartTitle/>
 					<chartSubtitle/>
@@ -132,16 +180,57 @@
 					</categorySeries>
 				</categoryDataset>
 				<barPlot isShowLabels="true">
-					<plot labelRotation="0.0">
-						<seriesColor seriesOrder="0" color="#6A5CFA"/>
-						<seriesColor seriesOrder="1" color="#FAB62F"/>
-						<seriesColor seriesOrder="2" color="#42C761"/>
-						<seriesColor seriesOrder="3" color="#CC3DBB"/>
-						<seriesColor seriesOrder="4" color="#59D4D2"/>
-						<seriesColor seriesOrder="5" color="#F57971"/>
-						<seriesColor seriesOrder="6" color="#9D2EBF"/>
-						<seriesColor seriesOrder="7" color="#E6E035"/>
-						<seriesColor seriesOrder="8" color="#B54326"/>
+					<plot backgroundAlpha="0.56" foregroundAlpha="1.0" labelRotation="0.0">
+						<seriesColor seriesOrder="0" color="#F8D0A7"/>
+						<seriesColor seriesOrder="1" color="#B8E0D2"/>
+						<seriesColor seriesOrder="2" color="#E0C3FC"/>
+						<seriesColor seriesOrder="3" color="#FF9A8B"/>
+						<seriesColor seriesOrder="4" color="#D6F4F2"/>
+						<seriesColor seriesOrder="5" color="#F2C3D1"/>
+						<seriesColor seriesOrder="6" color="#C4F5D9"/>
+						<seriesColor seriesOrder="7" color="#FFC2B4"/>
+						<seriesColor seriesOrder="8" color="#B2E2A4"/>
+						<seriesColor seriesOrder="9" color="#FFB2B2"/>
+						<seriesColor seriesOrder="10" color="#A6D8F7"/>
+						<seriesColor seriesOrder="11" color="#E8FFFB"/>
+						<seriesColor seriesOrder="12" color="#F7F8D4"/>
+						<seriesColor seriesOrder="13" color="#F9A8C8"/>
+						<seriesColor seriesOrder="14" color="#A1D1A8"/>
+						<seriesColor seriesOrder="15" color="#D3D4F1"/>
+						<seriesColor seriesOrder="16" color="#FFDB9B"/>
+						<seriesColor seriesOrder="17" color="#C9F3E0"/>
+						<seriesColor seriesOrder="18" color="#F6B9FF"/>
+						<seriesColor seriesOrder="19" color="#C6A7D8"/>
+						<seriesColor seriesOrder="20" color="#FF99CC"/>
+						<seriesColor seriesOrder="21" color="#D1E5FF"/>
+						<seriesColor seriesOrder="22" color="#F1E5A1"/>
+						<seriesColor seriesOrder="23" color="#FAD8D4"/>
+						<seriesColor seriesOrder="24" color="#A3F0E9"/>
+						<seriesColor seriesOrder="25" color="#E4E6FF"/>
+						<seriesColor seriesOrder="26" color="#FCB9A3"/>
+						<seriesColor seriesOrder="27" color="#C5FF92"/>
+						<seriesColor seriesOrder="28" color="#FF93B7"/>
+						<seriesColor seriesOrder="29" color="#DAFFED"/>
+						<seriesColor seriesOrder="30" color="#B1B2F6"/>
+						<seriesColor seriesOrder="31" color="#D3F8B6"/>
+						<seriesColor seriesOrder="32" color="#F2D5FF"/>
+						<seriesColor seriesOrder="33" color="#F8F1B5"/>
+						<seriesColor seriesOrder="34" color="#FF67B4"/>
+						<seriesColor seriesOrder="35" color="#A8B3F3"/>
+						<seriesColor seriesOrder="36" color="#D1F2A5"/>
+						<seriesColor seriesOrder="37" color="#A3D1FC"/>
+						<seriesColor seriesOrder="38" color="#FF93AF"/>
+						<seriesColor seriesOrder="39" color="#B4E7B8"/>
+						<seriesColor seriesOrder="40" color="#C8DFF2"/>
+						<seriesColor seriesOrder="41" color="#F2F4D5"/>
+						<seriesColor seriesOrder="42" color="#D9F3DB"/>
+						<seriesColor seriesOrder="43" color="#B6FFCE"/>
+						<seriesColor seriesOrder="44" color="#F7C3DB"/>
+						<seriesColor seriesOrder="45" color="#CCB9FF"/>
+						<seriesColor seriesOrder="46" color="#F9B1A9"/>
+						<seriesColor seriesOrder="47" color="#94D3F3"/>
+						<seriesColor seriesOrder="48" color="#DAF7B8"/>
+						<seriesColor seriesOrder="49" color="#FFE5A1"/>
 					</plot>
 					<itemLabel color="#787878">
 						<font size="8"/>
@@ -164,16 +253,21 @@
 				</barPlot>
 			</barChart>
 			<staticText>
-				<reportElement mode="Transparent" x="-12" y="345" width="822" height="18" forecolor="#787878" backcolor="#E6E6E6" uuid="9be4f29b-0f1e-4f92-a1a6-11df24b88e0b"/>
+				<reportElement mode="Transparent" x="-10" y="351" width="820" height="18" forecolor="#96ABBD" backcolor="#E6E6E6" uuid="9be4f29b-0f1e-4f92-a1a6-11df24b88e0b">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="false"/>
+					<font fontName="Cambria" size="12" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Personal requerido por nivel en cada dependencia]]></text>
 			</staticText>
 			<barChart>
 				<chart evaluationTime="Report">
-					<reportElement x="-12" y="363" width="822" height="120" uuid="14be4eab-bc9e-494f-85bb-0482b0a8fdc9">
+					<reportElement x="-10" y="363" width="820" height="120" uuid="14be4eab-bc9e-494f-85bb-0482b0a8fdc9">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					</reportElement>
 					<chartTitle/>
 					<chartSubtitle/>
@@ -193,16 +287,57 @@
 					</categorySeries>
 				</categoryDataset>
 				<barPlot isShowLabels="true">
-					<plot labelRotation="0.0">
-						<seriesColor seriesOrder="0" color="#6A5CFA"/>
-						<seriesColor seriesOrder="1" color="#FAB62F"/>
-						<seriesColor seriesOrder="2" color="#42C761"/>
-						<seriesColor seriesOrder="3" color="#CC3DBB"/>
-						<seriesColor seriesOrder="4" color="#59D4D2"/>
-						<seriesColor seriesOrder="5" color="#F57971"/>
-						<seriesColor seriesOrder="6" color="#9D2EBF"/>
-						<seriesColor seriesOrder="7" color="#E6E035"/>
-						<seriesColor seriesOrder="8" color="#B54326"/>
+					<plot backgroundAlpha="0.56" foregroundAlpha="1.0" labelRotation="0.0">
+						<seriesColor seriesOrder="0" color="#F8D0A7"/>
+						<seriesColor seriesOrder="1" color="#B8E0D2"/>
+						<seriesColor seriesOrder="2" color="#E0C3FC"/>
+						<seriesColor seriesOrder="3" color="#FF9A8B"/>
+						<seriesColor seriesOrder="4" color="#D6F4F2"/>
+						<seriesColor seriesOrder="5" color="#F2C3D1"/>
+						<seriesColor seriesOrder="6" color="#C4F5D9"/>
+						<seriesColor seriesOrder="7" color="#FFC2B4"/>
+						<seriesColor seriesOrder="8" color="#B2E2A4"/>
+						<seriesColor seriesOrder="9" color="#FFB2B2"/>
+						<seriesColor seriesOrder="10" color="#A6D8F7"/>
+						<seriesColor seriesOrder="11" color="#E8FFFB"/>
+						<seriesColor seriesOrder="12" color="#F7F8D4"/>
+						<seriesColor seriesOrder="13" color="#F9A8C8"/>
+						<seriesColor seriesOrder="14" color="#A1D1A8"/>
+						<seriesColor seriesOrder="15" color="#D3D4F1"/>
+						<seriesColor seriesOrder="16" color="#FFDB9B"/>
+						<seriesColor seriesOrder="17" color="#C9F3E0"/>
+						<seriesColor seriesOrder="18" color="#F6B9FF"/>
+						<seriesColor seriesOrder="19" color="#C6A7D8"/>
+						<seriesColor seriesOrder="20" color="#FF99CC"/>
+						<seriesColor seriesOrder="21" color="#D1E5FF"/>
+						<seriesColor seriesOrder="22" color="#F1E5A1"/>
+						<seriesColor seriesOrder="23" color="#FAD8D4"/>
+						<seriesColor seriesOrder="24" color="#A3F0E9"/>
+						<seriesColor seriesOrder="25" color="#E4E6FF"/>
+						<seriesColor seriesOrder="26" color="#FCB9A3"/>
+						<seriesColor seriesOrder="27" color="#C5FF92"/>
+						<seriesColor seriesOrder="28" color="#FF93B7"/>
+						<seriesColor seriesOrder="29" color="#DAFFED"/>
+						<seriesColor seriesOrder="30" color="#B1B2F6"/>
+						<seriesColor seriesOrder="31" color="#D3F8B6"/>
+						<seriesColor seriesOrder="32" color="#F2D5FF"/>
+						<seriesColor seriesOrder="33" color="#F8F1B5"/>
+						<seriesColor seriesOrder="34" color="#FF67B4"/>
+						<seriesColor seriesOrder="35" color="#A8B3F3"/>
+						<seriesColor seriesOrder="36" color="#D1F2A5"/>
+						<seriesColor seriesOrder="37" color="#A3D1FC"/>
+						<seriesColor seriesOrder="38" color="#FF93AF"/>
+						<seriesColor seriesOrder="39" color="#B4E7B8"/>
+						<seriesColor seriesOrder="40" color="#C8DFF2"/>
+						<seriesColor seriesOrder="41" color="#F2F4D5"/>
+						<seriesColor seriesOrder="42" color="#D9F3DB"/>
+						<seriesColor seriesOrder="43" color="#B6FFCE"/>
+						<seriesColor seriesOrder="44" color="#F7C3DB"/>
+						<seriesColor seriesOrder="45" color="#CCB9FF"/>
+						<seriesColor seriesOrder="46" color="#F9B1A9"/>
+						<seriesColor seriesOrder="47" color="#94D3F3"/>
+						<seriesColor seriesOrder="48" color="#DAF7B8"/>
+						<seriesColor seriesOrder="49" color="#FFE5A1"/>
 					</plot>
 					<itemLabel color="#787878">
 						<font size="8"/>
@@ -224,103 +359,15 @@
 					</valueAxisFormat>
 				</barPlot>
 			</barChart>
-			<frame>
-				<reportElement mode="Opaque" x="-11" y="-20" width="821" height="60" backcolor="#F2F2F2" uuid="395c0df7-61b7-491a-8c8a-dcf52da9b099"/>
-				<box>
-					<pen lineWidth="0.25"/>
-				</box>
-				<staticText>
-					<reportElement x="100" y="13" width="680" height="18" uuid="0b0e81b6-a540-4a26-a7be-b84cfb8b371d">
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="14" isBold="true"/>
-					</textElement>
-					<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
-				</staticText>
-				<image vAlign="Middle">
-					<reportElement x="4" y="3" width="190" height="53" uuid="2dfc6172-5f40-4df2-af8c-e5aea6313d43">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					</reportElement>
-					<imageExpression><![CDATA[$P{logo}]]></imageExpression>
-				</image>
-				<staticText>
-					<reportElement x="100" y="28" width="680" height="19" uuid="8e1f71a5-b6f7-41f4-aeae-bd254ca80f08">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<text><![CDATA[Gestión de Tiempos Laborados por Dependencia]]></text>
-				</staticText>
-			</frame>
-			<frame>
-				<reportElement mode="Transparent" x="351" y="80" width="100" height="50" backcolor="#F2F2F2" uuid="1d50903a-d787-4545-b369-c9d163ddafbf">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<box>
-					<pen lineWidth="0.0"/>
-				</box>
-				<rectangle radius="7">
-					<reportElement x="0" y="0" width="100" height="50" backcolor="#F2F2F2" uuid="3951a4a2-253c-4672-b6db-dcff8f82e2e6"/>
-					<graphicElement>
-						<pen lineWidth="0.25" lineColor="#E6E6E6"/>
-					</graphicElement>
-				</rectangle>
-				<staticText>
-					<reportElement x="0" y="20" width="20" height="30" forecolor="#787878" uuid="ac5bc840-e1d8-4d52-93ac-b8f725c05e86">
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
-						<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					</reportElement>
-					<box>
-						<pen lineWidth="0.0"/>
-					</box>
-					<textElement>
-						<font isBold="true"/>
-						<paragraph leftIndent="4" rightIndent="3"/>
-					</textElement>
-					<text><![CDATA[h:
-p:]]></text>
-				</staticText>
-				<staticText>
-					<reportElement mode="Transparent" x="20" y="20" width="80" height="30" forecolor="#787878" uuid="0e663d9a-b97c-4b56-8028-04c2a59362be">
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<box>
-						<pen lineWidth="0.0"/>
-					</box>
-					<textElement>
-						<paragraph leftIndent="4" rightIndent="3"/>
-					</textElement>
-					<text><![CDATA[Horas
-Personas]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="0" y="0" width="100" height="20" forecolor="#4B4B4B" uuid="9fcd6873-79bd-4eb9-b983-abb26a0b3195">
-						<property name="com.jaspersoft.studio.unit.x" value="px"/>
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font isBold="true"/>
-					</textElement>
-					<text><![CDATA[Notación]]></text>
-				</staticText>
-			</frame>
 			<pieChart>
 				<chart evaluationTime="Report">
-					<reportElement x="-11" y="80" width="411" height="119" uuid="230a62de-bfbe-4a91-bc0f-778c822c1ea9">
+					<reportElement x="-10" y="102" width="290" height="107" uuid="230a62de-bfbe-4a91-bc0f-778c822c1ea9">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					</reportElement>
+					<box>
+						<pen lineColor="rgba(0, 0, 0, 0.0)"/>
+					</box>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -336,29 +383,143 @@ Personas]]></text>
 					<labelExpression><![CDATA[Math.round(($F{valor})*10.0)/10.0  + "h" + " / " + Math.round(($F{valor} /$F{horasPorMes})*10.0)/10.0 + "p"]]></labelExpression>
 				</pieDataset>
 				<piePlot>
-					<plot backgroundAlpha="1.0" foregroundAlpha="1.0">
-						<seriesColor seriesOrder="0" color="#6A5CFA"/>
-						<seriesColor seriesOrder="1" color="#FAB62F"/>
-						<seriesColor seriesOrder="2" color="#42C761"/>
-						<seriesColor seriesOrder="3" color="#CC3DBB"/>
-						<seriesColor seriesOrder="4" color="#59D4D2"/>
-						<seriesColor seriesOrder="5" color="#F57971"/>
-						<seriesColor seriesOrder="6" color="#9D2EBF"/>
-						<seriesColor seriesOrder="7" color="#E6E035"/>
-						<seriesColor seriesOrder="8" color="#B54326"/>
+					<plot backgroundAlpha="0.56" foregroundAlpha="1.0">
+						<seriesColor seriesOrder="0" color="#F8D0A7"/>
+						<seriesColor seriesOrder="1" color="#B8E0D2"/>
+						<seriesColor seriesOrder="2" color="#E0C3FC"/>
+						<seriesColor seriesOrder="3" color="#FF9A8B"/>
+						<seriesColor seriesOrder="4" color="#D6F4F2"/>
+						<seriesColor seriesOrder="5" color="#F2C3D1"/>
+						<seriesColor seriesOrder="6" color="#C4F5D9"/>
+						<seriesColor seriesOrder="7" color="#FFC2B4"/>
+						<seriesColor seriesOrder="8" color="#B2E2A4"/>
+						<seriesColor seriesOrder="9" color="#FFB2B2"/>
+						<seriesColor seriesOrder="10" color="#A6D8F7"/>
+						<seriesColor seriesOrder="11" color="#E8FFFB"/>
+						<seriesColor seriesOrder="12" color="#F7F8D4"/>
+						<seriesColor seriesOrder="13" color="#F9A8C8"/>
+						<seriesColor seriesOrder="14" color="#A1D1A8"/>
+						<seriesColor seriesOrder="15" color="#D3D4F1"/>
+						<seriesColor seriesOrder="16" color="#FFDB9B"/>
+						<seriesColor seriesOrder="17" color="#C9F3E0"/>
+						<seriesColor seriesOrder="18" color="#F6B9FF"/>
+						<seriesColor seriesOrder="19" color="#C6A7D8"/>
+						<seriesColor seriesOrder="20" color="#FF99CC"/>
+						<seriesColor seriesOrder="21" color="#D1E5FF"/>
+						<seriesColor seriesOrder="22" color="#F1E5A1"/>
+						<seriesColor seriesOrder="23" color="#FAD8D4"/>
+						<seriesColor seriesOrder="24" color="#A3F0E9"/>
+						<seriesColor seriesOrder="25" color="#E4E6FF"/>
+						<seriesColor seriesOrder="26" color="#FCB9A3"/>
+						<seriesColor seriesOrder="27" color="#C5FF92"/>
+						<seriesColor seriesOrder="28" color="#FF93B7"/>
+						<seriesColor seriesOrder="29" color="#DAFFED"/>
+						<seriesColor seriesOrder="30" color="#B1B2F6"/>
+						<seriesColor seriesOrder="31" color="#D3F8B6"/>
+						<seriesColor seriesOrder="32" color="#F2D5FF"/>
+						<seriesColor seriesOrder="33" color="#F8F1B5"/>
+						<seriesColor seriesOrder="34" color="#FF67B4"/>
+						<seriesColor seriesOrder="35" color="#A8B3F3"/>
+						<seriesColor seriesOrder="36" color="#D1F2A5"/>
+						<seriesColor seriesOrder="37" color="#A3D1FC"/>
+						<seriesColor seriesOrder="38" color="#FF93AF"/>
+						<seriesColor seriesOrder="39" color="#B4E7B8"/>
+						<seriesColor seriesOrder="40" color="#C8DFF2"/>
+						<seriesColor seriesOrder="41" color="#F2F4D5"/>
+						<seriesColor seriesOrder="42" color="#D9F3DB"/>
+						<seriesColor seriesOrder="43" color="#B6FFCE"/>
+						<seriesColor seriesOrder="44" color="#F7C3DB"/>
+						<seriesColor seriesOrder="45" color="#CCB9FF"/>
+						<seriesColor seriesOrder="46" color="#F9B1A9"/>
+						<seriesColor seriesOrder="47" color="#94D3F3"/>
+						<seriesColor seriesOrder="48" color="#DAF7B8"/>
+						<seriesColor seriesOrder="49" color="#FFE5A1"/>
 					</plot>
 					<itemLabel/>
 				</piePlot>
 			</pieChart>
 			<staticText>
-				<reportElement style="Table_TD" mode="Transparent" x="400" y="60" width="410" height="20" forecolor="#787878" backcolor="#E6E6E6" uuid="b6197650-5c10-49ab-90c9-36dd3ceba1ea"/>
+				<reportElement style="Table_TD" mode="Transparent" x="280" y="32" width="530" height="20" forecolor="#96ABBD" backcolor="#E6E6E6" uuid="b6197650-5c10-49ab-90c9-36dd3ceba1ea"/>
 				<box>
 					<pen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="10" isBold="false"/>
+					<font fontName="Cambria" size="12" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Horas y personal requerido por dependencia]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="-10" y="-21" width="820" height="51" forecolor="#4E918D" backcolor="#E6E6E6" uuid="6a278f85-724a-4cf7-95dd-5a14de88f843">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Cambria" size="35" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RESUMEN]]></text>
+			</staticText>
+			<rectangle radius="7">
+				<reportElement mode="Opaque" x="680" y="82" width="130" height="56" backcolor="#E4E7F5" uuid="8ed58703-cbe7-4f81-bc9a-ee045805de5c"/>
+				<graphicElement>
+					<pen lineWidth="0.25" lineColor="#E6E6E6"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="680" y="82" width="130" height="20" forecolor="#616BB0" uuid="b86e0412-8a25-4a7c-bfd1-f9780c2d86fd">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Notación]]></text>
+			</staticText>
+			<rectangle radius="7">
+				<reportElement mode="Opaque" x="680" y="128" width="130" height="10" backcolor="#969DD6" uuid="84a6330e-45b3-4387-9884-a54d20b40f07">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineStyle="Dotted" lineColor="rgba(255, 255, 255, 0.0)"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement mode="Opaque" x="700" y="102" width="110" height="30" forecolor="#787878" backcolor="#E4E7F5" uuid="ebad082e-32df-446c-a592-1b4b197f716a">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.0"/>
+				</box>
+				<textElement>
+					<paragraph leftIndent="4" rightIndent="3"/>
+				</textElement>
+				<text><![CDATA[Horas
+Personas]]></text>
+			</staticText>
+			<image>
+				<reportElement x="776" y="100" width="28" height="28" uuid="407a6825-c2e6-4c67-bfe9-3b660939aa0a">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{infoIcon}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement mode="Opaque" x="680" y="102" width="20" height="30" forecolor="#787878" backcolor="#E4E7F5" uuid="344e1ed1-5cec-4adc-bdfd-324d0ca76cc2">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph leftIndent="4" rightIndent="3"/>
+				</textElement>
+				<text><![CDATA[h:
+p:]]></text>
 			</staticText>
 		</band>
 	</detail>

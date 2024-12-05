@@ -41,18 +41,27 @@ public class StructureReportPDF {
 
     private Map<String, Object> registry;
     private Double HOURS_PER_MONTH;
-    private String LOGO_URL = "reports/images/logo.png";
+    private String LOGO_URL = "reports/images/logo-without-name.png";
+    private String HEADER_IMAGE_URL = "reports/images/header.png";
+    private String INFO_ICON_URL = "reports/images/info-icon.png";
+    private String CORPORATE_NAME = "Universidad Distrital Francisco José de Caldas";
 
     public byte[] generate(List<Long> structureIds) throws JRException, CiadtiException{
         registry = new HashMap<>();
         HOURS_PER_MONTH = Corporate.MONTHLY_WORKING_TIME.getValue();
         
         byte[] logo = staticResourceMediator.getResourceBytes(this.LOGO_URL);
+        byte[] headerImage = staticResourceMediator.getResourceBytes(this.HEADER_IMAGE_URL);
+        byte[] infoIcon = staticResourceMediator.getResourceBytes(this.INFO_ICON_URL);
+
         String filePath = "reports/structures/Structures.jrxml";
         String filePathChart = "reports/structures/Charts.jrxml";
         String filePathBlobalChart = "reports/structures/GlobalCharts.jrxml";
 
         List<NivelEntity> levels = nivelService.findAll();
+        PropertyComparator<NivelEntity> propertyComparator = new PropertyComparator<>("id", true);
+        Collections.sort(levels, propertyComparator);
+
         TipologiaEntity tipologiaEntity = tipologiaService.findFirstTipology();
         List<EstructuraEntity> structures = structureIds != null && structureIds.size() > 0 
                                             ? estructuraService.findAllFilteredByIds(structureIds) 
@@ -75,6 +84,9 @@ public class StructureReportPDF {
         buildStructureData(plainedStructures, new String[]{"", "", "", ""}, 0, structureData);
         filterStructureData(structureData);
 
+        Double requiredTotalHours = getRequiredTotalHours(structureData);
+        Double requiredTotalPeople = requiredTotalHours / HOURS_PER_MONTH;
+
         Map<String, Object> parameters = new HashMap<String, Object>();
         Map<String, Object> chartParameters = new HashMap<String, Object>(); 
         JRBeanCollectionDataSource structureDataSource = new JRBeanCollectionDataSource(structureData);
@@ -82,19 +94,43 @@ public class StructureReportPDF {
         chartParameters.put("chartPieGlobalDataset",  new JRBeanCollectionDataSource(getChartPieGlobalData(structureData)));
         chartParameters.put("chartBarHoursDataset",  new JRBeanCollectionDataSource(getChartBarData(structureData)));
         chartParameters.put("chartBarPeopleDataset",  new JRBeanCollectionDataSource(getChartBarData(structureData)));
-        chartParameters.put("logo", new ByteArrayInputStream(logo));
+        chartParameters.put("headerImage", new ByteArrayInputStream(headerImage));
+        chartParameters.put("infoIcon", new ByteArrayInputStream(infoIcon));
+        chartParameters.put("requiredTotalHours", requiredTotalHours);
+        chartParameters.put("requiredTotalPeople", requiredTotalPeople);
 
         JasperReport chartReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(structureIds != null && structureIds.size() > 0 ? filePathChart : filePathBlobalChart));
 
         parameters.put("chartReport", chartReport);
         parameters.put("chartParameter", chartParameters);
         parameters.put("logo", new ByteArrayInputStream(logo));
+        parameters.put("headerImage", new ByteArrayInputStream(headerImage));
+        parameters.put("corporateName", CORPORATE_NAME);
         parameters.put("hoursPerMonth", HOURS_PER_MONTH);
-        parameters.put("entity", "Universidad Distrital Francisco José de Caldas".toUpperCase());
+        parameters.put("requiredTotalHours", requiredTotalHours);
+        parameters.put("requiredTotalPeople", requiredTotalPeople);
         parameters.put("levels", levels.stream().map(e -> getLevelNomenclature(e.getDescripcion())).toList());
 
         return reportJR.converterToPDF(parameters, structureDataSource, filePath);
     }
+
+    private Double getRequiredTotalHours(List<ReportStructureDTO> structureData) {
+        Double total = 0.0;
+        if (structureData != null){
+            for(ReportStructureDTO r : structureData){
+                if(r.getTiemposPorNivel() != null){
+                    for (Double lv : r.getTiemposPorNivel()){
+                        total += lv != null ? lv : 0.0;
+                    }
+                }
+            }
+        }
+        return total;
+    }
+    
+    
+    
+    
 
     private List<ReportChartDTO> getChartPieData(List<ReportStructureDTO> structureData) {
         List<ReportStructureDTO> structureDataCopy = new ArrayList<>(structureData);
