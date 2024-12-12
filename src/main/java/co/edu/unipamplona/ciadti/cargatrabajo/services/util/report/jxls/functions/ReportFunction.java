@@ -66,5 +66,4 @@ public class ReportFunction implements NeedsPublicContext {
             return null;
         }
     }
-
 }

@@ -117,5 +117,5 @@ public interface EstructuraDAO extends JpaRepository<EstructuraEntity, Long>, Jp
     List<EstructuraEntity> findByIdPadre(@Param("idPadre") Long idPadre);
 
     @Query(value = "SELECT e.tipo_id FROM fortalecimiento.estructura e WHERE e.estr_id = :id", nativeQuery = true)
-    Long findTypologyById(@Param("id") Long id);
+    Long findTypologyIdOfStructure(@Param("id") Long id);
 }

@@ -226,7 +226,7 @@ public class ConfigurationMediator {
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void reasignStructure(EstructuraEntity structure, Long newParentId) throws Exception {
         structure.setIdPadre(newParentId);
-        TipologiaEntity parentTypology = tipologiaService.findById(estructuraService.findTypologyById(newParentId));
+        TipologiaEntity parentTypology = tipologiaService.findById(estructuraService.findTypologyIdOfStructure(newParentId));
         if (parentTypology != null && parentTypology.getTipologiaSiguiente() != null) {
             TipologiaEntity newTypology = parentTypology.getTipologiaSiguiente();
             structure.setIdTipologia(newTypology.getId());

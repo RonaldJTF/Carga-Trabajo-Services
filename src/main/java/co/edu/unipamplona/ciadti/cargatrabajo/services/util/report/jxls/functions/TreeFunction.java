@@ -20,7 +20,7 @@ public class TreeFunction implements NeedsPublicContext {
             children = this.context.getVar((String)children);
         }
         List<Number> summarized = new ArrayList<>();
-        if(children != null && !((List<?>) children).isEmpty()){
+        if(children != null){
             calculate((List<?>)children, summarized);
         }
         return summarized;
@@ -28,10 +28,11 @@ public class TreeFunction implements NeedsPublicContext {
 
     private void calculate(List<?> children, List<Number> summarized){
         for (Object child : children){
-            if ((List<?>) getField(child, this.childName) == null || ((List<?>) getField(child, this.childName)).isEmpty()){
+            List<?> obj = (List<?>) getField(child, this.childName);
+            if (obj == null || obj.isEmpty()){
                 addSum(summarized, child);
             }else{
-                calculate((List<?>) getField(child, this.childName), summarized);
+                calculate(obj, summarized);
             }
         }   
     }

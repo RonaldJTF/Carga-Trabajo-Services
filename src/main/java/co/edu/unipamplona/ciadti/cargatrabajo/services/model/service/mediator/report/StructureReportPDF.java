@@ -77,8 +77,8 @@ public class StructureReportPDF {
         }).toList());
 
         List<EstructuraEntity> plainedStructures = new ArrayList<>();
-        filterAndPlainByIdTypology(structures, plainedStructures, tipologiaEntity.getId());
-        filterDistinctOfIdTypology(plainedStructures, tipologiaEntity.getId());
+        filterAndPlainByTypologyId(structures, plainedStructures, tipologiaEntity.getId());
+        filterDistinctOfTypologyId(plainedStructures, tipologiaEntity.getId());
 
         List<ReportStructureDTO> structureData = new ArrayList<>();
         buildStructureData(plainedStructures, new String[]{"", "", "", ""}, 0, structureData);
@@ -115,21 +115,13 @@ public class StructureReportPDF {
     }
 
     private Double getRequiredTotalHours(List<ReportStructureDTO> structureData) {
-        Double total = 0.0;
-        if (structureData != null){
-            for(ReportStructureDTO r : structureData){
-                if(r.getTiemposPorNivel() != null){
-                    for (Double lv : r.getTiemposPorNivel()){
-                        total += lv != null ? lv : 0.0;
-                    }
-                }
-            }
-        }
-        return total;
+        return structureData == null ? 0.0 : 
+            structureData.stream()
+                .filter(r -> r.getTiemposPorNivel() != null)
+                .flatMap(r -> r.getTiemposPorNivel().stream())
+                .mapToDouble(lv -> lv != null ? lv : 0.0)
+                .sum();
     }
-    
-    
-    
     
 
     private List<ReportChartDTO> getChartPieData(List<ReportStructureDTO> structureData) {
@@ -175,7 +167,6 @@ public class StructureReportPDF {
         }
         return list;
     }
-
 
     private List<ReportChartDTO> getChartBarData(List<ReportStructureDTO> structureData) {
         List<ReportStructureDTO> structureDataCopy = new ArrayList<>(structureData);
@@ -274,23 +265,27 @@ public class StructureReportPDF {
                     }
                 }
                 ReportStructureDTO reportDTO = ReportStructureDTO.builder()
-                .dependencia(level >= 0 ? tipologyStructures[0] : "")
-                .proceso(level >= 1 ? tipologyStructures[1] : "")
-                .procedimiento(level >= 2 ? tipologyStructures[2] : "")
-                .actividad(level >= 3 ? tipologyStructures[3] : "")
-                .nivel(levl != null ? levl : "")
-                .frecuencia(frecuency)
-                .tiempoMinimo(minTime)
-                .tiempoPromedio(meanTime)
-                .tiempoMaximo(maxTime)
-                .tiempoEstandar(standarTime)
-                .tiemposPorNivel(tiemposPorNivel)
-                .build();
+                    .dependencia(level >= 0 ? tipologyStructures[0] : "")
+                    .proceso(level >= 1 ? tipologyStructures[1] : "")
+                    .procedimiento(level >= 2 ? tipologyStructures[2] : "")
+                    .actividad(level >= 3 ? tipologyStructures[3] : "")
+                    .nivel(levl != null ? levl : "")
+                    .frecuencia(frecuency)
+                    .tiempoMinimo(minTime)
+                    .tiempoPromedio(meanTime)
+                    .tiempoMaximo(maxTime)
+                    .tiempoEstandar(standarTime)
+                    .tiemposPorNivel(tiemposPorNivel)
+                    .build();
                 results.add(reportDTO);
             }
         }
     }
 
+    /**
+     * Para colocar en el reporte una sola vez el procedimiento y evitar colocar su contenido.
+     * @param list
+     */
     private void filterStructureData(List<ReportStructureDTO> list){
         String procedimiento = null;
         for (ReportStructureDTO reportDTO  : list){
@@ -302,22 +297,22 @@ public class StructureReportPDF {
         }
     }
 
-    private void filterAndPlainByIdTypology(List<EstructuraEntity> structures, List<EstructuraEntity> plainedStructures, Long idTypology){
+    private void filterAndPlainByTypologyId(List<EstructuraEntity> structures, List<EstructuraEntity> plainedStructures, Long typologyId) {
         for (EstructuraEntity e : structures) {
-            if (e.getTipologia().getId() == idTypology && e.getSubEstructuras() != null ){
-                if(e.getSubEstructuras().stream().anyMatch(o -> o.getTipologia().getId() != idTypology)){
+            if (e.getIdTipologia() == typologyId && e.getSubEstructuras() != null) {
+                if (e.getSubEstructuras().stream().anyMatch(o -> o.getIdTipologia() != typologyId)) {
                     plainedStructures.add(e);
                 }
-                filterAndPlainByIdTypology(e.getSubEstructuras(), plainedStructures, idTypology);
+                filterAndPlainByTypologyId(e.getSubEstructuras(), plainedStructures, typologyId);
             }
         }
     }
 
-    private void filterDistinctOfIdTypology(List<EstructuraEntity> plainedStructures, Long idTypology){
+    private void filterDistinctOfTypologyId(List<EstructuraEntity> plainedStructures, Long typologyId){
         for (EstructuraEntity e : plainedStructures) {
             e.setSubEstructuras(
                 e.getSubEstructuras().stream()
-                    .filter(o -> o.getTipologia().getId() != idTypology)
+                    .filter(o -> o.getIdTipologia() != typologyId)
                     .collect(Collectors.toList())
             );
         }

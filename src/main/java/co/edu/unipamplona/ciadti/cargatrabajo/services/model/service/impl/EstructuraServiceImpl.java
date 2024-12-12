@@ -178,18 +178,20 @@ public class EstructuraServiceImpl implements EstructuraService {
     }
 
     @Override
-    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    @Transactional(readOnly = true)
     public List<DependenciaDTO> findAllDependencies() {
         return estructuraDAO.findAllDependencies();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EstructuraEntity> findByIdPadre(Long idPadre) {
         return estructuraDAO.findByIdPadre(idPadre);
     }
 
     @Override
-    public Long findTypologyById(Long id) {
-        return estructuraDAO.findTypologyById(id);
+    @Transactional(readOnly = true)
+    public Long findTypologyIdOfStructure(Long id) {
+        return estructuraDAO.findTypologyIdOfStructure(id);
     }
 }

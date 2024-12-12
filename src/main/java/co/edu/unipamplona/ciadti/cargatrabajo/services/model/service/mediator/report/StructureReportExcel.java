@@ -99,8 +99,8 @@ public class StructureReportExcel {
                                             ? estructuraService.findAllFilteredByIds(structureIds) 
                                             : estructuraService.findAllFilteredBy(EstructuraEntity.builder().nombre("").build());
         List<EstructuraEntity> plainedStructures = new ArrayList<>();
-        filterAndPlainByIdTypology(structures, plainedStructures, tipologiaEntity.getId());
-        filterDistinctOfIdTypology(plainedStructures, tipologiaEntity.getId());
+        filterAndPlainByTypologyId(structures, plainedStructures, tipologiaEntity.getId());
+        filterDistinctOfTypologyId(plainedStructures, tipologiaEntity.getId());
 
         registry.put("plainedStructures", plainedStructures);
         registry.put("levels", levels);
@@ -406,22 +406,22 @@ public class StructureReportExcel {
     }
 
     
-    private void filterAndPlainByIdTypology(List<EstructuraEntity> structures, List<EstructuraEntity> plainedStructures, Long idTypology){
+    private void filterAndPlainByTypologyId(List<EstructuraEntity> structures, List<EstructuraEntity> plainedStructures, Long typologyId){
         for (EstructuraEntity e : structures) {
-            if (e.getTipologia().getId() == idTypology && e.getSubEstructuras() != null ){
-                if(e.getSubEstructuras().stream().anyMatch(o -> o.getTipologia().getId() != idTypology)){
+            if (e.getIdTipologia() == typologyId && e.getSubEstructuras() != null ){
+                if(e.getSubEstructuras().stream().anyMatch(o -> o.getIdTipologia() != typologyId)){
                     plainedStructures.add(e);
                 }
-                filterAndPlainByIdTypology(e.getSubEstructuras(), plainedStructures, idTypology);
+                filterAndPlainByTypologyId(e.getSubEstructuras(), plainedStructures, typologyId);
             }
         }
     }
 
-    private void filterDistinctOfIdTypology(List<EstructuraEntity> plainedStructures, Long idTypology){
+    private void filterDistinctOfTypologyId(List<EstructuraEntity> plainedStructures, Long typologyId){
         for (EstructuraEntity e : plainedStructures) {
             e.setSubEstructuras(
                 e.getSubEstructuras().stream()
-                    .filter(o -> o.getTipologia().getId() != idTypology)
+                    .filter(o -> o.getIdTipologia() != typologyId)
                     .collect(Collectors.toList())
             );
         }

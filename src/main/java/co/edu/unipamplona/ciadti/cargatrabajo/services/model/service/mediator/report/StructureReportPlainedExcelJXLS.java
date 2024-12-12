@@ -138,8 +138,8 @@ public class StructureReportPlainedExcelJXLS {
      */
     private void filterAndPlainByIdTypology(List<EstructuraEntity> structures, List<EstructuraEntity> plainedStructures, Long idTypology) {
         for (EstructuraEntity e : structures) {
-            if (Objects.equals(e.getTipologia().getId(), idTypology) && e.getSubEstructuras() != null) {
-                if (e.getSubEstructuras().stream().anyMatch(o -> !Objects.equals(o.getTipologia().getId(), idTypology))) {
+            if (Objects.equals(e.getIdTipologia(), idTypology) && e.getSubEstructuras() != null) {
+                if (e.getSubEstructuras().stream().anyMatch(o -> !Objects.equals(o.getIdTipologia(), idTypology))) {
                     plainedStructures.add(e);
                 }
                 filterAndPlainByIdTypology(e.getSubEstructuras(), plainedStructures, idTypology);
@@ -155,7 +155,7 @@ public class StructureReportPlainedExcelJXLS {
      */
     private void filterDistinctOfIdTypology(List<EstructuraEntity> plainedStructures, Long idTypology) {
         for (EstructuraEntity e : plainedStructures) {
-            e.setSubEstructuras(e.getSubEstructuras().stream().filter(o -> o.getTipologia().getId() != idTypology).collect(Collectors.toList()));
+            e.setSubEstructuras(e.getSubEstructuras().stream().filter(o -> o.getIdTipologia() != idTypology).collect(Collectors.toList()));
         }
     }
 

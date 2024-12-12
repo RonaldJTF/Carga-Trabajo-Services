@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="StructureTimeStatistiscs" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c5d8f8ee-5788-445d-ae34-5e3ed09318e5">
+	<parameter name="corporateName" class="java.lang.String"/>
+	<parameter name="headerImage" class="java.io.InputStream"/>
+	<parameter name="logo" class="java.io.InputStream"/>
+	<parameter name="structureName" class="java.lang.String"/>
+	<parameter name="requiredTotalHours" class="java.lang.Double"/>
+	<parameter name="requiredTotalPeople" class="java.lang.Double"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="report" class="net.sf.jasperreports.engine.JasperReport"/>
+	<field name="parameters" class="java.util.Map"/>
+	<field name="resource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="320" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<rectangle radius="10">
+				<reportElement mode="Opaque" x="0" y="255" width="395" height="55" backcolor="#DCEAF7" uuid="09338b04-ab9e-4f6b-ba75-2d618ef9417d">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0" lineColor="#DCEAF7"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="10">
+				<reportElement mode="Opaque" x="405" y="255" width="395" height="55" backcolor="#DCEAF7" uuid="76027d28-9622-4ae3-8867-ca59c2480485">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0" lineColor="#DCEAF7"/>
+				</graphicElement>
+			</rectangle>
+			<image hAlign="Right">
+				<reportElement x="531" y="-20" width="291" height="210" uuid="1c7db695-af9d-4422-8ab5-d7fc00b7704e">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{headerImage}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="150" width="800" height="45" forecolor="#030303" uuid="f0fd7e89-8eb2-4208-8b2e-9eca093d1b41">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="Cambria" size="35" isBold="true"/>
+					<paragraph lineSpacing="Fixed" lineSpacingSize="25.0"/>
+				</textElement>
+				<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="202" width="800" height="25" forecolor="#787878" uuid="c473026f-93bf-4dff-aa95-42f467d66c42">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Cambria" size="16" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Gestión de Tiempos Laborados por Dependencia]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ContainerHeight" x="0" y="225" width="800" height="20" forecolor="#787878" uuid="6814adcd-a767-4690-a81d-6f4b1e691eb4"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Cambria" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{corporateName}]]></textFieldExpression>
+			</textField>
+			<image hAlign="Left" vAlign="Middle">
+				<reportElement x="0" y="-10" width="180" height="160" uuid="4f6bc41f-199f-45ef-8627-235922298d89">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="410" y="290" width="385" height="15" forecolor="#787878" uuid="84867257-b4b9-4654-8086-66b67095f87e">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Cambria" size="11"/>
+				</textElement>
+				<text><![CDATA[Horas requeridas]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" evaluationTime="Report">
+				<reportElement stretchType="ContainerHeight" x="410" y="255" width="385" height="40" forecolor="#215F9A" uuid="ecfbd375-5ce4-4086-8109-094752e18eb3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Cambria Math" size="31" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Math.round(($P{requiredTotalHours})*10.0)/10.0]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="6" y="290" width="384" height="15" forecolor="#787878" uuid="2a9f0bc6-0227-46fc-bc0b-3de08d8a7ae4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Cambria" size="11"/>
+				</textElement>
+				<text><![CDATA[Personas requeridas]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" evaluationTime="Report">
+				<reportElement stretchType="ContainerHeight" x="6" y="255" width="384" height="40" forecolor="#215F9A" uuid="073941ac-a867-47eb-8e6c-5bdc9ba3e520">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Cambria Math" size="31" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Math.round(($P{requiredTotalPeople})*10.0)/10.0]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="198" width="665" height="1" uuid="56c9d777-817c-4402-a35d-ba88dfb02c3d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="7.0" lineColor="#215F9A"/>
+				</graphicElement>
+			</line>
+		</band>
+	</title>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<subreport>
+				<reportElement x="-20" y="0" width="842" height="30" uuid="ba060f00-d677-4fae-b128-eb4b2a057c71"/>
+				<parametersMapExpression><![CDATA[$F{parameters}]]></parametersMapExpression>
+				<dataSourceExpression><![CDATA[$F{resource}]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$F{report}]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="25">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="6" width="416" height="13" forecolor="#787878" uuid="07c3d551-a3aa-4f3c-8965-6aaabc8f0e37">
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Cambria" isItalic="true"/>
+					<paragraph leftIndent="5" rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fecha del reporte: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="416" y="6" width="365" height="13" forecolor="#787878" backcolor="#F2F2F2" uuid="5ab30173-91a5-425d-bcb7-1f9fdbc77f2d">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Cambria" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página  "+$V{PAGE_NUMBER} + " de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement mode="Transparent" x="781" y="6" width="19" height="13" forecolor="#787878" backcolor="#F2F2F2" uuid="28adb925-6604-4f18-96dc-a7e9c14b30a0">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Cambria"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

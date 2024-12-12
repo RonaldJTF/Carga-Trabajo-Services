@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.*;
 
@@ -10,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class ReportStructureDTO {
+    private Map<Long, String> nombrePorTipologia;
     private String dependencia;
     private String proceso;
     private String procedimiento;

@@ -78,8 +78,8 @@ public class StructureReportExcelJXLS {
                 : estructuraService.findAllFilteredBy(EstructuraEntity.builder().nombre("").build());
 
         List<EstructuraEntity> plainedStructures = new ArrayList<>();
-        filterAndPlainByIdTypology(structures, plainedStructures, tipologiaEntity.getId());
-        filterDistinctOfIdTypology(plainedStructures, tipologiaEntity.getId());
+        filterAndPlainByTypologyId(structures, plainedStructures, tipologiaEntity.getId());
+        filterDistinctOfTypologyId(plainedStructures, tipologiaEntity.getId());
 
         Map<Long, Integer> levelIndexes = IntStream.range(0, levels.size()).boxed().collect(Collectors.toMap(i -> levels.get(i).getId(), i -> i));
 
@@ -119,60 +119,60 @@ public class StructureReportExcelJXLS {
     }
 
     /**
-     * De la lista de todas las estructuras, toma a cada dependencia(definida por idTipology) y las pone en un mismo nivel en la lista plainedStructures,
+     * De la lista de todas las estructuras, toma a cada dependencia(definida por typologyId) y las pone en un mismo nivel en la lista plainedStructures,
      * es decir, de esta posible estructura nos queda algo así:
      * ESTRUCTURA INICIAL:
      * Dependencia 1
-     * Subdependencia 1.1
-     * Proceso 1
-     * Procedimiento 1
-     * ...
-     * Proceso 2
-     * ....
-     * Subdependencia 1.2
-     * ...
+     *      Subdependencia 1.1
+     *          Proceso 1
+     *              Procedimiento 1
+     *              ...
+     *          Proceso 2
+     *              ....
+     *          Subdependencia 1.2
+     *              ...
      * Dependencia 2
-     * ...
+     *      ...
      * ESTRUCTURA FINAL:
      * Dependencia 1
-     * Subdependencia 1.1
-     * Proceso 1
-     * Procedimiento 1
-     * ...
-     * Proceso 2
-     * ...
-     * Subdependencia 1.1
-     * ...
+     *      Subdependencia 1.1
+     *          Proceso 1
+     *              Procedimiento 1
+     *              ...
+     *          Proceso 2
+     *              ...
+*      Subdependencia 1.1
+     *      ...
      * Subdependencia 1.2
-     * ...
+     *      ...
      * Dependencia 2
      * ....
      * @param structures
      * @param plainedStructures
-     * @param idTypology
+     * @param typologyId
      */
-    private void filterAndPlainByIdTypology(List<EstructuraEntity> structures, List<EstructuraEntity> plainedStructures, Long idTipology) {
+    private void filterAndPlainByTypologyId(List<EstructuraEntity> structures, List<EstructuraEntity> plainedStructures, Long typologyId) {
         for (EstructuraEntity e : structures) {
-            if (e.getTipologia().getId() == idTipology && e.getSubEstructuras() != null) {
-                if (e.getSubEstructuras().stream().anyMatch(o -> o.getTipologia().getId() != idTipology)) {
+            if (e.getIdTipologia() == typologyId && e.getSubEstructuras() != null) {
+                if (e.getSubEstructuras().stream().anyMatch(o -> o.getIdTipologia() != typologyId)) {
                     plainedStructures.add(e);
                 }
-                filterAndPlainByIdTypology(e.getSubEstructuras(), plainedStructures, idTipology);
+                filterAndPlainByTypologyId(e.getSubEstructuras(), plainedStructures, typologyId);
             }
         }
     }
 
     /**
-     * Remueve de una estructura las subestructuras, ya que estas subestructuras han sido extraidas y puestas en la lista plainedStructures (por el método filterAndPlainByIdTypology)
+     * Remueve de una estructura las subestructuras, ya que estas subestructuras han sido extraidas y puestas en la lista plainedStructures (por el método filterAndPlainByTypologyId)
      * @param plainedStructures
-     * @param idTypology
+     * @param typologyId
      */
-    private void filterDistinctOfIdTypology(List<EstructuraEntity> plainedStructures, Long idTypology) {
+    private void filterDistinctOfTypologyId(List<EstructuraEntity> plainedStructures, Long typologyId) {
         for (EstructuraEntity e : plainedStructures) {
             e.setSubEstructuras(
-                    e.getSubEstructuras().stream()
-                            .filter(o -> o.getTipologia().getId() != idTypology)
-                            .collect(Collectors.toList())
+                e.getSubEstructuras().stream()
+                    .filter(o -> o.getIdTipologia() != typologyId)
+                    .collect(Collectors.toList())
             );
         }
     }

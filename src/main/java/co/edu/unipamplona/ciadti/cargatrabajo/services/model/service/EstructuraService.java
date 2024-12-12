@@ -22,7 +22,7 @@ public interface EstructuraService extends CommonService<EstructuraEntity>{
 
     List<EstructuraEntity> findByIdPadre(Long idPadre);
 
-    Long findTypologyById(Long id);
+    Long findTypologyIdOfStructure(Long id);
 
     List<ActividadDTO> getTimeStatistics(Long structureId);
 

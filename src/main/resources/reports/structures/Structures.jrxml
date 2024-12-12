@@ -114,16 +114,16 @@
 			<band height="50">
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				<textField textAdjust="StretchHeight">
-					<reportElement stretchType="ContainerHeight" mode="Opaque" x="-10" y="0" width="820" height="50" forecolor="#616BB0" backcolor="#E4E7F5" uuid="23ba7d47-6f6d-446b-b5fd-808e1d9ba6fa">
+					<reportElement stretchType="ContainerHeight" mode="Opaque" x="-10" y="0" width="820" height="50" forecolor="#215F9A" backcolor="#DCEAF7" uuid="23ba7d47-6f6d-446b-b5fd-808e1d9ba6fa">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					</reportElement>
 					<box>
 						<pen lineWidth="0.25" lineColor="#CCCCCC"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#CCCCCC"/>
 						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#CCCCCC"/>
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -136,9 +136,9 @@
 		<groupFooter>
 			<band height="40">
 				<frame>
-					<reportElement stretchType="ElementGroupHeight" mode="Opaque" x="-10" y="0" width="820" height="40" forecolor="#616BB0" backcolor="#EBEDFC" uuid="93e4ade2-88b3-4255-aa1b-77ddc665d039"/>
+					<reportElement stretchType="ElementGroupHeight" mode="Opaque" x="-10" y="0" width="820" height="40" forecolor="#616BB0" backcolor="#F0FAFF" uuid="93e4ade2-88b3-4255-aa1b-77ddc665d039"/>
 					<staticText>
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="0" y="0" width="604" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="91a85011-6eac-400b-aea0-c781a5a2d80e">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="0" y="0" width="601" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="91a85011-6eac-400b-aea0-c781a5a2d80e">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -156,7 +156,7 @@
 						<text><![CDATA[Horas requeridas]]></text>
 					</staticText>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="748" y="0" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="2eee2efa-fd41-4246-b4bf-7c5d70fe4d7c">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="748" y="0" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="2eee2efa-fd41-4246-b4bf-7c5d70fe4d7c">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -175,7 +175,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol5Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="712" y="0" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="faa38748-b952-43a2-a037-1904e7df3df1">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="712" y="0" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="faa38748-b952-43a2-a037-1904e7df3df1">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -193,7 +193,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol4Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="676" y="0" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="5c2fdf17-4363-4543-b599-ceb2dc3fdb1d">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="676" y="0" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="5c2fdf17-4363-4543-b599-ceb2dc3fdb1d">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -212,7 +212,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol3Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="640" y="0" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="ff879c5e-44a8-41fc-b58b-c88907a4aa38">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="640" y="0" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="ff879c5e-44a8-41fc-b58b-c88907a4aa38">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -231,7 +231,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol2Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="604" y="0" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="0c7d2009-3190-4de7-93cf-705de96ca3b4">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="604" y="0" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="0c7d2009-3190-4de7-93cf-705de96ca3b4">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -250,7 +250,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol1Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="784" y="0" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="b893101c-eed3-47be-ab71-d709929f3772">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="784" y="0" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="b893101c-eed3-47be-ab71-d709929f3772">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -269,7 +269,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol6Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<staticText>
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="20" width="604" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="7549771b-b99c-46d8-8604-be47620780e1">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="20" width="604" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="7549771b-b99c-46d8-8604-be47620780e1">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -287,7 +287,7 @@
 						<text><![CDATA[Personal requerido]]></text>
 					</staticText>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="604" y="20" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="88b271a2-0611-4a46-90a3-aa30e681db81">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="604" y="20" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="88b271a2-0611-4a46-90a3-aa30e681db81">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -306,7 +306,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol1Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="640" y="20" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="73a0d7bb-41b7-4f6a-b361-6a7a24048b3a">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="640" y="20" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="73a0d7bb-41b7-4f6a-b361-6a7a24048b3a">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -325,7 +325,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol2Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="676" y="20" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="38686990-189a-484b-bd0f-1b3be4a3fc3b">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="676" y="20" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="38686990-189a-484b-bd0f-1b3be4a3fc3b">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -344,7 +344,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol3Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="712" y="20" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="a137827b-0fd2-4f3b-9301-3ce7bae99783">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="712" y="20" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="a137827b-0fd2-4f3b-9301-3ce7bae99783">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -363,7 +363,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol4Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="748" y="20" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="bc2b8336-86ca-4a03-bb42-b6a6dc717d9d">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="748" y="20" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="bc2b8336-86ca-4a03-bb42-b6a6dc717d9d">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -382,7 +382,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol5Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="StructureGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="784" y="20" width="36" height="20" forecolor="#616BB0" backcolor="#FFFFFF" uuid="b3143b88-c999-4044-9a8e-e1d70f3d95a5">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="784" y="20" width="36" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="b3143b88-c999-4044-9a8e-e1d70f3d95a5">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -699,55 +699,75 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="162">
+		<band height="320">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<image>
-				<reportElement x="0" y="-167" width="828" height="269" uuid="ab42643f-8bb6-4525-80b2-d7e4517c428b"/>
+			<rectangle radius="10">
+				<reportElement mode="Opaque" x="0" y="255" width="395" height="55" backcolor="#DCEAF7" uuid="9ea02c66-426d-4a32-b603-54c474eed166">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0" lineColor="#DCEAF7"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="10">
+				<reportElement mode="Opaque" x="405" y="255" width="395" height="55" backcolor="#DCEAF7" uuid="9cff14d1-782e-48ba-9de8-736119ef36ee">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0" lineColor="#DCEAF7"/>
+				</graphicElement>
+			</rectangle>
+			<image hAlign="Right">
+				<reportElement x="531" y="-20" width="291" height="210" uuid="9919f965-6d32-47c7-bb41-21d0a6aa55e8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<imageExpression><![CDATA[$P{headerImage}]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement mode="Transparent" x="250" y="-1" width="430" height="75" forecolor="#4E918D" uuid="5a767129-7a0e-45f0-a427-109d50430745">
+				<reportElement mode="Transparent" x="0" y="150" width="800" height="45" forecolor="#030303" uuid="6978d06d-c71e-451c-9a5d-bcc8a893d100">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Top">
+				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font fontName="Cambria" size="35" isBold="true"/>
 					<paragraph lineSpacing="Fixed" lineSpacingSize="25.0"/>
 				</textElement>
 				<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
 			</staticText>
-			<image hAlign="Right" vAlign="Middle">
-				<reportElement x="680" y="-12" width="130" height="120" uuid="25c87f18-8cd5-4b59-bc48-ca62005fc440">
+			<staticText>
+				<reportElement x="0" y="202" width="800" height="25" forecolor="#787878" uuid="019e804b-d410-42be-a5e8-e33774fb7ca3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Cambria" size="16" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Gestión de Tiempos Laborados por Dependencia]]></text>
+			</staticText>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ContainerHeight" x="0" y="225" width="800" height="20" forecolor="#787878" uuid="838d46e9-2afc-4ef8-9ebf-ca931897542b"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Cambria" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{corporateName}]]></textFieldExpression>
+			</textField>
+			<image hAlign="Left" vAlign="Middle">
+				<reportElement x="0" y="-10" width="180" height="160" uuid="b492131c-0732-423b-b047-b8f8aca57cb4">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="250" y="70" width="430" height="20" forecolor="#787878" uuid="982a2650-e1ec-4efa-a40d-e08ccebb6195">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Cambria" size="15"/>
-				</textElement>
-				<text><![CDATA[Gestión de Tiempos Laborados por Dependencia]]></text>
-			</staticText>
-			<rectangle radius="10">
-				<reportElement x="-10" y="110" width="405" height="45" uuid="3b11bc8c-9c6b-43e6-b0dc-0498b362514a">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<graphicElement>
-					<pen lineWidth="0.25" lineColor="#CCCCCC"/>
-				</graphicElement>
-			</rectangle>
-			<staticText>
-				<reportElement x="5" y="142" width="375" height="13" forecolor="#787878" uuid="d956800c-31e3-4526-8114-85b4f7fe9954">
+				<reportElement x="410" y="290" width="385" height="15" forecolor="#787878" uuid="8e8296a8-1699-461e-b754-cb8c79beaec8">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
@@ -756,19 +776,17 @@
 				</textElement>
 				<text><![CDATA[Horas requeridas]]></text>
 			</staticText>
-			<rectangle radius="10">
-				<reportElement x="405" y="110" width="405" height="45" uuid="51fc773b-f0a0-41b7-968e-b2e67279b7d4">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<textField textAdjust="StretchHeight" evaluationTime="Report">
+				<reportElement stretchType="ContainerHeight" x="410" y="255" width="385" height="40" forecolor="#215F9A" uuid="13ff158d-36c5-476d-abe4-2050446f955f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
-				<graphicElement>
-					<pen lineWidth="0.25" lineColor="#CCCCCC"/>
-				</graphicElement>
-			</rectangle>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Cambria Math" size="31" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Math.round(($P{requiredTotalHours})*10.0)/10.0]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement x="421" y="142" width="375" height="13" forecolor="#787878" uuid="462014c4-3393-4c17-918c-10796b98998a">
+				<reportElement x="6" y="290" width="384" height="15" forecolor="#787878" uuid="d4c33326-b7c3-4af9-898c-d8a2914b24bf">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
@@ -777,24 +795,8 @@
 				</textElement>
 				<text><![CDATA[Personas requeridas]]></text>
 			</staticText>
-			<textField textAdjust="StretchHeight">
-				<reportElement stretchType="ContainerHeight" x="250" y="89" width="430" height="20" forecolor="#787878" uuid="65623d24-26c1-4835-91c0-7b1e577e20fd"/>
-				<textElement textAlignment="Center">
-					<font fontName="Cambria"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{corporateName}]]></textFieldExpression>
-			</textField>
 			<textField textAdjust="StretchHeight" evaluationTime="Report">
-				<reportElement stretchType="ContainerHeight" x="5" y="110" width="375" height="40" forecolor="#96ABBD" uuid="5efdf6af-884b-45a8-8173-e60e84a54391">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="31" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[Math.round(($P{requiredTotalHours})*10.0)/10.0]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" evaluationTime="Report">
-				<reportElement stretchType="ContainerHeight" x="421" y="110" width="375" height="40" forecolor="#96ABBD" uuid="2b66e074-ca10-4eeb-8049-0d8b30347a53">
+				<reportElement stretchType="ContainerHeight" x="6" y="255" width="384" height="40" forecolor="#215F9A" uuid="3c924c77-d212-4321-9898-5b03bc55005e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -802,6 +804,14 @@
 				</textElement>
 				<textFieldExpression><![CDATA[Math.round(($P{requiredTotalPeople})*10.0)/10.0]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="0" y="198" width="665" height="1" uuid="463c8f8f-2623-46a4-80d4-be334ef2c318">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="7.0" lineColor="#215F9A"/>
+				</graphicElement>
+			</line>
 		</band>
 	</title>
 	<columnHeader>
@@ -813,7 +823,7 @@
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<ellipse>
-					<reportElement mode="Opaque" x="3" y="5" width="10" height="10" forecolor="#888FD1" backcolor="#888FD1" uuid="0d3a41bc-4cd0-4441-90f1-44b437ba8be0">
+					<reportElement mode="Opaque" x="3" y="5" width="10" height="10" forecolor="#215F9A" backcolor="#215F9A" uuid="0d3a41bc-4cd0-4441-90f1-44b437ba8be0">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
@@ -847,23 +857,23 @@
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement mode="Opaque" x="-10" y="20" width="820" height="24" backcolor="#636994" uuid="92ec0bb7-68a9-4fe8-9f77-30bd8769cc85">
+				<reportElement mode="Opaque" x="-10" y="20" width="820" height="24" backcolor="#2D6973" uuid="92ec0bb7-68a9-4fe8-9f77-30bd8769cc85">
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<staticText>
-					<reportElement x="0" y="0" width="160" height="24" forecolor="#FFFFFF" uuid="d9313482-631c-4629-b990-362ec7e06451">
+					<reportElement x="0" y="0" width="158" height="24" forecolor="#FFFFFF" uuid="d9313482-631c-4629-b990-362ec7e06451">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -871,16 +881,16 @@
 					<text><![CDATA[PROCEDIMIENTO]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="160" y="0" width="160" height="24" forecolor="#FFFFFF" uuid="2b387746-6589-49a2-9a88-71e408f56c40">
+					<reportElement x="158" y="0" width="162" height="24" forecolor="#FFFFFF" uuid="2b387746-6589-49a2-9a88-71e408f56c40">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25" lineColor="#FFFFFF"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -888,16 +898,16 @@
 					<text><![CDATA[ACTIVIDAD]]></text>
 				</staticText>
 				<staticText>
-					<reportElement mode="Opaque" x="320" y="0" width="84" height="24" forecolor="#FFFFFF" backcolor="#4E918D" uuid="d47ab750-d899-4f9f-88d0-be5f08095268">
+					<reportElement mode="Opaque" x="320" y="0" width="84" height="24" forecolor="#24756F" backcolor="#D1F7F2" uuid="d47ab750-d899-4f9f-88d0-be5f08095268">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -910,11 +920,11 @@
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -926,11 +936,11 @@
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -942,11 +952,11 @@
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -958,11 +968,11 @@
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -974,11 +984,11 @@
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -986,16 +996,16 @@
 					<text><![CDATA[T. E.]]></text>
 				</staticText>
 				<staticText>
-					<reportElement mode="Opaque" x="604" y="0" width="216" height="12" forecolor="#FFFFFF" backcolor="#4E918D" uuid="bf65a033-9eb3-415a-bd95-99e10ebb34f0">
+					<reportElement mode="Opaque" x="604" y="0" width="216" height="12" forecolor="#24756F" backcolor="#D1F7F2" uuid="bf65a033-9eb3-415a-bd95-99e10ebb34f0">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -1003,17 +1013,17 @@
 					<text><![CDATA[TIEMPO TOTAL POR TAREA]]></text>
 				</staticText>
 				<textField>
-					<reportElement mode="Opaque" x="604" y="12" width="36" height="12" forecolor="#FFFFFF" backcolor="#4E918D" uuid="e6a2fef9-7e1f-4d55-9c83-e015c0ce96a0">
+					<reportElement mode="Opaque" x="604" y="12" width="36" height="12" forecolor="#24756F" backcolor="#D1F7F2" uuid="e6a2fef9-7e1f-4d55-9c83-e015c0ce96a0">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -1021,17 +1031,17 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 0 ? $P{levels}.get(0) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="640" y="12" width="36" height="12" forecolor="#FFFFFF" backcolor="#4E918D" uuid="dc674af3-5cc3-4258-82ab-3f04135848f2">
+					<reportElement mode="Opaque" x="640" y="12" width="36" height="12" forecolor="#24756F" backcolor="#D1F7F2" uuid="dc674af3-5cc3-4258-82ab-3f04135848f2">
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -1039,17 +1049,17 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 1 ? $P{levels}.get(1) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="676" y="12" width="36" height="12" forecolor="#FFFFFF" backcolor="#4E918D" uuid="f0c710fb-2b2a-4084-9d30-6edde97fddb4">
+					<reportElement mode="Opaque" x="676" y="12" width="36" height="12" forecolor="#24756F" backcolor="#D1F7F2" uuid="f0c710fb-2b2a-4084-9d30-6edde97fddb4">
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -1057,17 +1067,17 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 2 ? $P{levels}.get(2) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="712" y="12" width="36" height="12" forecolor="#FFFFFF" backcolor="#4E918D" uuid="1f8a0d0e-e0d7-4192-a2ec-61df78ee6a93">
+					<reportElement mode="Opaque" x="712" y="12" width="36" height="12" forecolor="#24756F" backcolor="#D1F7F2" uuid="1f8a0d0e-e0d7-4192-a2ec-61df78ee6a93">
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -1075,16 +1085,16 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 3 ? $P{levels}.get(3) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="748" y="12" width="36" height="12" forecolor="#FFFFFF" backcolor="#4E918D" uuid="e28c2dce-063a-4412-a7f9-ef16d0891915">
+					<reportElement mode="Opaque" x="748" y="12" width="36" height="12" forecolor="#24756F" backcolor="#D1F7F2" uuid="e28c2dce-063a-4412-a7f9-ef16d0891915">
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -1092,16 +1102,16 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 4 ? $P{levels}.get(4) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="784" y="12" width="36" height="12" forecolor="#FFFFFF" backcolor="#4E918D" uuid="d2a69beb-5ab4-43e7-a2b0-cde99ef9f744">
+					<reportElement mode="Opaque" x="784" y="12" width="36" height="12" forecolor="#24756F" backcolor="#D1F7F2" uuid="d2a69beb-5ab4-43e7-a2b0-cde99ef9f744">
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
 					<box>
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<pen lineWidth="0.25" lineColor="#91DBC7"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Cambria" size="9" isBold="false"/>
@@ -1414,7 +1424,7 @@
 				<subreportExpression><![CDATA[$P{chartReport}]]></subreportExpression>
 			</subreport>
 			<frame>
-				<reportElement mode="Opaque" x="-10" y="0" width="820" height="50" backcolor="#636994" uuid="b28d1f79-ecef-4829-9bf3-f4819baf67bd">
+				<reportElement mode="Opaque" x="-10" y="0" width="820" height="50" backcolor="#2D6973" uuid="b28d1f79-ecef-4829-9bf3-f4819baf67bd">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>

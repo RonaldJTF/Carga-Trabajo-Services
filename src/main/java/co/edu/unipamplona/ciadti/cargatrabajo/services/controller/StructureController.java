@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureReportPlainedExcelJXLS;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.StructureTimeStatisticsReportPDF;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,6 +55,7 @@ public class StructureController {
     private final ActividadService actividadService;
     private final ConfigurationMediator configurationMediator;
     private final StructureReportPDF structureReportPDF;
+    private final StructureTimeStatisticsReportPDF structureTimeStatisticsReportPDF;
     private final StructureReportExcelJXLS structureReportExcelJXLS;
     private final StructureReportPlainedExcelJXLS structureReportFlatExcelJXLS;
 
@@ -253,6 +256,11 @@ public class StructureController {
             extension = "pdf";
             mediaType = "application/pdf";
             fileBytes = structureReportPDF.generate(structureIds);
+        }else if ("TIME-STATISTICS-PDF".equals(type.toUpperCase())) {
+            extension = "pdf";
+            mediaType = "application/pdf";
+            /*Para reportes de estadística de tiempos solo se requiere de una estructura, por eso se toma el único que viene*/
+            fileBytes = structureTimeStatisticsReportPDF.generate(structureIds.get(0));
         }
 
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
