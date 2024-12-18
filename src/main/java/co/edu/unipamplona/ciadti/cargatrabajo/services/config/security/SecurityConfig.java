@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .requestMatchers("/doc/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
 
-                .requestMatchers(HttpMethod.GET, "/api/time-statistics/**", "/api/structure/report").hasAnyRole("SUPERADMINISTRADOR")
+                .requestMatchers(HttpMethod.GET, "/api/time-statistics/**", "/api/structure/report").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers(HttpMethod.GET, "/api/inventory/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
 
                 .requestMatchers(HttpMethod.PUT, "/api/person/**").authenticated()
@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/media/**").authenticated()
 
                 .requestMatchers(HttpMethod.GET, "/api/structure/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
-                .requestMatchers(HttpMethod.POST, "/api/structure/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR","DESARROLLADOR")//ojo con esta línea
+                .requestMatchers(HttpMethod.POST, "/api/structure/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/structure/**").hasAnyRole("ADMINISTRADOR")
 
                 .requestMatchers(HttpMethod.GET, "/api/workplan/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")

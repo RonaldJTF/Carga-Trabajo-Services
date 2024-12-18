@@ -40,7 +40,7 @@ public class StatisticsMediator {
     /**
      * Calcula las estadísticas de tiempos laborados basadas en lista de actividades en una estructura.
      * @param activities, lista de actividades registradas para una estructura.
-     * @return: objeto con la infomación estadística asociada por nivel.
+     * @return: objeto con la información estadística asociada por nivel.
      */
     private List<TimeStatisticDTO> buildTimeStatistic(List<ActividadDTO> activities) {
         List<TimeStatisticDTO> timeStatistics = new ArrayList<>();
@@ -67,9 +67,9 @@ public class StatisticsMediator {
             statisticsByLevel.put(level.getDescripcion(), e);
         }
 
-        double tiempoEstandar = 0.0;
-        double tiempoTotal = 0.0;
-        double personalTotal = 0.0;
+        double tiempoEstandar;
+        double tiempoTotal;
+        double personalTotal;
         for (ActividadDTO act : activities) {
             if (act.getTiempoMaximo() != null && act.getTiempoMinimo() != null && act.getFrecuencia() != null) {
                 tiempoEstandar = 1.07 * (act.getTiempoMinimo() + 4.0 * act.getTiempoPromedio() + act.getTiempoMaximo()) / 6.0;

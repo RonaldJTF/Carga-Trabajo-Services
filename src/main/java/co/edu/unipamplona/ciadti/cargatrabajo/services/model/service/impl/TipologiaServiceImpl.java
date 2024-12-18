@@ -88,8 +88,7 @@ public class TipologiaServiceImpl implements TipologiaService{
     @Override
     @Transactional(readOnly = true)
     public List<InventarioTipologiaDTO> findInventarioTipologia(){
-        List<InventarioTipologiaDTO> inventarioList = tipologiaDAO.findInventarioTipologia();
-        return inventarioList;
+      return tipologiaDAO.findInventarioTipologia();
     }
 
     @Override
