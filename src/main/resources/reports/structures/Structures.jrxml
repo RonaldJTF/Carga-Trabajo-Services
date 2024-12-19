@@ -127,7 +127,7 @@
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="13" isBold="false"/>
+						<font fontName="SansSerif" size="13" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{dependencia}.toUpperCase()]]></textFieldExpression>
 				</textField>
@@ -150,7 +150,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="11" isBold="true"/>
+							<font fontName="SansSerif" size="11" isBold="true"/>
 							<paragraph leftIndent="5" rightIndent="5"/>
 						</textElement>
 						<text><![CDATA[Horas requeridas]]></text>
@@ -169,7 +169,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol5Variable})*10.0)/10.0]]></textFieldExpression>
@@ -187,7 +187,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol4Variable})*10.0)/10.0]]></textFieldExpression>
@@ -206,7 +206,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol3Variable})*10.0)/10.0]]></textFieldExpression>
@@ -225,7 +225,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol2Variable})*10.0)/10.0]]></textFieldExpression>
@@ -244,7 +244,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol1Variable})*10.0)/10.0]]></textFieldExpression>
@@ -263,7 +263,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol6Variable})*10.0)/10.0]]></textFieldExpression>
@@ -281,7 +281,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="11" isBold="true"/>
+							<font fontName="SansSerif" size="11" isBold="true"/>
 							<paragraph leftIndent="5" rightIndent="5"/>
 						</textElement>
 						<text><![CDATA[Personal requerido]]></text>
@@ -300,7 +300,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol1Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -319,7 +319,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol2Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -338,7 +338,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol3Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -357,7 +357,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol4Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -376,7 +376,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol5Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -395,7 +395,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorDependenciaCol6Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -418,7 +418,7 @@
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="13" isBold="false"/>
+						<font fontName="SansSerif" size="13" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{proceso}]]></textFieldExpression>
 				</textField>
@@ -441,7 +441,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="11" isBold="true"/>
+							<font fontName="SansSerif" size="11" isBold="true"/>
 							<paragraph leftIndent="5" rightIndent="5"/>
 						</textElement>
 						<text><![CDATA[Horas requeridas]]></text>
@@ -460,7 +460,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol5Variable})*10.0)/10.0]]></textFieldExpression>
@@ -478,7 +478,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol4Variable})*10.0)/10.0]]></textFieldExpression>
@@ -497,7 +497,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol3Variable})*10.0)/10.0]]></textFieldExpression>
@@ -516,7 +516,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol2Variable})*10.0)/10.0]]></textFieldExpression>
@@ -535,7 +535,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol1Variable})*10.0)/10.0]]></textFieldExpression>
@@ -554,7 +554,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol6Variable})*10.0)/10.0]]></textFieldExpression>
@@ -572,7 +572,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="11" isBold="true"/>
+							<font fontName="SansSerif" size="11" isBold="true"/>
 							<paragraph leftIndent="5" rightIndent="5"/>
 						</textElement>
 						<text><![CDATA[Personal requerido]]></text>
@@ -591,7 +591,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol1Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -610,7 +610,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol2Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -629,7 +629,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol3Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -648,7 +648,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol4Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -667,7 +667,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol5Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -686,7 +686,7 @@
 							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle">
-							<font fontName="Cambria Math" size="9" isBold="true"/>
+							<font fontName="SansSerif" size="9" isBold="true"/>
 							<paragraph leftIndent="2" rightIndent="0"/>
 						</textElement>
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol6Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -736,7 +736,7 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Top">
-					<font fontName="Cambria" size="35" isBold="true"/>
+					<font fontName="SansSerif" size="35" isBold="true"/>
 					<paragraph lineSpacing="Fixed" lineSpacingSize="25.0"/>
 				</textElement>
 				<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
@@ -748,14 +748,14 @@
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria" size="16" isBold="false"/>
+					<font fontName="SansSerif" size="16" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Gestión de Tiempos Laborados por Dependencia]]></text>
 			</staticText>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement stretchType="ContainerHeight" x="0" y="225" width="800" height="20" forecolor="#787878" uuid="838d46e9-2afc-4ef8-9ebf-ca931897542b"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria" size="14"/>
+					<font fontName="SansSerif" size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{corporateName}]]></textFieldExpression>
 			</textField>
@@ -772,7 +772,7 @@
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center">
-					<font fontName="Cambria" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<text><![CDATA[Horas requeridas]]></text>
 			</staticText>
@@ -781,7 +781,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="31" isBold="true"/>
+					<font fontName="SansSerif" size="31" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[Math.round(($P{requiredTotalHours})*10.0)/10.0]]></textFieldExpression>
 			</textField>
@@ -791,7 +791,7 @@
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center">
-					<font fontName="Cambria" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<text><![CDATA[Personas requeridas]]></text>
 			</staticText>
@@ -800,7 +800,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="31" isBold="true"/>
+					<font fontName="SansSerif" size="31" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[Math.round(($P{requiredTotalPeople})*10.0)/10.0]]></textFieldExpression>
 			</textField>
@@ -876,7 +876,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<text><![CDATA[PROCEDIMIENTO]]></text>
 				</staticText>
@@ -893,7 +893,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<text><![CDATA[ACTIVIDAD]]></text>
 				</staticText>
@@ -910,7 +910,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<text><![CDATA[NIVEL]]></text>
 				</staticText>
@@ -927,7 +927,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<text><![CDATA[FREC.]]></text>
 				</staticText>
@@ -943,7 +943,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<text><![CDATA[Tmin]]></text>
 				</staticText>
@@ -959,7 +959,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<text><![CDATA[Tusual]]></text>
 				</staticText>
@@ -975,7 +975,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<text><![CDATA[Tmáx]]></text>
 				</staticText>
@@ -991,7 +991,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<text><![CDATA[T. E.]]></text>
 				</staticText>
@@ -1008,7 +1008,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<text><![CDATA[TIEMPO TOTAL POR TAREA]]></text>
 				</staticText>
@@ -1026,7 +1026,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 0 ? $P{levels}.get(0) : null]]></textFieldExpression>
 				</textField>
@@ -1044,7 +1044,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 1 ? $P{levels}.get(1) : null]]></textFieldExpression>
 				</textField>
@@ -1062,7 +1062,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 2 ? $P{levels}.get(2) : null]]></textFieldExpression>
 				</textField>
@@ -1080,7 +1080,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 3 ? $P{levels}.get(3) : null]]></textFieldExpression>
 				</textField>
@@ -1097,7 +1097,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 4 ? $P{levels}.get(4) : null]]></textFieldExpression>
 				</textField>
@@ -1114,7 +1114,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="9" isBold="false"/>
+						<font fontName="SansSerif" size="9" isBold="false"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 5 ? $P{levels}.get(5) : null]]></textFieldExpression>
 				</textField>
@@ -1139,7 +1139,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Top">
-					<font fontName="Cambria" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="5" rightIndent="5" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{procedimiento}]]></textFieldExpression>
@@ -1160,7 +1160,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Top">
-					<font fontName="Cambria" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="5" rightIndent="5" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{actividad}]]></textFieldExpression>
@@ -1180,7 +1180,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="5" rightIndent="5" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nivel}]]></textFieldExpression>
@@ -1198,7 +1198,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{frecuencia}]]></textFieldExpression>
@@ -1216,7 +1216,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiempoMinimo}]]></textFieldExpression>
@@ -1234,7 +1234,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiempoPromedio}]]></textFieldExpression>
@@ -1252,7 +1252,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiempoMaximo}]]></textFieldExpression>
@@ -1270,7 +1270,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiempoEstandar}]]></textFieldExpression>
@@ -1288,7 +1288,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >0 ?   $F{tiemposPorNivel}.get(0) : null]]></textFieldExpression>
@@ -1306,7 +1306,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >1 ?   $F{tiemposPorNivel}.get(1) : null]]></textFieldExpression>
@@ -1324,7 +1324,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >2 ?   $F{tiemposPorNivel}.get(2) : null]]></textFieldExpression>
@@ -1342,7 +1342,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >3 ?   $F{tiemposPorNivel}.get(3) : null]]></textFieldExpression>
@@ -1360,7 +1360,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >4 ?   $F{tiemposPorNivel}.get(4) : null]]></textFieldExpression>
@@ -1378,7 +1378,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >5 ?   $F{tiemposPorNivel}.get(5) : null]]></textFieldExpression>
@@ -1390,14 +1390,14 @@
 			<textField>
 				<reportElement mode="Transparent" x="410" y="6" width="381" height="13" forecolor="#787878" backcolor="#F2F2F2" uuid="313e034f-5cd2-4131-9b16-8fa5510c295e"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Cambria" size="10"/>
+					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Página  "+$V{PAGE_NUMBER} + " de"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement mode="Transparent" x="791" y="6" width="19" height="13" forecolor="#787878" backcolor="#F2F2F2" uuid="8850115b-480b-4e28-a08e-04825085472c"/>
 				<textElement>
-					<font fontName="Cambria"/>
+					<font fontName="SansSerif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
@@ -1408,7 +1408,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria" isItalic="true"/>
+					<font fontName="SansSerif" isItalic="true"/>
 					<paragraph leftIndent="5" rightIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Fecha del reporte: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date())]]></textFieldExpression>
@@ -1443,7 +1443,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria" size="13" isBold="true"/>
+						<font fontName="SansSerif" size="13" isBold="true"/>
 						<paragraph leftIndent="5" rightIndent="5"/>
 					</textElement>
 					<text><![CDATA[TOTAL HORAS REQUERIDAS]]></text>
@@ -1462,7 +1462,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol5Variable})*10.0)/10.0]]></textFieldExpression>
@@ -1481,7 +1481,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol4Variable})*10.0)/10.0]]></textFieldExpression>
@@ -1500,7 +1500,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol3Variable})*10.0)/10.0]]></textFieldExpression>
@@ -1519,7 +1519,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol2Variable})*10.0)/10.0]]></textFieldExpression>
@@ -1539,7 +1539,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol1Variable})*10.0)/10.0]]></textFieldExpression>
@@ -1559,7 +1559,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria" size="13" isBold="true"/>
+						<font fontName="SansSerif" size="13" isBold="true"/>
 						<paragraph leftIndent="5" rightIndent="5"/>
 					</textElement>
 					<text><![CDATA[PERSONAL TOTAL REQUERIDO]]></text>
@@ -1578,7 +1578,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol1Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -1597,7 +1597,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol2Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -1616,7 +1616,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol3Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -1635,7 +1635,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol4Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -1655,7 +1655,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol5Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
@@ -1674,7 +1674,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol6Variable})*10.0)/10.0]]></textFieldExpression>
@@ -1694,7 +1694,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
 					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="Cambria Math" size="9" isBold="true"/>
+						<font fontName="SansSerif" size="9" isBold="true"/>
 						<paragraph leftIndent="2" rightIndent="0"/>
 					</textElement>
 					<textFieldExpression><![CDATA[Math.round(($V{TotalHorasCol6Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>

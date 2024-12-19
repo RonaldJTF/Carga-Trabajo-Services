@@ -36,7 +36,7 @@
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Bottom">
-					<font fontName="Cambria" size="19" isBold="true"/>
+					<font fontName="SansSerif" size="19" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Tiempo total por " + $P{structureName}.toLowerCase()]]></textFieldExpression>
 			</textField>
@@ -68,7 +68,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" isBold="true"/>
+						<font fontName="SansSerif" isBold="true"/>
 					</textElement>
 					<text><![CDATA[TIEMPO TOTAL POR NIVEL OCUPACIONAL]]></text>
 				</staticText>
@@ -86,7 +86,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="10" isBold="true"/>
+						<font fontName="SansSerif" size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 0 ? $P{levels}.get(0) : null]]></textFieldExpression>
 				</textField>
@@ -103,7 +103,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="10" isBold="true"/>
+						<font fontName="SansSerif" size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 1 ? $P{levels}.get(1) : null]]></textFieldExpression>
 				</textField>
@@ -120,7 +120,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="10" isBold="true"/>
+						<font fontName="SansSerif" size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 2 ? $P{levels}.get(2) : null]]></textFieldExpression>
 				</textField>
@@ -137,7 +137,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="10" isBold="true"/>
+						<font fontName="SansSerif" size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 3 ? $P{levels}.get(3) : null]]></textFieldExpression>
 				</textField>
@@ -154,7 +154,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="10" isBold="true"/>
+						<font fontName="SansSerif" size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 4 ? $P{levels}.get(4) : null]]></textFieldExpression>
 				</textField>
@@ -171,7 +171,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" size="10" isBold="true"/>
+						<font fontName="SansSerif" size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 5 ? $P{levels}.get(5) : null]]></textFieldExpression>
 				</textField>
@@ -188,7 +188,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
-						<font fontName="Cambria" size="10" isBold="true"/>
+						<font fontName="SansSerif" size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{structureName}.toUpperCase()]]></textFieldExpression>
 				</textField>
@@ -202,7 +202,7 @@
 						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Cambria" isBold="true"/>
+						<font fontName="SansSerif" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Total]]></text>
 				</staticText>
@@ -225,7 +225,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >0 ?  Math.round(((double)$F{tiemposPorNivel}.get(0))*10.0)/10.0 : null]]></textFieldExpression>
@@ -243,7 +243,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >1 ?  Math.round(((double)$F{tiemposPorNivel}.get(1))*10.0)/10.0 : null]]></textFieldExpression>
@@ -261,7 +261,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >2 ? Math.round(((double)$F{tiemposPorNivel}.get(2))*10.0)/10.0 : null]]></textFieldExpression>
@@ -279,7 +279,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >3 ? Math.round(((double)$F{tiemposPorNivel}.get(3))*10.0)/10.0 : null]]></textFieldExpression>
@@ -297,7 +297,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >4 ? Math.round(((double)$F{tiemposPorNivel}.get(4))*10.0)/10.0 : null]]></textFieldExpression>
@@ -312,7 +312,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >5 ? Math.round(((double)$F{tiemposPorNivel}.get(5))*10.0)/10.0 : null]]></textFieldExpression>
@@ -332,7 +332,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Cambria" size="9"/>
+					<font fontName="SansSerif" size="9"/>
 					<paragraph leftIndent="5" rightIndent="5" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
@@ -350,7 +350,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="9" isBold="true"/>
+					<font fontName="SansSerif" size="9" isBold="true"/>
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[Math.round($V{TiempoTotalPorEstructura}*10.0)/10.0]]></textFieldExpression>

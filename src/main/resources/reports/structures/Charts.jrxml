@@ -65,7 +65,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
-					<font fontName="Cambria" size="35" isBold="true"/>
+					<font fontName="SansSerif" size="35" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Resumen]]></text>
 			</staticText>
@@ -81,7 +81,7 @@
 					<pen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Cambria" size="12" isBold="false"/>
+					<font fontName="SansSerif" size="12" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Horas y personal requerido por dependencia]]></text>
 			</staticText>
@@ -173,7 +173,7 @@
 					<pen lineWidth="0.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Cambria" size="12" isBold="false"/>
+					<font fontName="SansSerif" size="12" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Horas y personal requerido por nivel de ocupación]]></text>
 			</staticText>
@@ -219,19 +219,19 @@
 				</piePlot>
 			</pieChart>
 			<staticText>
-				<reportElement mode="Transparent" x="-9" y="211" width="820" height="15" forecolor="#787878" backcolor="#E6E6E6" uuid="e2825406-3d99-4da2-babc-a4db07bf7f13">
+				<reportElement mode="Transparent" x="-10" y="211" width="820" height="20" forecolor="#787878" backcolor="#E6E6E6" uuid="e2825406-3d99-4da2-babc-a4db07bf7f13">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Cambria" size="12" isBold="false"/>
+					<font fontName="SansSerif" size="12" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Horas requeridas por nivel en cada dependencia]]></text>
 			</staticText>
 			<barChart>
 				<chart evaluationTime="Report">
-					<reportElement x="-9" y="220" width="820" height="120" uuid="c5bcc97d-9240-43cc-ab95-b1b8d6e09c61">
+					<reportElement x="-10" y="220" width="820" height="120" uuid="c5bcc97d-9240-43cc-ab95-b1b8d6e09c61">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.x" value="px"/>
@@ -292,18 +292,19 @@
 				</barPlot>
 			</barChart>
 			<staticText>
-				<reportElement mode="Transparent" x="-9" y="348" width="820" height="18" forecolor="#787878" backcolor="#E6E6E6" uuid="9be4f29b-0f1e-4f92-a1a6-11df24b88e0b">
+				<reportElement mode="Transparent" x="-10" y="348" width="820" height="20" forecolor="#787878" backcolor="#E6E6E6" uuid="9be4f29b-0f1e-4f92-a1a6-11df24b88e0b">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Cambria" size="12" isBold="false"/>
+					<font fontName="SansSerif" size="12" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Personal requerido por nivel en cada dependencia]]></text>
 			</staticText>
 			<barChart>
 				<chart evaluationTime="Report">
-					<reportElement x="-9" y="360" width="820" height="120" uuid="14be4eab-bc9e-494f-85bb-0482b0a8fdc9">
+					<reportElement x="-10" y="360" width="820" height="120" uuid="14be4eab-bc9e-494f-85bb-0482b0a8fdc9">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.x" value="px"/>

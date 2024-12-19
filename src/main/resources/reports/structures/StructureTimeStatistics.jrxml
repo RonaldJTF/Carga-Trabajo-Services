@@ -54,7 +54,7 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Top">
-					<font fontName="Cambria" size="35" isBold="true"/>
+					<font fontName="SansSerif" size="35" isBold="true"/>
 					<paragraph lineSpacing="Fixed" lineSpacingSize="25.0"/>
 				</textElement>
 				<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
@@ -66,14 +66,14 @@
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria" size="16" isBold="false"/>
+					<font fontName="SansSerif" size="16" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Gestión de Tiempos Laborados por Dependencia]]></text>
 			</staticText>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement stretchType="ContainerHeight" x="0" y="225" width="800" height="20" forecolor="#787878" uuid="6814adcd-a767-4690-a81d-6f4b1e691eb4"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria" size="14"/>
+					<font fontName="SansSerif" size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{corporateName}]]></textFieldExpression>
 			</textField>
@@ -90,7 +90,7 @@
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center">
-					<font fontName="Cambria" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<text><![CDATA[Horas requeridas]]></text>
 			</staticText>
@@ -99,7 +99,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="31" isBold="true"/>
+					<font fontName="SansSerif" size="31" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[Math.round(($P{requiredTotalHours})*10.0)/10.0]]></textFieldExpression>
 			</textField>
@@ -109,7 +109,7 @@
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center">
-					<font fontName="Cambria" size="11"/>
+					<font fontName="SansSerif" size="11"/>
 				</textElement>
 				<text><![CDATA[Personas requeridas]]></text>
 			</staticText>
@@ -118,7 +118,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Cambria Math" size="31" isBold="true"/>
+					<font fontName="SansSerif" size="31" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[Math.round(($P{requiredTotalPeople})*10.0)/10.0]]></textFieldExpression>
 			</textField>
@@ -153,7 +153,7 @@
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Cambria" isItalic="true"/>
+					<font fontName="SansSerif" isItalic="true"/>
 					<paragraph leftIndent="5" rightIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Fecha del reporte: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date())]]></textFieldExpression>
@@ -163,7 +163,7 @@
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Cambria" size="10"/>
+					<font fontName="SansSerif" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Página  "+$V{PAGE_NUMBER} + " de"]]></textFieldExpression>
 			</textField>
@@ -172,7 +172,7 @@
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textElement>
-					<font fontName="Cambria"/>
+					<font fontName="SansSerif"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
