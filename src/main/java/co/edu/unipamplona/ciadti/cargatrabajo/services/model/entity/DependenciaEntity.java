@@ -1,20 +1,26 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.jackson.JacksonCIADTI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.RegistradorDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Image;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,71 +32,52 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "ESTRUCTURA", schema = "FORTALECIMIENTO")
-public class EstructuraEntity implements Serializable, Cloneable{
+@Table(name = "DEPENDENCIA", schema = "FORTALECIMIENTO")
+public class DependenciaEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "estr_id", nullable = false)
+    @Column(name = "depe_id", nullable = false)
     private Long id;
 
-    @Column(name = "estr_nombre", nullable = false, length = 1000)
+    @Column(name = "conv_id")
+    private Long idConvencion;
+
+    @Column(name = "depe_nombre", nullable = false, length = 1000)
     private String nombre;
 
-    @Column(name = "estr_descripcion", length = 2000)
+    @Column(name = "depe_descripcion", length = 2000)
     private String descripcion;
 
-    @JsonProperty("idPadre")
-    @Column(name = "estr_idpadre")
-    private Long idPadre;
-
-    @Column(name = "tipo_id", nullable = false)
-    private Long idTipologia;
-
     @JsonIgnore
-    @Column(name = "estr_icono")
+    @Column(name = "depe_icono")
     private byte[] icono;
 
-    @Column(name = "estr_mimetype")
+    @Column(name = "depe_mimetype", length = 100)
     private String mimetype;
 
-    @Column(name = "estr_orden")
-    private Long orden;
-
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "estr_fechacambio")
+    @Column(name = "depe_fechacambio")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCambio;
-    
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "estr_registradopor", nullable =  false, length = 250)
+    @Column(name = "depe_registradopor", nullable = false, length = 250)
     private String registradoPor;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="estr_idpadre", insertable=false, updatable=false)
-    private List<EstructuraEntity> subEstructuras;
-
-    @JsonManagedReference
-    @OneToOne(mappedBy="estructura")
-    private ActividadEntity actividad;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tipo_id", insertable = false, updatable = false)
-    private TipologiaEntity tipologia;
-
+    @JsonIgnore
+    @Transient
+    private RegistradorDTO registradorDTO;
+    
     @Transient
     private String srcIcono;
-
+    
     @JsonGetter("srcIcono")
-    public String getSrcFoto() {
+    public String getSrcFoto(){
         return  srcIcono != null ? srcIcono :
             icono != null
             ? Image.getSrcImage(icono, mimetype)
             : null;
     }
-    
-    @JsonIgnore
-    @Transient
-    private RegistradorDTO registradorDTO;
 
     @PrePersist
     void onCreate() {
@@ -103,17 +90,5 @@ public class EstructuraEntity implements Serializable, Cloneable{
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
         this.registradoPor = registradorDTO.getJsonAsString();
-    }
-
-    @Override
-    public EstructuraEntity clone() throws CloneNotSupportedException {
-        EstructuraEntity cloned = (EstructuraEntity) super.clone();
-        if (this.subEstructuras != null) {
-            cloned.subEstructuras = new ArrayList<>();
-            for (EstructuraEntity sub : this.subEstructuras) {
-                cloned.subEstructuras.add(sub.clone());
-            }
-        }
-        return cloned;
     }
 }

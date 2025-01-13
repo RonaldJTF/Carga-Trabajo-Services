@@ -15,6 +15,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Stat
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +67,7 @@ public class ConfigurationMediator {
     private final ReglaService reglaService;
     private final CompensacionLabNivelVigenciaService compensacionLabNivelVigenciaService;
     private final CompensacionLabNivelVigValorService compensacionLabNivelVigValorService;
+    private final GestionOperativaService gestionOperativaService;
     private final GeneralExpressionMediator generalExpressionMediator;
 
     /**
@@ -86,6 +88,7 @@ public class ConfigurationMediator {
     /**
      * Actualiza una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
      * @param structure
+     * @param previousOrder: orden previo/viejo
      * @return
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
@@ -1505,7 +1508,7 @@ public class ConfigurationMediator {
      */
     private List<Long> extractVariableIds(String expression) {
         List<Long> numbers = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\\$\\[(\\d+)\\]");
+        Pattern pattern = Pattern.compile("\$\[(\d+)\]");
         Matcher matcher = pattern.matcher(expression);
 
         while (matcher.find()) {
@@ -1608,7 +1611,7 @@ public class ConfigurationMediator {
     @Transactional(readOnly = true)
     private void completeAppointmentInformation(CargoEntity appointment, List<VariableEntity> variables) throws CiadtiException{
         Map<String, Double> primaryVariables = new HashMap<>();
-        primaryVariables.put("${ASIGNACION_BASICA_MENSUAL}", appointment.getAsignacionBasicaMensual());
+        primaryVariables.put("", appointment.getAsignacionBasicaMensual());
         Double asignacionTotal = 0.0;
         for (CompensacionLabNivelVigenciaEntity clnv : appointment.getCompensacionesLaboralesAplicadas()){
             for (CompensacionLabNivelVigValorEntity cnvv : clnv.getValoresCompensacionLabNivelVigencia()){
@@ -1708,5 +1711,42 @@ public class ConfigurationMediator {
             }
         }
         return list;
+    }
+
+    /**
+     * Actualiza una gestión operativa (proceso, procedimiento, actividad), y reorganiza las subgestiones operativas en el padre que lo contiene.
+     * @param operationalManagement: Informasción de la gestión operativa.
+     * @param previousOrder: orden previo/viejo
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public GestionOperativaEntity updateOperationalManagement(GestionOperativaEntity operationalManagement, Long previousOrder) {
+        gestionOperativaService.save(operationalManagement);
+        boolean exists = gestionOperativaService.existsByIdPadreAndOrdenAndNotId(operationalManagement.getIdPadre(), operationalManagement.getOrden(), operationalManagement.getId());
+        if (exists) {
+            if (previousOrder != null) {
+                if (previousOrder >= operationalManagement.getOrden()) {
+                    gestionOperativaService.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(operationalManagement.getIdPadre(), operationalManagement.getOrden(), previousOrder, operationalManagement.getId(), 1);
+                } else {
+                    gestionOperativaService.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(operationalManagement.getIdPadre(), previousOrder, operationalManagement.getOrden(), operationalManagement.getId(), -1);
+                }
+            } else {
+                gestionOperativaService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(operationalManagement.getIdPadre(), operationalManagement.getOrden(), operationalManagement.getId(), 1);
+            }
+        }
+        return operationalManagement;
+    }
+
+    public List<GestionOperativaEntity> createOperationalManagementsFromStructures(List<EstructuraEntity> structures) {
+        List<GestionOperativaEntity> operationalManagements = new ArrayList<>();
+        GestionOperativaEntity operationalManagement;
+        for (EstructuraEntity e : structures){
+            operationalManagement = GestionOperativaEntity.builder().build();
+            if(e.getSubEstructuras() != null){
+                operationalManagement.setSubGestionesOperativas(createOperationalManagementsFromStructures(e.getSubEstructuras()));
+            }
+            operationalManagements.add(operationalManagement);
+        }
+        return operationalManagements;
     }
 }

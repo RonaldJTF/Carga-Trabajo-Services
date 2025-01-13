@@ -22,7 +22,7 @@ public class CompensacionLaboralServiceImpl implements CompensacionLaboralServic
     @Override
     @Transactional(readOnly = true)
     public CompensacionLaboralEntity findById(Long id) throws CiadtiException {
-        return compensacionLaboralDAO.findById(id).orElseThrow(() -> new CiadtiException("Actividad no encontrada para el id :: " + id, 404));
+        return compensacionLaboralDAO.findById(id).orElseThrow(() -> new CiadtiException("CompensacionLaboral no encontrada para el id :: " + id, 404));
     }
 
     @Override
