@@ -1508,7 +1508,7 @@ public class ConfigurationMediator {
      */
     private List<Long> extractVariableIds(String expression) {
         List<Long> numbers = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\$\[(\d+)\]");
+        Pattern pattern = Pattern.compile("\\$\\[(\\d+)]");
         Matcher matcher = pattern.matcher(expression);
 
         while (matcher.find()) {

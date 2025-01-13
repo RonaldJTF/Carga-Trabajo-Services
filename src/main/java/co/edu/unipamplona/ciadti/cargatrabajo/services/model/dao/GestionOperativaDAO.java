@@ -12,7 +12,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOpera
 
 public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntity, Long>, JpaSpecificationExecutor<GestionOperativaEntity>{
 
-    @Query(value = "select coalesce (Max(e.orden), 0) from GestionOperativaEntity g where g.idPadre = :idPadre")
+    @Query(value = "select coalesce (Max(g.orden), 0) from GestionOperativaEntity g where g.idPadre = :idPadre")
     Long findLastOrderByIdPadre(@Param("idPadre") Long idPadre);
 
     @Modifying

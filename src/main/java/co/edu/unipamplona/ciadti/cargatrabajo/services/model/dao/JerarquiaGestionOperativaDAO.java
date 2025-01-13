@@ -14,7 +14,7 @@ public interface JerarquiaGestionOperativaDAO extends JpaRepository<JerarquiaGes
     
     @Modifying
     @Query(value = """
-        update  JerarquiaGestionOperativaEntity jgo set jgo.idJerarquia = :idJerarquia, j.idGestionOperativa = :idGestionOperativa,
+        update  JerarquiaGestionOperativaEntity jgo set jgo.idJerarquia = :idJerarquia, jgo.idGestionOperativa = :idGestionOperativa,
         jgo.fechaCambio = :fechaCambio, jgo.registradoPor = :registradoPor where jgo.id = :id
     """)
     int update(@Param("idJerarquia") Long idJerarquia,
