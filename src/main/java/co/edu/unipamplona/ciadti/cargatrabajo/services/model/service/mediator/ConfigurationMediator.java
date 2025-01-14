@@ -69,6 +69,7 @@ public class ConfigurationMediator {
     private final CompensacionLabNivelVigValorService compensacionLabNivelVigValorService;
     private final GestionOperativaService gestionOperativaService;
     private final GeneralExpressionMediator generalExpressionMediator;
+    private final ConvencionService convencionService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -1508,7 +1509,11 @@ public class ConfigurationMediator {
      */
     private List<Long> extractVariableIds(String expression) {
         List<Long> numbers = new ArrayList<>();
+<<<<<<< Updated upstream
         Pattern pattern = Pattern.compile("\\$\\[(\\d+)]");
+=======
+        Pattern pattern = Pattern.compile("\\$\\[(\\d+)\\]");
+>>>>>>> Stashed changes
         Matcher matcher = pattern.matcher(expression);
 
         while (matcher.find()) {
@@ -1748,5 +1753,32 @@ public class ConfigurationMediator {
             operationalManagements.add(operationalManagement);
         }
         return operationalManagements;
+    }
+
+    /**
+     * Elimina la convención para una dependencia.
+     *
+     * @param id, identificador único de la la convención para una dependencia.
+     * @throws CiadtiException, excepción
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteConvention(Long id) throws CiadtiException {
+        ConvencionEntity convencionDB = convencionService.findById(id);
+        if (convencionDB != null) {
+            convencionService.deleteByProcedure(convencionDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+     }
+ 
+     /**
+      * Elimina lista de convenciones para dependencias.
+      *
+      * @param conventionsIds, lista de identificadores de objetos de compensaciones a eliminar.
+      * @throws CiadtiException, excepción
+      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteConventions(List<Long> conventionIds) throws CiadtiException {
+        for (Long id : conventionIds) {
+            deleteConvention(id);
+        }
     }
 }

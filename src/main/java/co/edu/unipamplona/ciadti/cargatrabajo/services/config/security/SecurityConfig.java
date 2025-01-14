@@ -79,8 +79,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/api/compensation/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/compensation-category/**").hasAnyRole("ADMINISTRADOR")
 
-                .requestMatchers(HttpMethod.GET,"/api/periodicity/**", "/api/scope/**", "/api/normativity-type/**", "/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").authenticated()
-                .requestMatchers("/api/primary-variable/**", "/api/periodicity/**", "/api/scope/**",  "/api/normativity-type/**", "/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").hasAnyRole("DESARROLLADOR")
+                .requestMatchers(HttpMethod.GET,"/api/convention/**","/api/periodicity/**", "/api/scope/**", "/api/normativity-type/**", "/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").authenticated()
+                .requestMatchers("/api/convention/**","/api/primary-variable/**", "/api/periodicity/**", "/api/scope/**",  "/api/normativity-type/**", "/api/document-type/**", "/api/gender/**", "/api/level/**", "/api/role/**", "/api/typology/**", "/api/ftp/**", "/api/action/**", "/api/typology-action/**").hasAnyRole("DESARROLLADOR")
 
                 .anyRequest().denyAll()
             )

@@ -38,6 +38,7 @@ public class BasicInformationController {
     private final PeriodicidadService periodicidadService;
     private final VariableService variableService;
     private final StatisticsMediator statisticsMediator;
+    private final ConvencionService convencionService;
 
     @Operation(
             summary = "Obtener o listar los tipos de documentos",
@@ -722,6 +723,68 @@ public class BasicInformationController {
     @DeleteMapping("/primary-variable")
     public ResponseEntity<?> deletePrimaryVariables(@RequestBody List<Long> primaryVariableIds) throws CiadtiException {
         configurationMediator.deleteVariables(primaryVariableIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+        summary = "Obtener o listar una convención",
+        description = "Obtiene o lista las convenciones de acuerdo a ciertos parámetros. " +
+            "Args: id: identificador de una convención. " +
+            "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase ConvencionEntity). " +
+            "Returns: Objeto o lista de objetos con información del valor de una convención. " +
+            "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las convenciones o parámetros especificados. ")
+    @GetMapping(value = {"/convention", "/convention/{id}"})
+    public ResponseEntity<?> getConvention(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
+        ParameterConverter parameterConverter = new ParameterConverter(ConvencionEntity.class);
+        ConvencionEntity filter = (ConvencionEntity) parameterConverter.converter(request.getParameterMap());
+        filter.setId(id==null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, convencionService.findAllFilteredBy(filter));
+        
+    }
+
+    @Operation(
+        summary="Crear una convención",
+        description = "Crea una convención" +
+            "Args: convencionEntity: objeto con información de la convención. " +
+            "Returns: Objeto con la información asociada.")
+    @PostMapping("/convention")
+    public ResponseEntity<?> createConvention(@Valid @RequestBody ConvencionEntity convencionEntity) {
+        return new ResponseEntity<>(convencionService.save(convencionEntity), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary="Actualizar una convención",
+        description = "Actualiza una convención. " + 
+            "Args: convencionEntity: objeto con información de la convención. " +
+            "id: identificador del cargo. " +
+            "Returns: Objeto con la información asociada.")
+    @PutMapping("/convention/{id}")
+    public ResponseEntity<?> updateConvention(@Valid @RequestBody ConvencionEntity convencionEntity, @PathVariable Long id) throws CiadtiException{
+        ConvencionEntity convencionEntityDB = convencionService.findById(id);
+        convencionEntityDB.setNombre(convencionEntity.getNombre());
+        convencionEntityDB.setDescripcion(convencionEntity.getDescripcion());
+        convencionEntityDB.setClaseIcono(convencionEntity.getClaseIcono());
+        convencionEntityDB.setNombreColor(convencionEntity.getNombreColor());
+        return new ResponseEntity<>(convencionService.save(convencionEntityDB), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary = "Elimina una convención",
+        description = "Eliminar una convención" + 
+            "Args: id: identificador de la convención a eliminar. ")
+    @DeleteMapping("/convention/{id}")
+    public ResponseEntity<?> deleteConvention(@PathVariable Long id) throws CiadtiException{
+        configurationMediator.deleteConvention(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Eliminar variables primarias por el id",
+            description = "Elimina lista de variables primarias  por su id." +
+                    "Args: primaryVariableIds: identificadores de los tipos de variables primarias a eliminar.")
+    @DeleteMapping("/convention")
+    public ResponseEntity<?> deleteConventions(@RequestBody List<Long> conventionIds) throws CiadtiException {
+        configurationMediator.deleteConventions(conventionIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
