@@ -1,10 +1,9 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
@@ -12,16 +11,18 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import java.util.*;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,7 @@ public class OperationalManagementController {
     private final GestionOperativaService gestionOperativaService;
     private final TipologiaService tipologiaService;
     private final ConfigurationMediator configurationMediator;
+    private final EstructuraService estructuraService;
 
     @Operation(
         summary = "Obtener o listar las gestiones operativas",
@@ -112,4 +114,11 @@ public class OperationalManagementController {
     public ResponseEntity<?> associateStructure(@RequestBody List<EstructuraEntity> structures){
         return new ResponseEntity<>(configurationMediator.createOperationalManagementsFromStructures(structures), HttpStatus.OK);
     }
+
+
+    @PostMapping("/migrate-structures")
+    public ResponseEntity<?> migrateStructures(@RequestBody ArrayList<EstructuraEntity> estructuras, @RequestParam(required = false) Long idPadre) throws CiadtiException {
+        return new ResponseEntity<>(configurationMediator.migrateStructures(estructuras, idPadre), HttpStatus.OK);
+    }
+
 }

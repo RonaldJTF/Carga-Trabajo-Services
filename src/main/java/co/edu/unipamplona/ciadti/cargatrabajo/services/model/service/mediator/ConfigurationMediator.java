@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -70,6 +69,7 @@ public class ConfigurationMediator {
     private final GestionOperativaService gestionOperativaService;
     private final GeneralExpressionMediator generalExpressionMediator;
     private final ConvencionService convencionService;
+    private final ActividadGestionOperativaService actividadGestionOperativaService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -203,7 +203,6 @@ public class ConfigurationMediator {
 
         structure.setActividad(activity);
         structure.setId(null);
-
         structure.setIdPadre(newParentId);
         estructuraService.save(structure);
         
@@ -242,6 +241,67 @@ public class ConfigurationMediator {
             }
         }
         estructuraService.save(structure);
+    }
+
+    /**
+     * Migra una estructura de la tabla estructura a la tabla gestionoperativa
+     * @param estructuras: lista de estructuras a migrar
+     * @param idPadre: id del nuevo padre de la estructura a migrar
+     * @return
+    * @throws CiadtiException 
+    * @throws Exception
+    */
+     
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public List<GestionOperativaEntity> migrateStructures(List<EstructuraEntity> estructuras, Long idPadre) throws CiadtiException {
+        
+        Long lastOrder = gestionOperativaService.findLastOrderByIdPadre(idPadre);
+        List<GestionOperativaEntity> operationalsManagements = new ArrayList<>();
+        GestionOperativaEntity operationalManagement;
+
+        for (EstructuraEntity estructura : estructuras) {
+            lastOrder++; 
+            EstructuraEntity structure = estructuraService.findById(estructura.getId());
+
+            if (idPadre != null){
+                GestionOperativaEntity gestionOperativaEntity = gestionOperativaService.findById(idPadre);
+
+                Long tipoPadre = gestionOperativaEntity.getIdTipologia();
+                Long tipoHijo = structure.getIdTipologia();
+    
+                if(tipoHijo > tipoPadre){
+                    throw new RuntimeException("Error: La tipología de la estructura a migrar es mayor a la tipología del padre.");
+                }
+            }
+
+            
+
+            operationalManagement = gestionOperativaService.save(GestionOperativaEntity
+                .builder()
+                .nombre(structure.getNombre())
+                .descripcion(structure.getDescripcion())
+                .idTipologia(structure.getIdTipologia())
+                .idPadre(idPadre)
+                .orden(lastOrder)
+                .build());
+
+            if (estructura.getSubEstructuras() != null && !estructura.getSubEstructuras().isEmpty()) {
+                List<GestionOperativaEntity> temp = migrateStructures(estructura.getSubEstructuras(), operationalManagement.getId());
+                operationalManagement.setSubGestionesOperativas(temp);
+            }
+            operationalsManagements.add(operationalManagement);
+
+            ActividadEntity estructuraActividad = actividadService.findByIdEstructura(structure.getId());
+            if(estructuraActividad != null){
+                ActividadGestionOperativaEntity actividadGestionOperativaEntity = ActividadGestionOperativaEntity.builder()
+                    .idGestionOperativa(operationalManagement.getId())
+                    .idActividad(estructuraActividad.getId())
+                    .build();
+
+                actividadGestionOperativaService.save(actividadGestionOperativaEntity);
+            }
+        }
+        return operationalsManagements;
     }
 
     /**
