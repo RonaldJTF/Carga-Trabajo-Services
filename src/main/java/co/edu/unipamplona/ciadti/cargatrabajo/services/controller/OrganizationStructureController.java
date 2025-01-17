@@ -81,6 +81,13 @@ public class OrganizationStructureController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(
+            summary = "Obtener o listar las jerarquías",
+            description = "Obtiene o lista las jerarquías de acuerdo a ciertas variables o parámetros" +
+                    "Args: id: identificador de la jerarquías. " +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase JerarquiaEntity). " +
+                    "Returns: Objeto o lista de objetos con información de las depéndencias. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"/hierarchy", "/hierarchy/{id}"})
     public ResponseEntity<?> getHierarchy(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(JerarquiaEntity.class);
@@ -89,6 +96,10 @@ public class OrganizationStructureController {
         return Methods.getResponseAccordingToId(id, jerarquiaService.findAllFilteredBy(filter));
     }
 
+    @Operation(
+            summary = "Crear una dependencia",
+            description = "Crea una dependencia. " +
+                    "Args: dependencia: objeto con información del dependencia a registrar." )
     @PostMapping("/dependency")
     public ResponseEntity<?> createDependency(@Valid @RequestParam("dependency") String dependencia, @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -99,5 +110,44 @@ public class OrganizationStructureController {
             dependenciaEntity.setIcono(file.getBytes());
         }
         return new ResponseEntity<>(dependenciaService.save(dependenciaEntity), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Obtener o listar las dependencias",
+            description = "Obtiene o lista las dependencias de acuerdo a ciertas variables o parámetros" +
+                    "Args: id: identificador de la dependencia. " +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase DependenciaEntity). " +
+                    "Returns: Objeto o lista de objetos con información de las depéndencias. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
+    @GetMapping(value = {"/dependency", "/dependency/{id}"})
+    public ResponseEntity<?> getDependency(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+        ParameterConverter parameterConverter = new ParameterConverter(DependenciaEntity.class);
+        DependenciaEntity filter = (DependenciaEntity) parameterConverter.converter(request.getParameterMap());
+        filter.setId(id == null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, dependenciaService.findAllFilteredBy(filter));
+    }
+
+    @Operation(
+            summary = "Actualizar una dependencia",
+            description = "Actualiza una dependencia. " +
+                    "Args: dependencia: objeto con información del dependencia." +
+                    "id: identificador de la dependencia." +
+                    "Returns: Objeto con la información asociada.")
+    @PutMapping("/dependency/{id}")
+    public ResponseEntity<?> updateDependency(@Valid @RequestParam("dependency") String dependencia, @RequestParam(value = "file", required = false) MultipartFile file, @PathVariable Long id) throws CiadtiException, IOException {
+        DependenciaEntity dependenciaDB = dependenciaService.findById(id);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        DependenciaEntity dependenciaEntity = objectMapper.readValue(dependencia, DependenciaEntity.class);
+
+        dependenciaDB.setNombre(dependenciaEntity.getNombre());
+        dependenciaDB.setDescripcion(dependenciaEntity.getDescripcion());
+        dependenciaDB.setIdConvencion(dependenciaEntity.getIdConvencion());
+
+        if (file != null) {
+            dependenciaDB.setMimetype(file.getContentType());
+            dependenciaDB.setIcono(file.getBytes());
+        }
+        return new ResponseEntity<>(dependenciaService.save(dependenciaDB), HttpStatus.CREATED);
     }
 }

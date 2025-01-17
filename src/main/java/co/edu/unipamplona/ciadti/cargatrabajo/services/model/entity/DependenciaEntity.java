@@ -11,16 +11,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.config.jackson.JacksonCIA
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.RegistradorDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Image;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -63,6 +54,10 @@ public class DependenciaEntity implements Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "depe_registradopor", nullable = false, length = 250)
     private String registradoPor;
+
+    @OneToOne
+    @JoinColumn(name = "conv_id", insertable = false, updatable = false)
+    private ConvencionEntity convencion;
 
     @JsonIgnore
     @Transient
