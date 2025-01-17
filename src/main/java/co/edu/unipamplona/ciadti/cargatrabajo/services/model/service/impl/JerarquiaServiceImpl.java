@@ -38,7 +38,7 @@ public class JerarquiaServiceImpl implements JerarquiaService {
             jerarquiaDAO.update(
                 entity.getIdOrganigrama(), 
                 entity.getIdDependencia(), 
-                entity.getIdDependenciaPadre(),
+                entity.getIdJerarquiaPadre(),
                 entity.getOrden(),
                 entity.getFechaCambio(), 
                 entity.getRegistradoPor(), 

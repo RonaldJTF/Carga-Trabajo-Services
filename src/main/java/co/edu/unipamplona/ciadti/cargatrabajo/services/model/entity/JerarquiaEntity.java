@@ -2,6 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -34,8 +35,8 @@ public class JerarquiaEntity implements Serializable{
     @Column(name = "depe_id", nullable = false)
     private Long idDependencia;
 
-    @Column(name = "depe_idpadre")
-    private Long idDependenciaPadre;
+    @Column(name = "jera_idpadre")
+    private Long idJerarquiaPadre;
 
     @Column(name = "jera_orden")
     private Long orden;
@@ -57,9 +58,9 @@ public class JerarquiaEntity implements Serializable{
     @JoinColumn(name = "depe_id", insertable = false, updatable = false)
     private DependenciaEntity dependencia;
 
-    @OneToOne
-    @JoinColumn(name = "depe_idpadre", insertable = false, updatable = false)
-    private DependenciaEntity dependenciaPadre;
+    @OneToMany
+    @JoinColumn(name = "jera_idpadre", insertable = false, updatable = false)
+    private List<JerarquiaEntity> subJerarquias;
 
     @JsonIgnore
     @Transient

@@ -15,12 +15,12 @@ public interface JerarquiaDAO extends JpaRepository<JerarquiaEntity, Long>, JpaS
     @Modifying
     @Query(value = """
         update  JerarquiaEntity j set j.idOrganigrama = :idOrganigrama, j.idDependencia = :idDependencia,
-        j.idDependenciaPadre = :idDependenciaPadre, j.orden = :orden,
+        j.idJerarquiaPadre = :idJerarquiaPadre, j.orden = :orden,
         j.fechaCambio = :fechaCambio, j.registradoPor = :registradoPor where j.id = :id
     """)
     int update(@Param("idOrganigrama") Long idOrganigrama,
                @Param("idDependencia") Long idDependencia,
-               @Param("idDependenciaPadre") Long idDependenciaPadre,
+               @Param("idJerarquiaPadre") Long idJerarquiaPadre,
                @Param("orden") Long orden,
                @Param("fechaCambio") Date fechaCambio,
                @Param("registradoPor") String registradoPor,
