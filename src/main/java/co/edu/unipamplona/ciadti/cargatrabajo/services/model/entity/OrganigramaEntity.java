@@ -9,16 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.jackson.JacksonCIADTI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.RegistradorDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,6 +35,7 @@ public class OrganigramaEntity implements Serializable{
     @Column(name = "orga_descripcion", length = 2000)
     private String descripcion;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "norm_id")
     private Long idNormatividad;
 
@@ -54,6 +47,10 @@ public class OrganigramaEntity implements Serializable{
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "orga_registradopor", nullable = false, length = 250)
     private String registradoPor;
+
+    @OneToOne
+    @JoinColumn(name = "norm_id", insertable = false, updatable = false)
+    private NormatividadEntity normatividad;
 
     @JsonIgnore
     @Transient
@@ -70,5 +67,23 @@ public class OrganigramaEntity implements Serializable{
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
         this.registradoPor = registradorDTO.getJsonAsString();
+    }
+
+    @JsonSetter("idNormatividad")
+    public void setIdNormatividad(Long idNormatividad) {
+        if (idNormatividad != null && idNormatividad > 0) {
+            this.idNormatividad = idNormatividad;
+        } else {
+            this.idNormatividad = null;
+        }
+    }
+
+    @JsonSetter("normatividad")
+    public void setNormatividad(NormatividadEntity normatividad) {
+        if (normatividad != null && normatividad.getId() != null) {
+            this.normatividad = normatividad;
+        } else {
+            this.normatividad = null;
+        }
     }
 }

@@ -1,14 +1,13 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.DependenciaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.JerarquiaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.DependenciaService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.JerarquiaService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
@@ -17,24 +16,28 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.Organigrama
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/organization-chart")
 public class OrganizationStructureController {
     private final OrganigramaService organigramaService;
+    private final JerarquiaService jerarquiaService;
+    private final DependenciaService dependenciaService;
 
-     @Operation(
-        summary = "Obtener o listar los organigramas",
-        description = "Obtiene o lista los organigramas de acuerdo a ciertas variables o parámetros" +
-                "Args: id: identificador del organigrama. " +
-                "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase OrganigramaEntity). " +
-                "Returns: Objeto o lista de objetos con información de los organigramas. " +
-                "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
+    @Operation(
+            summary = "Obtener o listar los organigramas",
+            description = "Obtiene o lista los organigramas de acuerdo a ciertas variables o parámetros" +
+                    "Args: id: identificador del organigrama. " +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase OrganigramaEntity). " +
+                    "Returns: Objeto o lista de objetos con información de los organigramas. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"", "/{id}"})
     public ResponseEntity<?> getOrganizationChart(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(OrganigramaEntity.class);
@@ -76,5 +79,25 @@ public class OrganizationStructureController {
     public ResponseEntity<?> deleteOrganizationChart(@PathVariable Long id) throws CiadtiException {
         organigramaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping(value = {"/hierarchy", "/hierarchy/{id}"})
+    public ResponseEntity<?> getHierarchy(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+        ParameterConverter parameterConverter = new ParameterConverter(JerarquiaEntity.class);
+        JerarquiaEntity filter = (JerarquiaEntity) parameterConverter.converter(request.getParameterMap());
+        filter.setIdOrganigrama(id == null ? filter.getIdOrganigrama() : id);
+        return Methods.getResponseAccordingToId(id, jerarquiaService.findAllFilteredBy(filter));
+    }
+
+    @PostMapping("/dependency")
+    public ResponseEntity<?> createDependency(@Valid @RequestParam("dependency") String dependencia, @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        DependenciaEntity dependenciaEntity = objectMapper.readValue(dependencia, DependenciaEntity.class);
+
+        if (file != null) {
+            dependenciaEntity.setMimetype(file.getContentType());
+            dependenciaEntity.setIcono(file.getBytes());
+        }
+        return new ResponseEntity<>(dependenciaService.save(dependenciaEntity), HttpStatus.CREATED);
     }
 }
