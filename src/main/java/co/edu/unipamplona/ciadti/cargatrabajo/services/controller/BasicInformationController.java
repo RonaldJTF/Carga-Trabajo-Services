@@ -121,7 +121,7 @@ public class BasicInformationController {
         ParameterConverter parameterConverter = new ParameterConverter(TipologiaEntity.class);
         TipologiaEntity filter = (TipologiaEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id == null ? filter.getId() : id);
-        return Methods.getResponseAccordingToId(id, tipologiaService.findAllFilteredBy(filter));
+        return Methods.getResponseAccordingToId(id, tipologiaService.findAllWithNextTipologyFilteredBy(filter));
     }
 
     @Operation(
@@ -724,6 +724,11 @@ public class BasicInformationController {
     public ResponseEntity<?> deletePrimaryVariables(@RequestBody List<Long> primaryVariableIds) throws CiadtiException {
         configurationMediator.deleteVariables(primaryVariableIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/typology/orden")
+    public ResponseEntity<?> getOrderOfTypologies(){
+        return new ResponseEntity<>(tipologiaService.findOrderOfTypologies(), HttpStatus.OK);
     }
 
     @Operation(

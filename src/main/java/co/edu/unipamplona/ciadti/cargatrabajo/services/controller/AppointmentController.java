@@ -85,7 +85,7 @@ public class AppointmentController {
         CargoEntity cargoEntityBD = cargoService.findById(id);
         cargoEntityBD.setAsignacionBasicaMensual(cargoEntity.getAsignacionBasicaMensual());
         cargoEntityBD.setTotalCargos(cargoEntity.getTotalCargos());
-        cargoEntityBD.setIdEstructura(cargoEntity.getIdEstructura());
+        cargoEntityBD.setIdJerarquia(cargoEntity.getIdJerarquia());
         cargoEntityBD.setIdVigencia(cargoEntity.getIdVigencia());
         cargoEntityBD.setIdNivel(cargoEntity.getIdNivel());
         cargoEntityBD.setIdEscalaSalarial(cargoEntity.getIdEscalaSalarial());

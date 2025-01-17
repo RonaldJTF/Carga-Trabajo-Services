@@ -28,4 +28,9 @@ public interface JerarquiaDAO extends JpaRepository<JerarquiaEntity, Long>, JpaS
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_JERARQUIA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure (Long id, String registradoPor);
+
+    @Query(value = """
+        SELECT j FROM JerarquiaEntity j WHERE j.idOrganigrama = :idOrganigrama AND j.idDependencia = :idDependencia       
+    """)
+    JerarquiaEntity findByIdOrganigramaAndIdDependencia(@Param("idOrganigrama") Long idOrganigrama, @Param("idDependencia") Long idDependencia);
 }

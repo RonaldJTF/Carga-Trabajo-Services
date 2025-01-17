@@ -80,8 +80,9 @@ public class TipologiaEntity implements Serializable, Cloneable{
     )
     private List<AccionEntity> acciones;
 
-    @OneToOne
-    @JoinColumn(name = "tipo_idtipologiasiguiente", insertable = false, updatable = false)
+    //@OneToOne
+    //@JoinColumn(name = "tipo_idtipologiasiguiente", insertable = false, updatable = false)
+    @Transient
     private TipologiaEntity tipologiaSiguiente;
 
     @JsonIgnore

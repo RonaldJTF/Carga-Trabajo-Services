@@ -1,6 +1,8 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,13 +11,22 @@ import org.springframework.transaction.annotation.Transactional;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.GestionOperativaDAO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class GestionOperativaServiceImpl implements GestionOperativaService{
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private final GestionOperativaDAO gestionOperativaDAO;
 
     @Override
@@ -68,7 +79,64 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
     @Transactional(readOnly = true)
     public List<GestionOperativaEntity> findAllFilteredBy(GestionOperativaEntity filter) {
         SpecificationCiadti<GestionOperativaEntity> specification = new SpecificationCiadti<GestionOperativaEntity>(filter);
-        return gestionOperativaDAO.findAll(specification);
+        List<GestionOperativaEntity> results = gestionOperativaDAO.findAll(specification);
+        results = this.filter(results);
+        this.orderOperationalsManagements(results);
+        return results;
+    }
+
+    /**
+     * Nos permite quedarnos solo con aquellas gestiones operativas que no son hijas en otras
+     * gestiones operativas.
+     */
+    private List<GestionOperativaEntity> filter(List<GestionOperativaEntity> list) {
+        ArrayList<GestionOperativaEntity> listFiltered = new ArrayList<>();
+        Integer INITIAL_COUNT = 0;
+        Integer numberOfMatches;
+        for (GestionOperativaEntity e : list) {
+            numberOfMatches = getNumberOfMatches(e, list, INITIAL_COUNT) - INITIAL_COUNT;
+            if (numberOfMatches == 1) {
+                listFiltered.add(e);
+            }
+        }
+        return listFiltered;
+    }
+
+    /**
+     * Nos permite saber cuantas veces se repite una gestión operativa en una lista, e
+     * incluso considerando las gestiones operativas del padre de manera recursiva.
+     * Nota: Si esa gestión operativa ('gestionOperativaEntity') hace parte de esa misma lista
+     * ('list'), entonces al menos sabrá
+     * que la encontrará una vez, así que si esta 'gestionOperativaEntity' figura como
+     * subGestionOperativa en otra (s) gestión(es) operativas(s),
+     * este valor retornado será mayor que la unidad.
+     */
+    private Integer getNumberOfMatches(GestionOperativaEntity gestionOperativaEntity, List<GestionOperativaEntity> list, Integer cont) {
+        for (GestionOperativaEntity obj : list) {
+            if (obj.getId() == gestionOperativaEntity.getId()) {
+                cont += 1;
+            } else {
+                cont = getNumberOfMatches(gestionOperativaEntity, obj.getSubGestionesOperativas(), cont);
+            }
+        }
+        return cont;
+    }
+
+    private void orderSubOperationalManagements(List<GestionOperativaEntity> operationalsManagements) {
+        List<PropertyComparator<GestionOperativaEntity>> propertyComparators = new ArrayList<>();
+        propertyComparators.add(new PropertyComparator<>("orden", true));
+        propertyComparators.add(new PropertyComparator<>("id", true));
+        MultiPropertyComparator<GestionOperativaEntity> multiPropertyComparator = new MultiPropertyComparator<>(propertyComparators);
+        Collections.sort(operationalsManagements, multiPropertyComparator);
+    }
+
+    private void orderOperationalsManagements(List<GestionOperativaEntity> operationalsManagements) {
+        orderSubOperationalManagements(operationalsManagements);
+        for (GestionOperativaEntity obj : operationalsManagements) {
+            if (obj.getSubGestionesOperativas() != null && !obj.getSubGestionesOperativas().isEmpty()) {
+                orderOperationalsManagements(obj.getSubGestionesOperativas());
+            }
+        }
     }
 
     @Override
@@ -93,5 +161,11 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
     @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
     public int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(Long idPadre, Long inferiorOrder, Long superiorOrder, Long id, int increment) {
         return gestionOperativaDAO.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(idPadre, inferiorOrder, superiorOrder, id, increment);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ActividadEntity findActividadByIdGestionOperativa(Long idGestionOperativa) {
+        return gestionOperativaDAO.findActividadByIdGestionOperativa(idGestionOperativa);
     }
 }

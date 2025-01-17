@@ -55,6 +55,7 @@ public class JerarquiaServiceImpl implements JerarquiaService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteByProcedure(Long id, String register) {
         Integer rows = jerarquiaDAO.deleteByProcedure(id, register);
         if (1 != rows) {
@@ -63,8 +64,15 @@ public class JerarquiaServiceImpl implements JerarquiaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<JerarquiaEntity> findAllFilteredBy(JerarquiaEntity filter) {
         SpecificationCiadti<JerarquiaEntity> specification = new SpecificationCiadti<JerarquiaEntity>(filter);
         return jerarquiaDAO.findAll(specification);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public JerarquiaEntity findByIdOrganigramaAndIdDependencia(Long idOrganigrama, Long idDependencia) {
+        return jerarquiaDAO.findByIdOrganigramaAndIdDependencia(idOrganigrama, idDependencia);
     }
 }

@@ -2,6 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.InventarioTipologiaDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -58,4 +59,20 @@ public interface TipologiaDAO extends JpaRepository<TipologiaEntity, Long>, JpaS
         ORDER BY t.tipo_id DESC;
     """, nativeQuery = true)
     List<InventarioTipologiaDTO> findInventarioTipologia();
+
+    @Query(value = """
+        WITH RECURSIVE hierarchical_typology AS (
+            SELECT tt.*, 1 AS level
+                FROM fortalecimiento.tipologia tt
+                WHERE tt.tipo_esdependencia = '1'
+            UNION ALL
+            SELECT t.*, ht.level + 1
+                FROM fortalecimiento.tipologia t
+                INNER JOIN hierarchical_typology ht ON t.tipo_id  = ht.tipo_idtipologiasiguiente
+        )
+        SELECT t.tipo_id, t.level
+        FROM hierarchical_typology t
+        ORDER BY level;
+    """, nativeQuery = true)
+    List<Object[]> findOrderOfTypologies();
 }

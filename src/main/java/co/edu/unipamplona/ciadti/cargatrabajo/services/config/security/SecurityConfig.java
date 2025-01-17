@@ -73,11 +73,17 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/api/compensation/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/compensation/**").hasAnyRole("ADMINISTRADOR")
 
-                .requestMatchers(HttpMethod.GET,"/api/primary-variable/**", "/api/compensation/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers(HttpMethod.GET,"/api/primary-variable/**", "/api/level-compensation/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/level-compensation/**").hasAnyRole("ADMINISTRADOR")
 
-                .requestMatchers(HttpMethod.GET,"/api/compensation/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers(HttpMethod.GET,"/api/compensation-category/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/compensation-category/**").hasAnyRole("ADMINISTRADOR")
+
+                .requestMatchers(HttpMethod.GET,"/api/operational-management/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers("/api/operational-management/**").hasAnyRole("ADMINISTRADOR")
+
+                .requestMatchers(HttpMethod.GET,"/api/operational-management/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers("/api/operational-management/**").hasAnyRole("ADMINISTRADOR")
 
                 //.requestMatchers(HttpMethod.POST,"/api/operational-management/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR", "DESARROLLADOR")
                 .requestMatchers(HttpMethod.POST, "/api/operational-management/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")

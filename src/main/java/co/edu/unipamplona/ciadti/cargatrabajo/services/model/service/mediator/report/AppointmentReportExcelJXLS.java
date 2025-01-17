@@ -92,23 +92,31 @@ public class AppointmentReportExcelJXLS {
         MultiPropertyComparator<CargoEntity> multiPropertyComparator = new MultiPropertyComparator<>(propertyComparators);
         Collections.sort(appointments, multiPropertyComparator);
 
+        Long idOrganigrama = -1L;
         Long idAlcance = -1L;
         Long idVigencia = -1L;
-        Long idEstructura = -1L;
+        Long idDependencia = -1L;
         Long idNormatividad = -1L;
         Long idNivel = -1L;
 
+        ReportAppointmentDTO org = null;
         ReportAppointmentDTO scope = null;
         ReportAppointmentDTO validity = null;
-        ReportAppointmentDTO structure = null;
-        ReportAppointmentDTO structureAppointment = null;
+        ReportAppointmentDTO dependency = null;
+        ReportAppointmentDTO dependencyAppointment = null;
         ReportAppointmentDTO normativity = null;
         ReportAppointmentDTO level = null;
 
         for (CargoEntity e : appointments){
+            if (!idOrganigrama.equals(e.getOrganigrama().getId())){
+                org = ReportAppointmentDTO.builder().data(e.getOrganigrama()).children(new ArrayList<>()).build();
+                dataset.add(org);
+                idOrganigrama = e.getOrganigrama().getId();
+                idAlcance = -1L;
+            }
             if (!idAlcance.equals(e.getIdAlcance())){
                 scope = ReportAppointmentDTO.builder().data(e.getAlcance()).children(new ArrayList<>()).build();
-                dataset.add(scope);
+                org.getChildren().add(scope);
                 idAlcance = e.getIdAlcance();
                 idVigencia = -1L;
             }
@@ -116,21 +124,21 @@ public class AppointmentReportExcelJXLS {
                 validity = ReportAppointmentDTO.builder().data(e.getVigencia()).children(new ArrayList<>()).build();
                 scope.getChildren().add(validity);
                 idVigencia = e.getIdVigencia();
-                idEstructura = -1L;
+                idDependencia = -1L;
             }
-            if(!idEstructura.equals(e.getIdEstructura())){
-                structure = ReportAppointmentDTO.builder().data(e.getEstructura()).children(new ArrayList<>()).build();
-                validity.getChildren().add(structure);
+            if(!idDependencia.equals(e.getDependencia().getId())){
+                dependency = ReportAppointmentDTO.builder().data(e.getDependencia()).children(new ArrayList<>()).build();
+                validity.getChildren().add(dependency);
 
-                structureAppointment = ReportAppointmentDTO.builder().children(new ArrayList<>()).totalCargos(0).build();
-                structure.getChildren().add(structureAppointment);
+                dependencyAppointment = ReportAppointmentDTO.builder().children(new ArrayList<>()).totalCargos(0).build();
+                dependency.getChildren().add(dependencyAppointment);
 
-                idEstructura = e.getIdEstructura();
+                idDependencia = e.getDependencia().getId();
                 idNormatividad = -1L;
             }
             if(!idNormatividad.equals(e.getIdNormatividad())){
                 normativity = ReportAppointmentDTO.builder().data(e.getNormatividad()).children(new ArrayList<>()).build();
-                structureAppointment.getChildren().add(normativity);
+                dependencyAppointment.getChildren().add(normativity);
                 idNormatividad = e.getIdNormatividad();
                 idNivel = -1L;
             }
@@ -148,7 +156,7 @@ public class AppointmentReportExcelJXLS {
                     .asignacionBasicaMensual(e.getAsignacionBasicaMensual())
                     .valueByCompensation(getValueByCompensation(e))
                     .build());
-            structureAppointment.setTotalCargos(structureAppointment.getTotalCargos() + e.getTotalCargos());
+            dependencyAppointment.setTotalCargos(dependencyAppointment.getTotalCargos() + e.getTotalCargos());
         }
         registry.put("dataset", dataset);
         registry.put("categories", categories);
@@ -166,16 +174,16 @@ public class AppointmentReportExcelJXLS {
         MultiPropertyComparator<CargoEntity> multiPropertyComparator = new MultiPropertyComparator<>(propertyComparators);
         Collections.sort(appointments, multiPropertyComparator);
 
-        Long idEstructura = -1L;
+        Long idDependencia = -1L;
         Long idNivel = -1L;
-        ReportAppointmentDTO structure = null;
+        ReportAppointmentDTO dependency = null;
         ReportAppointmentDTO level = null;
         
         for (CargoEntity e : appointments){
-            if(!idEstructura.equals(e.getIdEstructura())){
-                structure = ReportAppointmentDTO.builder().data(e.getEstructura()).children(new ArrayList<>()).build();
-                dataset.add(structure);
-                idEstructura = e.getIdEstructura();
+            if(!idDependencia.equals(e.getDependencia().getId())){
+                dependency = ReportAppointmentDTO.builder().data(e.getDependencia()).children(new ArrayList<>()).build();
+                dataset.add(dependency);
+                idDependencia = e.getDependencia().getId();
                 idNivel = -1L;
             }
             if(!idNivel.equals(e.getIdNivel())){
@@ -185,7 +193,7 @@ public class AppointmentReportExcelJXLS {
                     .comparativesByScope(new ArrayList<>())
                     .children(new ArrayList<>())
                     .build();
-                structure.getChildren().add(level);
+                dependency.getChildren().add(level);
                 idNivel = e.getIdNivel();
             }
 

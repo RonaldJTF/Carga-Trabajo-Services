@@ -23,6 +23,9 @@ public interface ActividadGestionOperativaDAO extends JpaRepository<ActividadGes
                @Param("registradoPor") String registradoPor,
                @Param("id") Long id);
 
-    @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_ACTIVIDDAGESTIONOPERATIVA(?1, ?2)", nativeQuery = true)
+    @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_ACTIVIDADGESTIONOPERATIVA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure (Long id, String registradoPor);
+
+    @Query(value = "SELECT ago FROM ActividadGestionOperativaEntity ago WHERE ago.idGestionOperativa = :idGestionOperativa")
+    ActividadGestionOperativaEntity findByIdGestionOperativa(@Param("idGestionOperativa") Long idGestionOperativa);
 }

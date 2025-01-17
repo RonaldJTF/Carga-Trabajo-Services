@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
@@ -62,7 +61,7 @@ public class OperationalManagementController {
     @PostMapping
     public ResponseEntity<?> createOperationalManagement(@Valid @RequestBody GestionOperativaEntity gestionOperativaEntity) throws CiadtiException {
         TipologiaEntity firstTypology = tipologiaService.findFirstTipology();
-        TipologiaEntity secondTypology = firstTypology.getTipologiaSiguiente();
+        TipologiaEntity secondTypology = tipologiaService.findById(firstTypology.getIdTipologiaSiguiente());
         gestionOperativaEntity.setIdTipologia(gestionOperativaEntity.getIdTipologia() == null ? secondTypology.getId() : gestionOperativaEntity.getIdTipologia());
         gestionOperativaEntity.setTipologia(tipologiaService.findById(gestionOperativaEntity.getIdTipologia()));
 
@@ -72,8 +71,7 @@ public class OperationalManagementController {
             ? gestionOperativaEntity.getOrden()
             : (lastOrder != null ? lastOrder + 1 : 1)
         );
-
-        return new ResponseEntity<>(gestionOperativaService.save(gestionOperativaEntity), HttpStatus.CREATED);
+        return new ResponseEntity<>(configurationMediator.createOperationalManagement(gestionOperativaEntity), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -94,9 +92,6 @@ public class OperationalManagementController {
         );
         gestionOperativaEntityBD.setDescripcion(gestionOperativaEntity.getDescripcion());
         gestionOperativaEntityBD.setNombre(gestionOperativaEntity.getNombre());
-        gestionOperativaEntityBD.setIdPadre(gestionOperativaEntity.getIdPadre());
-        gestionOperativaEntityBD.setIdTipologia(gestionOperativaEntity.getIdTipologia());
-        gestionOperativaEntityBD.setOrden(gestionOperativaEntity.getOrden());
         return new ResponseEntity<>(configurationMediator.updateOperationalManagement(gestionOperativaEntityBD, previusOrder), HttpStatus.CREATED);
     }
 
@@ -106,7 +101,17 @@ public class OperationalManagementController {
                 "Args: id: identificador de la gestión operativa a eliminar.")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOperationalManagement(@PathVariable Long id) throws CiadtiException {
-        gestionOperativaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+        configurationMediator.deleteOperationalManagement(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Eliminar gestiones operativas por el id",
+            description = "Elimina lista de gestiones operativas por su id." +
+                    "Args: operationManagementIds: identificadores de las gestiones operativas a eliminar.")
+    @DeleteMapping
+    public ResponseEntity<?> deleteOperationalsManagements(@RequestBody List<Long> operationManagementIds) throws CiadtiException {
+        configurationMediator.deleteOperationalsManagements(operationManagementIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -117,8 +122,8 @@ public class OperationalManagementController {
 
 
     @PostMapping("/migrate-structures")
-    public ResponseEntity<?> migrateStructures(@RequestBody ArrayList<EstructuraEntity> estructuras, @RequestParam(required = false) Long idPadre) throws CiadtiException {
-        return new ResponseEntity<>(configurationMediator.migrateStructures(estructuras, idPadre), HttpStatus.OK);
+    public ResponseEntity<?> migrateStructures(@RequestBody ArrayList<EstructuraEntity> estructuras, @RequestParam(required = false) Long idParent) throws CiadtiException {
+        return new ResponseEntity<>(configurationMediator.migrateStructures(estructuras, idParent), HttpStatus.CREATED);
     }
 
 }

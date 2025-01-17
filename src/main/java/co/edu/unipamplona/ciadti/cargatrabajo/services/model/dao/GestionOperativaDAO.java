@@ -8,29 +8,43 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 
 public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntity, Long>, JpaSpecificationExecutor<GestionOperativaEntity>{
 
-    @Query(value = "select coalesce (Max(g.orden), 0) from GestionOperativaEntity g where g.idPadre = :idPadre")
+    @Query(value = """
+        SELECT COALESCE(MAX(g.orden), 0)
+        FROM GestionOperativaEntity g
+        WHERE (:idPadre IS NULL AND g.idPadre IS NULL) OR g.idPadre = :idPadre
+    """)
     Long findLastOrderByIdPadre(@Param("idPadre") Long idPadre);
 
     @Modifying
-    @Query(value = "update EstructuraEntity e set e.orden = e.orden + :increment where e.idPadre = :idPadre and e.orden >= :orden and e.id != :id")
+    @Query(value = """
+        update GestionOperativaEntity g set g.orden = g.orden + :increment 
+        where ((:idPadre IS NULL AND g.idPadre IS NULL) OR g.idPadre = :idPadre) 
+            and g.orden >= :orden and g.id != :id
+    """)
     int updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(@Param("idPadre") Long idPadre,
                                                          @Param("orden") Long orden,
                                                          @Param("id") Long id,
                                                          @Param("increment") int increment);
 
-    @Query(value = "select count(e) > 0 from EstructuraEntity e where e.idPadre = :idPadre and e.orden = :orden and e.id != :id")
+    @Query(value = """
+        select count(g) > 0 from GestionOperativaEntity g 
+        where ((:idPadre IS NULL AND g.idPadre IS NULL) OR g.idPadre = :idPadre)
+            and g.orden = :orden and g.id != :id
+    """)
     boolean existsByIdPadreAndOrdenAndNotId(@Param("idPadre") Long idPadre,
                                             @Param("orden") Long orden,
                                             @Param("id") Long id);
 
     @Modifying
     @Query(value = """
-        update EstructuraEntity e set e.orden = e.orden + :increment where e.idPadre = :idPadre 
-        and e.orden >= :inferiorOrder and  e.orden <= :superiorOrder and e.id != :id
+        update GestionOperativaEntity g set g.orden = g.orden + :increment 
+        where ((:idPadre IS NULL AND g.idPadre IS NULL) OR g.idPadre = :idPadre)
+            and g.orden >= :inferiorOrder and  g.orden <= :superiorOrder and g.id != :id
     """)
     int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(@Param("idPadre") Long idPadre,
                                                     @Param("inferiorOrder") Long inferiorOrder,
@@ -55,4 +69,11 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_GESTIONOPERATIVA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure (Long id, String registradoPor);
+
+    @Query(value = """
+        select a from ActividadEntity a 
+        inner join ActividadGestionOperativaEntity ago on (a.id = ago.idActividad)
+        where ago.idGestionOperativa = :idGestionOperativa
+    """)
+    ActividadEntity findActividadByIdGestionOperativa(@Param("idGestionOperativa") Long idGestionOperativa);
 }

@@ -67,9 +67,10 @@ public class ConfigurationMediator {
     private final CompensacionLabNivelVigenciaService compensacionLabNivelVigenciaService;
     private final CompensacionLabNivelVigValorService compensacionLabNivelVigValorService;
     private final GestionOperativaService gestionOperativaService;
+    private final ActividadGestionOperativaService actividadGestionOperativaService;
     private final GeneralExpressionMediator generalExpressionMediator;
     private final ConvencionService convencionService;
-    private final ActividadGestionOperativaService actividadGestionOperativaService;
+    private final JerarquiaService jerarquiaService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -230,8 +231,9 @@ public class ConfigurationMediator {
     public void reasignStructure(EstructuraEntity structure, Long newParentId) throws Exception {
         structure.setIdPadre(newParentId);
         TipologiaEntity parentTypology = tipologiaService.findById(estructuraService.findTypologyIdOfStructure(newParentId));
-        if (parentTypology != null && parentTypology.getTipologiaSiguiente() != null) {
-            TipologiaEntity newTypology = parentTypology.getTipologiaSiguiente();
+        TipologiaEntity parentNextTypology = tipologiaService.findById(parentTypology.getIdTipologiaSiguiente());
+        if (parentTypology != null && parentNextTypology != null) {
+            TipologiaEntity newTypology = parentNextTypology;
             structure.setIdTipologia(newTypology.getId());
             structure.setTipologia(newTypology);
         }
@@ -254,51 +256,43 @@ public class ConfigurationMediator {
      
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public List<GestionOperativaEntity> migrateStructures(List<EstructuraEntity> estructuras, Long idPadre) throws CiadtiException {
-        
         Long lastOrder = gestionOperativaService.findLastOrderByIdPadre(idPadre);
         List<GestionOperativaEntity> operationalsManagements = new ArrayList<>();
         GestionOperativaEntity operationalManagement;
-
         for (EstructuraEntity estructura : estructuras) {
             lastOrder++; 
             EstructuraEntity structure = estructuraService.findById(estructura.getId());
-
             if (idPadre != null){
                 GestionOperativaEntity gestionOperativaEntity = gestionOperativaService.findById(idPadre);
-
                 Long tipoPadre = gestionOperativaEntity.getIdTipologia();
                 Long tipoHijo = structure.getIdTipologia();
-    
                 if(tipoHijo > tipoPadre){
                     throw new RuntimeException("Error: La tipología de la estructura a migrar es mayor a la tipología del padre.");
                 }
             }
-
-            
-
             operationalManagement = gestionOperativaService.save(GestionOperativaEntity
                 .builder()
                 .nombre(structure.getNombre())
                 .descripcion(structure.getDescripcion())
                 .idTipologia(structure.getIdTipologia())
+                .tipologia(structure.getTipologia())
                 .idPadre(idPadre)
                 .orden(lastOrder)
                 .build());
-
+                
             if (estructura.getSubEstructuras() != null && !estructura.getSubEstructuras().isEmpty()) {
                 List<GestionOperativaEntity> temp = migrateStructures(estructura.getSubEstructuras(), operationalManagement.getId());
                 operationalManagement.setSubGestionesOperativas(temp);
             }
             operationalsManagements.add(operationalManagement);
-
             ActividadEntity estructuraActividad = actividadService.findByIdEstructura(structure.getId());
             if(estructuraActividad != null){
                 ActividadGestionOperativaEntity actividadGestionOperativaEntity = ActividadGestionOperativaEntity.builder()
                     .idGestionOperativa(operationalManagement.getId())
                     .idActividad(estructuraActividad.getId())
                     .build();
-
                 actividadGestionOperativaService.save(actividadGestionOperativaEntity);
+                operationalManagement.setActividad(estructuraActividad);
             }
         }
         return operationalsManagements;
@@ -1653,6 +1647,10 @@ public class ConfigurationMediator {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public CargoEntity saveAppointment(CargoEntity appointment) throws CiadtiException{
+        if (appointment.getIdJerarquia() == null && appointment.getJerarquia() != null){
+            JerarquiaEntity hierarchy = jerarquiaService.findByIdOrganigramaAndIdDependencia(appointment.getJerarquia().getIdOrganigrama(), appointment.getJerarquia().getIdDependencia());
+            
+        }
         cargoService.save(appointment);
         appointment = cargoService.findByAppointmentId(appointment.getId());
         List<VariableEntity> allVariablesInDB = variableService.findAll();
@@ -1672,7 +1670,7 @@ public class ConfigurationMediator {
     @Transactional(readOnly = true)
     private void completeAppointmentInformation(CargoEntity appointment, List<VariableEntity> variables) throws CiadtiException{
         Map<String, Double> primaryVariables = new HashMap<>();
-        primaryVariables.put("", appointment.getAsignacionBasicaMensual());
+        primaryVariables.put("${ASIGNACION_BASICA_MENSUAL}", appointment.getAsignacionBasicaMensual());
         Double asignacionTotal = 0.0;
         for (CompensacionLabNivelVigenciaEntity clnv : appointment.getCompensacionesLaboralesAplicadas()){
             for (CompensacionLabNivelVigValorEntity cnvv : clnv.getValoresCompensacionLabNivelVigencia()){
@@ -1775,6 +1773,22 @@ public class ConfigurationMediator {
     }
 
     /**
+     * Crea una gestión operativa, y reorganiza las subgestiones operativas en el padre que lo contiene.
+     * @param operationalManagement
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public GestionOperativaEntity createOperationalManagement(GestionOperativaEntity operationalManagement) {
+        gestionOperativaService.save(operationalManagement);
+        boolean exists = gestionOperativaService.existsByIdPadreAndOrdenAndNotId(operationalManagement.getIdPadre(), operationalManagement.getOrden(), operationalManagement.getId());
+        if (exists) {
+            System.out.println("EXISTE");
+            gestionOperativaService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(operationalManagement.getIdPadre(), operationalManagement.getOrden(), operationalManagement.getId(), 1);
+        }
+        return operationalManagement;
+    }
+
+    /**
      * Actualiza una gestión operativa (proceso, procedimiento, actividad), y reorganiza las subgestiones operativas en el padre que lo contiene.
      * @param operationalManagement: Informasción de la gestión operativa.
      * @param previousOrder: orden previo/viejo
@@ -1796,6 +1810,66 @@ public class ConfigurationMediator {
             }
         }
         return operationalManagement;
+    }
+
+    /**
+     * Elimina una gestión operativa por su id y todas sus subgestiones operativas en cascada.
+     * @param id: Identificador de la gestión operativa a eliminar.
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteOperationalManagement(Long id) throws CiadtiException {
+        GestionOperativaEntity operationalManagement = gestionOperativaService.findById(id);
+        gestionOperativaService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(operationalManagement.getIdPadre(), operationalManagement.getOrden(), operationalManagement.getId(), -1);
+        if (operationalManagement.getSubGestionesOperativas() != null) {
+            for (GestionOperativaEntity e : operationalManagement.getSubGestionesOperativas()) {
+                deleteOperationalManagement(e.getId());
+            }
+        }
+        ActividadGestionOperativaEntity relashionshipToDelete = actividadGestionOperativaService.findByIdGestionOperativa(id);
+        if (relashionshipToDelete != null) {
+            actividadGestionOperativaService.deleteByProcedure(relashionshipToDelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+        gestionOperativaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+    }
+
+    /**
+     * Elimina todas las gestiones operativas pasadas en el parámetro operationalManagementIds.
+     * @param operationalManagementIds: Contiene los identificadores de las gestiones operativas a eliminar.
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteOperationalsManagements(List<Long> operationalManagementIds) throws CiadtiException {
+        List<Long> deletedOperationalsManagements = new ArrayList<>();
+        for (Long id : operationalManagementIds) {
+            deletedOperationalManagement(id, deletedOperationalsManagements);
+        }
+    }
+
+    /**
+     * Elimina una gestión operativa y sus subgestiones operativas de manera recursiva.
+     * @param id: identificador de la gestión operativa a eliminar.
+     * @param deletedOperationalsManagements: almacena las gestiones operativas que se han eliminado, esto para evitar tratar 
+     * de eliminar una gestión operativa que ha sido eliminada en el mismo proceso.
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    private void deletedOperationalManagement(Long id, List<Long> deletedOperationalsManagements) throws CiadtiException {
+        GestionOperativaEntity operationalManagement = gestionOperativaService.findById(id);
+        gestionOperativaService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(operationalManagement.getIdPadre(), operationalManagement.getOrden(), operationalManagement.getId(), -1);
+        if (operationalManagement.getSubGestionesOperativas() != null) {
+            for (GestionOperativaEntity g : operationalManagement.getSubGestionesOperativas()) {
+                deletedOperationalManagement(g.getId(), deletedOperationalsManagements);
+            }
+        }
+        if (!deletedOperationalsManagements.contains(id)) {
+            ActividadGestionOperativaEntity relashionshipToDelete = actividadGestionOperativaService.findByIdGestionOperativa(id);
+            if (relashionshipToDelete != null) {
+                actividadGestionOperativaService.deleteByProcedure(relashionshipToDelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+            }
+            gestionOperativaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+            deletedOperationalsManagements.add(id);
+        }
     }
 
     public List<GestionOperativaEntity> createOperationalManagementsFromStructures(List<EstructuraEntity> structures) {

@@ -13,12 +13,12 @@ public interface CargoDAO extends JpaRepository<CargoEntity, Long>, JpaSpecifica
     @Modifying
     @Query(value = """
         update CargoEntity c set c.asignacionBasicaMensual =:asignacionBasicaMensual, c.totalCargos =:totalCargos, 
-        c.idEstructura =:idEstructura, c.idNivel =:idNivel, c.idNormatividad =:idNormatividad, c.idEscalaSalarial =:idEscalaSalarial, 
+        c.idJerarquia =:idJerarquia, c.idNivel =:idNivel, c.idNormatividad =:idNormatividad, c.idEscalaSalarial =:idEscalaSalarial, 
         c.idAlcance =:idAlcance, c.idVigencia =:idVigencia, c.fechaCambio =:fechaCambio, c.registradoPor =:registradoPor where c.id =:id
     """)
     int update (@Param("asignacionBasicaMensual") Double asignacionBasicaMensual,
                 @Param("totalCargos") Integer totalCargos,
-                @Param("idEstructura") Long idEstructura,
+                @Param("idJerarquia") Long idJerarquia,
                 @Param("idNivel") Long idNivel,
                 @Param("idNormatividad") Long idNormatividad,
                 @Param("idEscalaSalarial") Long idEscalaSalarial,

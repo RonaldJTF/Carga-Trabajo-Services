@@ -47,8 +47,8 @@ public class CargoEntity implements Serializable, Cloneable {
     @Column(name = "carg_totalcargo", nullable = false, length = 30)
     private Integer totalCargos;
   
-    @Column(name = "estr_id", nullable = false, length = 30)
-    private Long idEstructura;
+    @Column(name = "jera_id", nullable = false, length = 30)
+    private Long idJerarquia;
 
     @Column(name = "nive_id", nullable = false, length = 30)
     private Long idNivel;
@@ -75,8 +75,8 @@ public class CargoEntity implements Serializable, Cloneable {
     private String registradoPor;
 
     @OneToOne
-    @JoinColumn(name = "estr_id", insertable = false, updatable = false)
-    private EstructuraEntity estructura;
+    @JoinColumn(name = "jera_id", insertable = false, updatable = false)
+    private JerarquiaEntity jerarquia;
 
     @OneToOne
     @JoinColumn(name = "nive_id", insertable = false, updatable = false)
@@ -110,6 +110,12 @@ public class CargoEntity implements Serializable, Cloneable {
     @JsonIgnore
     @Transient
     private RegistradorDTO registradorDTO;
+
+    @Transient
+    private DependenciaEntity dependencia;
+
+    @Transient
+    private OrganigramaEntity organigrama;
 
     @PrePersist
     void onCreate() {

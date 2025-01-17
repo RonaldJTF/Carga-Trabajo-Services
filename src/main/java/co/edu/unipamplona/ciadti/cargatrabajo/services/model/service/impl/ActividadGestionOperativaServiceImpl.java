@@ -68,4 +68,9 @@ public class ActividadGestionOperativaServiceImpl implements ActividadGestionOpe
         return actividadGestionOperativaDAO.findAll(specification);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ActividadGestionOperativaEntity findByIdGestionOperativa(Long idGestionOperativa) {
+        return actividadGestionOperativaDAO.findByIdGestionOperativa(idGestionOperativa);
+    }
 }

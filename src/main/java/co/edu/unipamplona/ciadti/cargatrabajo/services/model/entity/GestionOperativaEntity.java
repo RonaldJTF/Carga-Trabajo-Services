@@ -17,6 +17,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
@@ -24,6 +26,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -73,6 +76,18 @@ public class GestionOperativaEntity implements Serializable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name="geop_idpadre", insertable=false, updatable=false)
     private List<GestionOperativaEntity> subGestionesOperativas;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinTable(
+        schema = "FORTALECIMIENTO",
+        name = "ACTIVIDADGESTIONOPERATIVA",
+        joinColumns = {@JoinColumn(name = "geop_id", insertable = false, updatable = false)},
+        inverseJoinColumns = {@JoinColumn(name = "acti_id", insertable = false, updatable = false)},
+        uniqueConstraints = {@UniqueConstraint(
+            columnNames = {"geop_id", "acti_id"}
+        )}
+    )
+    private ActividadEntity actividad;
 
     @JsonIgnore
     @Transient

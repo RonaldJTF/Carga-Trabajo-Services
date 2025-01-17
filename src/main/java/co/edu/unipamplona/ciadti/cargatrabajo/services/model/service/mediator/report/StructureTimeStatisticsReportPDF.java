@@ -88,7 +88,7 @@ public class StructureTimeStatisticsReportPDF {
 
         List<EstructuraEntity> structures = estructuraService.findAllFilteredBy(EstructuraEntity.builder().id(structureId).build());
         EstructuraEntity structureWorkingOn = structures.get(0);
-        TipologiaEntity typology = structureWorkingOn.getTipologia();
+        TipologiaEntity typology = tipologiaService.findWithNextTipologyHierarchicallyById(structureWorkingOn.getIdTipologia());
         
         registry.put("levels", levels);
         registry.put("structures", structures.stream().map(e -> {
