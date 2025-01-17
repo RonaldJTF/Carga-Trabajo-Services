@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.JerarquiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.EstructuraService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
@@ -16,6 +17,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaSe
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
+import io.micrometer.core.ipc.http.HttpSender.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
@@ -126,4 +128,15 @@ public class OperationalManagementController {
         return new ResponseEntity<>(configurationMediator.migrateStructures(estructuras, idParent), HttpStatus.CREATED);
     }
 
+    @PostMapping("/create-operational-management-hierarchy")
+    public ResponseEntity<?> createOperationalManagementHierarchy(@RequestBody List<GestionOperativaEntity> operationalManagements, @RequestParam(required = true) Long hierarchyId)  throws CiadtiException {
+        return new ResponseEntity<>(configurationMediator.createOperationalManagementHierarchy(operationalManagements, hierarchyId), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/get-operational-management")
+    public ResponseEntity<?> getOperationalManagementByHierarchy(@RequestParam(required = true) Long hierarchyId) throws CiadtiException {
+        List<GestionOperativaEntity> gestiones = gestionOperativaService.findOperationalManagementByHierarchy(hierarchyId);
+    return new ResponseEntity<>(gestiones, HttpStatus.OK);
+    }
+    
 }

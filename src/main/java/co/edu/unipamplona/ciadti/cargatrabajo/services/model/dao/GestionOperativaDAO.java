@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -42,15 +43,39 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
 
     @Modifying
     @Query(value = """
+<<<<<<< Updated upstream
         update GestionOperativaEntity g set g.orden = g.orden + :increment 
         where ((:idPadre IS NULL AND g.idPadre IS NULL) OR g.idPadre = :idPadre)
             and g.orden >= :inferiorOrder and  g.orden <= :superiorOrder and g.id != :id
+=======
+    WITH RECURSIVE padres AS (
+        SELECT go.*
+        FROM FORTALECIMIENTO.GESTIONOPERATIVA go
+        INNER JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = go.geop_id
+        WHERE jgo.jera_id = :hierarchyId AND go.tipo_id = 1
+
+        UNION ALL
+
+        SELECT padre.*
+        FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
+        INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
+    )
+    SELECT * FROM padres
+    """, nativeQuery = true)
+    List<GestionOperativaEntity> findOperationalManagementByHierarchy(@Param("hierarchyId") Long hierarchyId);                                   
+
+    @Modifying
+    @Query(value = """
+        update EstructuraEntity e set e.orden = e.orden + :increment where e.idPadre = :idPadre 
+        and e.orden >= :inferiorOrder and  e.orden <= :superiorOrder and e.id != :id
+>>>>>>> Stashed changes
     """)
     int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(@Param("idPadre") Long idPadre,
                                                     @Param("inferiorOrder") Long inferiorOrder,
                                                     @Param("superiorOrder") Long superiorOrder,
                                                     @Param("id") Long id,
                                                     @Param("increment") int increment);
+
                                                     
     @Modifying
     @Query(value = """

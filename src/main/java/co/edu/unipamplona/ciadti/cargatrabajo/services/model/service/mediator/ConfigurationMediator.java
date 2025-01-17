@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -70,7 +71,12 @@ public class ConfigurationMediator {
     private final ActividadGestionOperativaService actividadGestionOperativaService;
     private final GeneralExpressionMediator generalExpressionMediator;
     private final ConvencionService convencionService;
+<<<<<<< Updated upstream
     private final JerarquiaService jerarquiaService;
+=======
+    private final ActividadGestionOperativaService actividadGestionOperativaService;
+    private final JerarquiaGestionOperativaService jerarquiaGestionOperativaService;
+>>>>>>> Stashed changes
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -297,6 +303,36 @@ public class ConfigurationMediator {
         }
         return operationalsManagements;
     }
+
+    /**
+     * Crea la relación entre jerarquias y gestiones operativas
+     * @param operationalManagementList lista de gestiones operativas
+     * @param hierarchyId id de la jerarquia
+     * @return
+    * @throws CiadtiException 
+    * @throws IOException
+    * @throws CloneNotSupportedException
+    */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public List<JerarquiaGestionOperativaEntity> createOperationalManagementHierarchy(List<GestionOperativaEntity> operationalManagementList, Long hierarchyId) throws CiadtiException {
+
+        List<JerarquiaGestionOperativaEntity> jerarquiaGestionOperativaList = new ArrayList<>();
+
+        for(GestionOperativaEntity operationalManagement: operationalManagementList ){
+            GestionOperativaEntity operationalManagementEntity = gestionOperativaService.findById(operationalManagement.getId());
+
+            JerarquiaGestionOperativaEntity jerarquiaGestionOperativaEntity = JerarquiaGestionOperativaEntity.builder()
+                .idJerarquia(hierarchyId)
+                .idGestionOperativa(operationalManagementEntity.getId())
+                .build();
+
+            jerarquiaGestionOperativaService.save(jerarquiaGestionOperativaEntity);
+            jerarquiaGestionOperativaList.add(jerarquiaGestionOperativaEntity);
+        }
+        return jerarquiaGestionOperativaList;
+    }
+
+
 
     /**
      * Crea o actualiza la información de una persona con su respectiva foto de perfil

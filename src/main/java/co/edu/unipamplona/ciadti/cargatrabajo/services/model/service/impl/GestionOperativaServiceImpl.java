@@ -2,8 +2,13 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+<<<<<<< Updated upstream
 import java.util.Collections;
+=======
+import java.util.HashMap;
+>>>>>>> Stashed changes
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,8 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.GestionOperativaDAO;
+<<<<<<< Updated upstream
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
+=======
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.JerarquiaGestionOperativaDAO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
+>>>>>>> Stashed changes
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.JerarquiaGestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
@@ -27,6 +38,7 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
     private EntityManager entityManager;
 
     private final GestionOperativaDAO gestionOperativaDAO;
+    private final JerarquiaGestionOperativaDAO   jerarquiaGestionOperativaDAO;
 
     @Override
     @Transactional(readOnly = true)
@@ -162,9 +174,49 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
         return gestionOperativaDAO.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(idPadre, inferiorOrder, superiorOrder, id, increment);
     }
 
+<<<<<<< Updated upstream
     @Override
     @Transactional(readOnly = true)
     public ActividadEntity findActividadByIdGestionOperativa(Long idGestionOperativa) {
         return gestionOperativaDAO.findActividadByIdGestionOperativa(idGestionOperativa);
+=======
+    /**
+     * Método para obtener la jerarquía completa de gestiones operativas a partir de un ID de jerarquía.
+     * @param hierarchyId El ID de la jerarquía.
+     * @return Lista de gestiones operativas organizadas jerárquicamente.
+     */
+    public List<GestionOperativaEntity> findOperationalManagementByHierarchy(Long hierarchyId) {
+        List<GestionOperativaEntity> operationalManagementList = gestionOperativaDAO.findOperationalManagementByHierarchy(hierarchyId);
+
+        return buildHierarchy(operationalManagementList);
+    }
+
+    /**
+     * Construye la jerarquía a partir de una lista plana de gestiones operativas.
+     * @param operationalManagement Lista de gestiones operativas.
+     * @return Lista jerárquica de gestiones operativas.
+     */
+    private List<GestionOperativaEntity> buildHierarchy(List<GestionOperativaEntity> operationalManagementList) {
+        Map<Long, GestionOperativaEntity> operationalManagementMap = new HashMap<>();
+        List<GestionOperativaEntity> parentOperationalManagement  = new ArrayList<>();
+
+        for (GestionOperativaEntity operationalManagementEntity : operationalManagementList) {
+            operationalManagementMap.put(operationalManagementEntity.getId(), operationalManagementEntity);
+            operationalManagementEntity.setSubGestionesOperativas(new ArrayList<>());
+        }
+
+        for (GestionOperativaEntity entity : operationalManagementList) {
+            if (entity.getIdPadre() == null) {
+                parentOperationalManagement.add(entity);
+            } else {
+                GestionOperativaEntity childOperationalManagement = operationalManagementMap.get(entity.getIdPadre());
+                if (childOperationalManagement != null) {
+                    childOperationalManagement.getSubGestionesOperativas().add(entity);
+                }
+            }
+        }
+
+        return parentOperationalManagement;
+>>>>>>> Stashed changes
     }
 }
