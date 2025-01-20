@@ -85,5 +85,15 @@ public class NormatividadServiceImpl implements NormatividadService{
             return normatividadDAO.findByEsEscalaSalarialAndIdAlcanceIsNull("0");
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<NormatividadEntity> findAppointmentNormativities(String status) {
+        if(status != null){
+            return normatividadDAO.findByEstadoAndEsEscalaSalarialAndIdAlcanceIsNotNull(status, "0");
+        }else{
+            return normatividadDAO.findByEsEscalaSalarialAndIdAlcanceIsNotNull("0");
+        }
+    }
     
 }

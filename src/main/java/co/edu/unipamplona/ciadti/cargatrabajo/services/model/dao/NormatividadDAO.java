@@ -38,5 +38,9 @@ public interface NormatividadDAO extends JpaRepository<NormatividadEntity, Long>
     List<NormatividadEntity> findByEsEscalaSalarialAndIdAlcanceIsNull(String esEscalaSalarial);
     
     List<NormatividadEntity> findByEstadoAndEsEscalaSalarialAndIdAlcanceIsNull(String estado, String esEscalaSalarial);
+
+    List<NormatividadEntity> findByEstadoAndEsEscalaSalarialAndIdAlcanceIsNotNull(String estado, String esEscalaSalarial);
+
+    List<NormatividadEntity> findByEsEscalaSalarialAndIdAlcanceIsNotNull(String esEscalaSalarial);
 }
 

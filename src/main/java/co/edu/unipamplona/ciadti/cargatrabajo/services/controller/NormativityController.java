@@ -96,4 +96,15 @@ public class NormativityController {
     public ResponseEntity<?> getGeneralNormativities(@RequestParam(required = false, name = "status") String status){
         return new ResponseEntity<>(normatividadService.findGeneralNormativities(status), HttpStatus.OK);
     }
+
+    @Operation(
+        summary = "Obtener o listar las normatividades de asignación de cargos, es decir las que tienen "+ 
+                "asociadas un alcance y no son de escalas salariales",
+        description = "Obtiene o lista las normatividades de asignación de cargos de acuerdo al estado. " +
+                "status:Estado de la normatividad '0' o '1' o si no se define entonces no filtra por el estado. " +
+                "Returns: Objeto o lista de objetos con información de las normatividades. ")
+    @GetMapping("/appointment")
+    public ResponseEntity<?> getppointmentNormativities(@RequestParam(required = false, name = "status") String status){
+        return new ResponseEntity<>(normatividadService.findAppointmentNormativities(status), HttpStatus.OK);
+    }
 }

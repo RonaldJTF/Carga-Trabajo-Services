@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.OrganigramaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.OrganigramaService;
@@ -113,6 +114,16 @@ public class OrganizationStructureController {
         DependenciaEntity filter = (DependenciaEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id == null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, dependenciaService.findAllFilteredBy(filter));
+    }
+
+    @Operation(
+            summary = "Eliminar una dependencia por su id",
+            description = "Elimina una dependencia por su id." +
+                    "Args: id: identificador de la dependencia a eliminar.")
+    @DeleteMapping("/dependency/{id}")
+    public ResponseEntity<?> deleteDependency(@PathVariable Long id) throws CiadtiException {
+        dependenciaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(
