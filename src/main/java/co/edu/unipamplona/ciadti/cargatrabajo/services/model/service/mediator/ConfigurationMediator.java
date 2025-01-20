@@ -15,7 +15,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.status.Stat
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -71,12 +69,10 @@ public class ConfigurationMediator {
     private final ActividadGestionOperativaService actividadGestionOperativaService;
     private final GeneralExpressionMediator generalExpressionMediator;
     private final ConvencionService convencionService;
-<<<<<<< Updated upstream
     private final JerarquiaService jerarquiaService;
-=======
-    private final ActividadGestionOperativaService actividadGestionOperativaService;
+    private final DependenciaService dependenciaService;
+    private final OrganigramaService organigramaService;
     private final JerarquiaGestionOperativaService jerarquiaGestionOperativaService;
->>>>>>> Stashed changes
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -303,36 +299,6 @@ public class ConfigurationMediator {
         }
         return operationalsManagements;
     }
-
-    /**
-     * Crea la relación entre jerarquias y gestiones operativas
-     * @param operationalManagementList lista de gestiones operativas
-     * @param hierarchyId id de la jerarquia
-     * @return
-    * @throws CiadtiException 
-    * @throws IOException
-    * @throws CloneNotSupportedException
-    */
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public List<JerarquiaGestionOperativaEntity> createOperationalManagementHierarchy(List<GestionOperativaEntity> operationalManagementList, Long hierarchyId) throws CiadtiException {
-
-        List<JerarquiaGestionOperativaEntity> jerarquiaGestionOperativaList = new ArrayList<>();
-
-        for(GestionOperativaEntity operationalManagement: operationalManagementList ){
-            GestionOperativaEntity operationalManagementEntity = gestionOperativaService.findById(operationalManagement.getId());
-
-            JerarquiaGestionOperativaEntity jerarquiaGestionOperativaEntity = JerarquiaGestionOperativaEntity.builder()
-                .idJerarquia(hierarchyId)
-                .idGestionOperativa(operationalManagementEntity.getId())
-                .build();
-
-            jerarquiaGestionOperativaService.save(jerarquiaGestionOperativaEntity);
-            jerarquiaGestionOperativaList.add(jerarquiaGestionOperativaEntity);
-        }
-        return jerarquiaGestionOperativaList;
-    }
-
-
 
     /**
      * Crea o actualiza la información de una persona con su respectiva foto de perfil
@@ -1946,5 +1912,124 @@ public class ConfigurationMediator {
         for (Long id : conventionIds) {
             deleteConvention(id);
         }
+    }
+
+    /**
+     * Crea una jerarquía junto a su dependencia si esta es definida y reorganiza las subjerarquías del padre que lo contiene
+     * @param hierarchy
+     * @return
+     * @throws CiadtiException 
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public JerarquiaEntity createHierarchy(JerarquiaEntity hierarchy) throws CiadtiException {
+        DependenciaEntity dependency = hierarchy.getDependencia();
+        if (dependency != null){
+            if(dependency.getIdConvencion() != null){
+                ConvencionEntity convention = convencionService.findById(hierarchy.getDependencia().getIdConvencion());
+                dependency.setConvencion(convention);
+            }
+            dependenciaService.save(dependency);
+            hierarchy.setIdDependencia(dependency.getId());
+        }
+        jerarquiaService.save(hierarchy);
+        boolean exists = jerarquiaService.existsByIdPadreAndOrdenAndNotId(hierarchy.getIdPadre(), hierarchy.getOrden(), hierarchy.getId());
+        if (exists) {
+            jerarquiaService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(hierarchy.getIdPadre(), hierarchy.getOrden(), hierarchy.getId(), 1);
+        }
+        return hierarchy;
+    }
+
+    /**
+     * Actualiza una jerarquía junto a su dependencia (si es definida), y reorganiza las subjerarquías en el padre que lo contiene
+     * @param hierarchy
+     * @param previousOrder: orden previo/viejo
+     * @return
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public JerarquiaEntity updateHierarchy(JerarquiaEntity hierarchy, Long previousOrder) {
+        jerarquiaService.save(hierarchy);
+        boolean exists = jerarquiaService.existsByIdPadreAndOrdenAndNotId(hierarchy.getIdPadre(), hierarchy.getOrden(), hierarchy.getId());
+        if (exists) {
+            if (previousOrder != null) {
+                if (previousOrder >= hierarchy.getOrden()) {
+                    jerarquiaService.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(hierarchy.getIdPadre(), hierarchy.getOrden(), previousOrder, hierarchy.getId(), 1);
+                } else {
+                    jerarquiaService.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(hierarchy.getIdPadre(), previousOrder, hierarchy.getOrden(), hierarchy.getId(), -1);
+                }
+            } else {
+                jerarquiaService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(hierarchy.getIdPadre(), hierarchy.getOrden(), hierarchy.getId(), 1);
+            }
+        }
+        return hierarchy;
+    }
+
+    /**
+     * Elimina una jerarquía por su id y todas sus subjerarquías en cascada.
+     * @param id: Identificador de la jerarquía a eliminar
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteHierarchy(Long id) throws CiadtiException {
+        JerarquiaEntity hierarchy = jerarquiaService.findById(id);
+        jerarquiaService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(hierarchy.getIdPadre(), hierarchy.getOrden(), hierarchy.getId(), -1);
+        if (hierarchy.getSubJerarquias() != null) {
+            for (JerarquiaEntity e : hierarchy.getSubJerarquias()) {
+                deleteHierarchy(e.getId());
+            }
+        }
+        jerarquiaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+    }
+
+    /**
+     * Elimina una dependencia y la jerarquía definida. Aquí la dependencia y la jerarquía estan relacionadas, 
+     * pero no elimina las dependencias relacionadas en las jerarquías hijas.
+     * @param dependencyId
+     * @param hierarchyId
+     * @throws CiadtiException 
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteDependencyWithHierarchy(Long hierarchyId) throws CiadtiException {
+        DependenciaEntity dependency = dependenciaService.findByHierarchyId(hierarchyId);
+        deleteHierarchy(hierarchyId);
+        dependenciaService.deleteByProcedure(dependency.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+	}
+
+    /**
+     * Elimina un organigrama y todas las jerarquias en cascada que tiene asociadas.
+     * @param id: Identificador del organigrama a eliminar
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteOrganizationChart(Long id) throws CiadtiException {
+        List<JerarquiaEntity> hierarchies = jerarquiaService.findAllFilteredBy(JerarquiaEntity.builder().idOrganigrama(id).build());
+        for(JerarquiaEntity hierarchy : hierarchies){
+            deleteHierarchy(hierarchy.getId());
+        }
+        organigramaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+    }
+
+    
+    /**
+     * Crea la relación entre jerarquias y gestiones operativas
+     * @param operationalManagementList lista de gestiones operativas
+     * @param hierarchyId id de la jerarquia
+     * @return
+    * @throws CiadtiException 
+    * @throws IOException
+    * @throws CloneNotSupportedException
+    */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public List<JerarquiaGestionOperativaEntity> createOperationalManagementHierarchy(List<GestionOperativaEntity> operationalManagementList, Long hierarchyId) throws CiadtiException {
+        List<JerarquiaGestionOperativaEntity> jerarquiaGestionOperativaList = new ArrayList<>();
+        for(GestionOperativaEntity operationalManagement: operationalManagementList ){
+            GestionOperativaEntity operationalManagementEntity = gestionOperativaService.findById(operationalManagement.getId());
+            JerarquiaGestionOperativaEntity jerarquiaGestionOperativaEntity = JerarquiaGestionOperativaEntity.builder()
+                .idJerarquia(hierarchyId)
+                .idGestionOperativa(operationalManagementEntity.getId())
+                .build();
+            jerarquiaGestionOperativaService.save(jerarquiaGestionOperativaEntity);
+            jerarquiaGestionOperativaList.add(jerarquiaGestionOperativaEntity);
+        }
+        return jerarquiaGestionOperativaList;
     }
 }

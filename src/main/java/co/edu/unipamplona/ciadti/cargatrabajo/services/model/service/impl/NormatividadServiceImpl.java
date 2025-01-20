@@ -75,5 +75,15 @@ public class NormatividadServiceImpl implements NormatividadService{
         SpecificationCiadti<NormatividadEntity> specification = new SpecificationCiadti<NormatividadEntity>(filter);
         return normatividadDAO.findAll(specification);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<NormatividadEntity> findGeneralNormativities(String status) {
+        if(status != null){
+            return normatividadDAO.findByEstadoAndEsEscalaSalarialAndIdAlcanceIsNull(status, "0");
+        }else{
+            return normatividadDAO.findByEsEscalaSalarialAndIdAlcanceIsNull("0");
+        }
+    }
     
 }

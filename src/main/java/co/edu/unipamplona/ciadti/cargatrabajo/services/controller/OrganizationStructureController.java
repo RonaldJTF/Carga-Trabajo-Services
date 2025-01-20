@@ -1,7 +1,9 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ConvencionEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.DependenciaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.JerarquiaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ConvencionService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.DependenciaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.JerarquiaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,10 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.OrganigramaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.OrganigramaService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +32,8 @@ public class OrganizationStructureController {
     private final OrganigramaService organigramaService;
     private final JerarquiaService jerarquiaService;
     private final DependenciaService dependenciaService;
+    private final ConvencionService convencionService;
+    private final ConfigurationMediator configurationMediator;
 
     @Operation(
             summary = "Obtener o listar los organigramas",
@@ -77,7 +81,7 @@ public class OrganizationStructureController {
                     "Args: id: identificador del organigrama a eliminar.")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOrganizationChart(@PathVariable Long id) throws CiadtiException {
-        organigramaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+        configurationMediator.deleteOrganizationChart(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -92,24 +96,8 @@ public class OrganizationStructureController {
     public ResponseEntity<?> getHierarchy(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(JerarquiaEntity.class);
         JerarquiaEntity filter = (JerarquiaEntity) parameterConverter.converter(request.getParameterMap());
-        filter.setIdOrganigrama(id == null ? filter.getIdOrganigrama() : id);
+        filter.setId(id == null ? filter.getId() : id);
         return Methods.getResponseAccordingToId(id, jerarquiaService.findAllFilteredBy(filter));
-    }
-
-    @Operation(
-            summary = "Crear una dependencia",
-            description = "Crea una dependencia. " +
-                    "Args: dependencia: objeto con información del dependencia a registrar." )
-    @PostMapping("/dependency")
-    public ResponseEntity<?> createDependency(@Valid @RequestParam("dependency") String dependencia, @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        DependenciaEntity dependenciaEntity = objectMapper.readValue(dependencia, DependenciaEntity.class);
-
-        if (file != null) {
-            dependenciaEntity.setMimetype(file.getContentType());
-            dependenciaEntity.setIcono(file.getBytes());
-        }
-        return new ResponseEntity<>(dependenciaService.save(dependenciaEntity), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -128,26 +116,88 @@ public class OrganizationStructureController {
     }
 
     @Operation(
-            summary = "Actualizar una dependencia",
-            description = "Actualiza una dependencia. " +
-                    "Args: dependencia: objeto con información del dependencia." +
-                    "id: identificador de la dependencia." +
+            summary = "Crear una jerarquia junto a una dependencia si esta es pasada",
+            description = "Crea una jerarquia junto a una dependencia si esta es pasada. " +
+                    "Args: hierarchyJSON: objeto con información de la jerarquia. " +
                     "Returns: Objeto con la información asociada.")
-    @PutMapping("/dependency/{id}")
-    public ResponseEntity<?> updateDependency(@Valid @RequestParam("dependency") String dependencia, @RequestParam(value = "file", required = false) MultipartFile file, @PathVariable Long id) throws CiadtiException, IOException {
-        DependenciaEntity dependenciaDB = dependenciaService.findById(id);
-
+    @PostMapping("hierarchy")
+    public ResponseEntity<?> create(@Valid @RequestParam("hierarchy") String hierarchyJSON,
+                                    @RequestParam(value = "file", required = false) MultipartFile file) throws IOException, CiadtiException {
         ObjectMapper objectMapper = new ObjectMapper();
-        DependenciaEntity dependenciaEntity = objectMapper.readValue(dependencia, DependenciaEntity.class);
+        JerarquiaEntity jerarquiaEntity = objectMapper.readValue(hierarchyJSON, JerarquiaEntity.class);
 
-        dependenciaDB.setNombre(dependenciaEntity.getNombre());
-        dependenciaDB.setDescripcion(dependenciaEntity.getDescripcion());
-        dependenciaDB.setIdConvencion(dependenciaEntity.getIdConvencion());
+        Long lastOrder = jerarquiaService.findLastOrderByIdPadre(jerarquiaEntity.getIdPadre());
+        jerarquiaEntity.setOrden(
+            jerarquiaEntity.getOrden() != null
+            ? jerarquiaEntity.getOrden()
+            : (lastOrder != null ? lastOrder + 1 : 1)
+        );
 
         if (file != null) {
-            dependenciaDB.setMimetype(file.getContentType());
-            dependenciaDB.setIcono(file.getBytes());
+            if(jerarquiaEntity.getDependencia() != null){
+                jerarquiaEntity.getDependencia().setMimetype(file.getContentType());
+                jerarquiaEntity.getDependencia().setIcono(file.getBytes());
+            }
         }
-        return new ResponseEntity<>(dependenciaService.save(dependenciaDB), HttpStatus.CREATED);
+        return new ResponseEntity<>(configurationMediator.createHierarchy(jerarquiaEntity), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary = "Actualizar una jerarquía junto a su dependencia si esta es definida.",
+        description = "Actualiza una jerarquía junto a su dependencia si esta es definida. " +
+                "Args: hierarchy: objeto con información de la jerarquía. " +
+                "id: identificador de la jerarquía. " +
+                "Returns: Objeto con la información asociada.")
+    @PutMapping("/hierarchy/{id}")
+    public ResponseEntity<?> update(@Valid @RequestParam("hierarchy") String hierarchyJSON,
+                                    @RequestParam(value = "file", required = false) MultipartFile file,
+                                    @PathVariable Long id) throws CiadtiException, IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JerarquiaEntity jerarquiaEntity = objectMapper.readValue(hierarchyJSON, JerarquiaEntity.class);
+
+        JerarquiaEntity jerarquiaEntityBD = jerarquiaService.findById(id);
+        Long previusOrder = jerarquiaEntityBD.getOrden();
+        Long lastOrder = jerarquiaService.findLastOrderByIdPadre(jerarquiaEntity.getIdPadre());
+        jerarquiaEntityBD.setOrden(
+            jerarquiaEntity.getOrden() != null
+            ? jerarquiaEntity.getOrden()
+            : (lastOrder != null ? lastOrder + 1 : 1)
+        );
+        if(jerarquiaEntity.getDependencia() != null){
+            
+            jerarquiaEntityBD.getDependencia().setNombre(jerarquiaEntity.getDependencia().getNombre());
+            jerarquiaEntityBD.getDependencia().setDescripcion(jerarquiaEntity.getDependencia().getDescripcion());
+            jerarquiaEntityBD.getDependencia().setIdConvencion(jerarquiaEntity.getDependencia().getIdConvencion());
+            if(jerarquiaEntity.getDependencia().getIdConvencion() != null){
+                ConvencionEntity convention = convencionService.findById(jerarquiaEntity.getDependencia().getIdConvencion());
+                jerarquiaEntityBD.getDependencia().setConvencion(convention);
+            }
+        }
+
+        if (file != null) {
+            jerarquiaEntityBD.getDependencia().setMimetype(file.getContentType());
+            jerarquiaEntityBD.getDependencia().setIcono(file.getBytes());
+        }
+        return new ResponseEntity<>(configurationMediator.updateHierarchy(jerarquiaEntityBD, previusOrder), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Eliminar una jerarquía por su id",
+            description = "Elimina una jerarquía y sus subjerarquías por su id." +
+                    "Args: id: identificador de la jerarquía a eliminar.")
+    @DeleteMapping("/hierarchy/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) throws CiadtiException {
+        configurationMediator.deleteHierarchy(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Eliminar una jerarquía por su id",
+            description = "Elimina una jerarquía y sus subjerarquías por su id." +
+                    "Args: id: identificador de la jerarquía a eliminar.")
+    @DeleteMapping("/hierarchy/with-dependency/{hierarchyId}")
+    public ResponseEntity<?> deleteWithDependency(@PathVariable Long hierarchyId) throws CiadtiException {
+        configurationMediator.deleteDependencyWithHierarchy(hierarchyId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

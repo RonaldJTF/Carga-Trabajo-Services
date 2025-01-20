@@ -35,7 +35,6 @@ public class OrganigramaEntity implements Serializable{
     @Column(name = "orga_descripcion", length = 2000)
     private String descripcion;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "norm_id")
     private Long idNormatividad;
 

@@ -36,7 +36,7 @@ public class JerarquiaEntity implements Serializable{
     private Long idDependencia;
 
     @Column(name = "jera_idpadre")
-    private Long idJerarquiaPadre;
+    private Long idPadre;
 
     @Column(name = "jera_orden")
     private Long orden;

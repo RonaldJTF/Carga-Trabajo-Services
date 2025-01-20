@@ -111,12 +111,6 @@ public class CargoEntity implements Serializable, Cloneable {
     @Transient
     private RegistradorDTO registradorDTO;
 
-    @Transient
-    private DependenciaEntity dependencia;
-
-    @Transient
-    private OrganigramaEntity organigrama;
-
     @PrePersist
     void onCreate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();

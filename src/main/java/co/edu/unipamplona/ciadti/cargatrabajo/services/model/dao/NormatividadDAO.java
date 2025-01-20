@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.Date;
+import java.util.List;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NormatividadEntity;
 
@@ -33,5 +34,9 @@ public interface NormatividadDAO extends JpaRepository<NormatividadEntity, Long>
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_NORMATIVIDAD(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    List<NormatividadEntity> findByEsEscalaSalarialAndIdAlcanceIsNull(String esEscalaSalarial);
+    
+    List<NormatividadEntity> findByEstadoAndEsEscalaSalarialAndIdAlcanceIsNull(String estado, String esEscalaSalarial);
 }
 

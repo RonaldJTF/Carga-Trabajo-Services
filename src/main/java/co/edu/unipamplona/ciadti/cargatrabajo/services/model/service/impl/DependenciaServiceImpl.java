@@ -71,4 +71,10 @@ public class DependenciaServiceImpl implements DependenciaService{
         SpecificationCiadti<DependenciaEntity> specification = new SpecificationCiadti<DependenciaEntity>(filter);
         return dependenciaDAO.findAll(specification);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DependenciaEntity findByHierarchyId(Long hierarchyId) {
+        return dependenciaDAO.findByHierarchyId(hierarchyId);
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
@@ -37,7 +38,7 @@ public class NormativityController {
                 "Returns: Objeto o lista de objetos con información de las normatividades. " +
                 "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados.")
     @GetMapping(value = {"", "/{id}"})
-    public ResponseEntity<?> getLevel(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+    public ResponseEntity<?> getNormativity(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
         ParameterConverter parameterConverter = new ParameterConverter(NormatividadEntity.class);
         NormatividadEntity filter = (NormatividadEntity) parameterConverter.converter(request.getParameterMap());
         filter.setId(id == null ? filter.getId() : id);
@@ -83,5 +84,16 @@ public class NormativityController {
     public ResponseEntity<?> deleteNormativity(@PathVariable Long id) throws CiadtiException {
         configurationMediator.deleteNormativity(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+        summary = "Obtener o listar las normatividades generales, es decir las que no tienen "+ 
+                "asociadas un alcance y no son de escalas salariales",
+        description = "Obtiene lista las normatividades generales de acuerdo al estado. " +
+                "status:Estado de la normatividad '0' o '1' o si no se define entonces no filtra por el estado. " +
+                "Returns: Objeto o lista de objetos con información de las normatividades. ")
+    @GetMapping("/general")
+    public ResponseEntity<?> getGeneralNormativities(@RequestParam(required = false, name = "status") String status){
+        return new ResponseEntity<>(normatividadService.findGeneralNormativities(status), HttpStatus.OK);
     }
 }

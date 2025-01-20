@@ -95,7 +95,8 @@ public class CargoServiceImpl implements CargoService{
     @Override
     @Transactional(readOnly = true)
     public List<CargoEntity> findAllBy(Map<String, Long[]> filter) {
-        Long[] structureIds = filter.get("dependencies");
+        Long[] organizationChartIds = filter.get("organizationCharts");
+        Long[] dependencyIds = filter.get("dependencies");
         Long[] validityIds = filter.get("validities");
         Long[] scopeIds = filter.get("scopes");
         Long[] levelIds = filter.get("levels");
@@ -103,7 +104,7 @@ public class CargoServiceImpl implements CargoService{
         String jpql= """
             select c.id, c.asignacionBasicaMensual, c.totalCargos, c.idJerarquia, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial,
                 j.orden, 
-                o.id, o.nombre, 
+                o.id, o.nombre, o.descripcion, 
                 d.id, d.nombre, d.icono, d.mimetype,
                 v.nombre, v.anio, v.estado, 
                 a.nombre, 
@@ -138,9 +139,13 @@ public class CargoServiceImpl implements CargoService{
             jpql += "AND c.idVigencia IN :validityIds ";
             parameters.put("validityIds", Arrays.asList(validityIds));
         }
-        if (structureIds != null && structureIds.length > 0){
-            jpql += "AND c.idEstructura IN :structureIds ";
-            parameters.put("structureIds", Arrays.asList(structureIds));
+        if (organizationChartIds != null && organizationChartIds.length > 0){
+            jpql += "AND j.idOrganigrama IN :organizationChartIds ";
+            parameters.put("organizationChartIds", Arrays.asList(organizationChartIds));
+        }
+        if (dependencyIds != null && dependencyIds.length > 0){
+            jpql += "AND j.idDependencia IN :dependencyIds ";
+            parameters.put("dependencyIds", Arrays.asList(dependencyIds));
         }
         if (scopeIds != null && scopeIds.length > 0){
             jpql += "AND c.idAlcance IN :scopeIds ";
@@ -151,7 +156,7 @@ public class CargoServiceImpl implements CargoService{
             parameters.put("levelIds", Arrays.asList(levelIds));
         }
 
-        jpql += "order by c.id asc, j.idOrganigrama asc, j.idDependencia asc, c.idVigencia asc, c.idAlcance asc, c.idNivel asc, clnv.id asc ";
+        jpql += " order by c.id asc, clnv.id asc, cnvv.id asc ";
 
         Query query = entityManager.createQuery(jpql);
 
@@ -179,70 +184,79 @@ public class CargoServiceImpl implements CargoService{
                     .idNormatividad((Long) row[6])
                     .idNivel((Long) row[7])
                     .idEscalaSalarial((Long) row[8])
-                    .jerarquia(JerarquiaEntity.builder().id((Long) row[3]).orden((Long) row[9]).build())
-                    .organigrama(OrganigramaEntity.builder().id((Long) row[10]).nombre((String)row[11]).build())
-                    .dependencia(DependenciaEntity.builder()
-                        .id((Long) row[12])
-                        .nombre((String) row[13])
-                        .icono((byte[]) row[14])
-                        .mimetype((String)row[15])
+                    .jerarquia(JerarquiaEntity.builder()
+                        .id((Long) row[3])
+                        .orden((Long) row[9])
+                        .idOrganigrama((Long) row[10])
+                        .idDependencia((Long) row[13])
+                        .organigrama(OrganigramaEntity.builder()
+                            .id((Long) row[10])
+                            .nombre((String)row[11])
+                            .descripcion((String)row[12]).build())
+                        .dependencia(DependenciaEntity.builder()
+                            .id((Long) row[13])
+                            .nombre((String) row[14])
+                            .icono((byte[]) row[15])
+                            .mimetype((String)row[16])
+                            .build())
                         .build())
                     .vigencia(VigenciaEntity.builder()
                         .id((Long) row[4])
-                        .nombre((String) row[16])
-                        .anio((String)row[17])
-                        .estado((String)row[18])
+                        .nombre((String) row[17])
+                        .anio((String)row[18])
+                        .estado((String)row[19])
                         .build())
                     .alcance(AlcanceEntity.builder()
                         .id((Long) row[5])
-                        .nombre((String) row[19])
+                        .nombre((String) row[20])
                         .build())
                     .normatividad(NormatividadEntity.builder()
                         .id((Long) row[6])
-                        .nombre((String) row[20])
+                        .nombre((String) row[21])
                         .build())
                     .nivel(NivelEntity.builder()
                         .id((Long) row[7])
-                        .descripcion((String) row[21])
+                        .descripcion((String) row[22])
                         .build())
                     .escalaSalarial(EscalaSalarialEntity.builder()
                         .id((Long) row[8])
-                        .nombre((String) row[22])
-                        .codigo((String) row[23])
+                        .nombre((String) row[23])
+                        .codigo((String) row[24])
                         .build())
                     .compensacionesLaboralesAplicadas(new ArrayList<>())
                     .build();
                 appointments.add(appointment);
                 appointmentId = (Long) row[0];
+                clnvId = -1L;
             }
 
-            if(row[24] != null){
-                if((Long) row[24] != clnvId){
+            if(row[25] != null){
+                if((Long) row[25] != clnvId){
                     compensacionLabNivelVigencia = CompensacionLabNivelVigenciaEntity.builder()
-                        .id((Long) row[24])
-                        .idVigencia((Long) row[25])
-                        .idNivel((Long) row[26])
-                        .idEscalaSalarial((Long) row[27])
-                        .idCompensacionLaboral((Long) row[28])
+                        .id((Long) row[25])
+                        .idVigencia((Long) row[26])
+                        .idNivel((Long) row[27])
+                        .idEscalaSalarial((Long) row[28])
+                        .idCompensacionLaboral((Long) row[29])
                         .compensacionLaboral(CompensacionLaboralEntity.builder()
-                            .id((Long) row[28])
-                            .nombre((String) row[29])
-                            .idCategoria((Long) row[30])
-                            .idPeriodicidad((Long) row[31])
-                            .periodicidad(PeriodicidadEntity.builder().id((Long) row[31]).nombre((String) row[32]).frecuenciaAnual((Long) row[33]).build())
-                            .categoria(CategoriaEntity.builder().nombre((String) row[34]).build())
+                            .id((Long) row[29])
+                            .nombre((String) row[30])
+                            .idCategoria((Long) row[31])
+                            .idPeriodicidad((Long) row[32])
+                            .periodicidad(PeriodicidadEntity.builder().id((Long) row[32]).nombre((String) row[33]).frecuenciaAnual((Long) row[34]).build())
+                            .categoria(CategoriaEntity.builder().nombre((String) row[35]).build())
                             .build())
                         .valoresCompensacionLabNivelVigencia(new ArrayList<>())
                         .build();
                     appointment.getCompensacionesLaboralesAplicadas().add(compensacionLabNivelVigencia);
-                    clnvId = (Long) row[21];
+                    clnvId = (Long) row[25];
                 }
-                if(row[35] != null){
+                if(row[36] != null){
                     CompensacionLabNivelVigValorEntity cnvv = CompensacionLabNivelVigValorEntity.builder()
-                        .id((Long) row[35])
-                        .idCompensacionLabNivelVigencia((Long) row[36])
-                        .idRegla((Long) row[37])
-                        .idVariable((Long) row[38])
+                        .id((Long) row[36])
+                        .idCompensacionLabNivelVigencia((Long) row[37])
+                        .idRegla((Long) row[38])
+                        .idVariable((Long) row[39])
                         .build();
                     compensacionLabNivelVigencia.getValoresCompensacionLabNivelVigencia().add(cnvv);
                 }
@@ -258,7 +272,7 @@ public class CargoServiceImpl implements CargoService{
         String jpql= """
             select c.id, c.asignacionBasicaMensual, c.totalCargos, c.idJerarquia, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial,
                 j.orden, 
-                o.id, o.nombre, 
+                o.id, o.nombre, o.descripcion, 
                 d.id, d.nombre, d.icono, d.mimetype,
                 v.nombre, v.anio, v.estado, 
                 a.nombre, 
@@ -311,69 +325,78 @@ public class CargoServiceImpl implements CargoService{
                     .idNormatividad((Long) row[6])
                     .idNivel((Long) row[7])
                     .idEscalaSalarial((Long) row[8])
-                    .jerarquia(JerarquiaEntity.builder().id((Long) row[3]).orden((Long) row[9]).build())
-                    .organigrama(OrganigramaEntity.builder().id((Long) row[10]).nombre((String)row[11]).build())
-                    .dependencia(DependenciaEntity.builder()
-                        .id((Long) row[12])
-                        .nombre((String) row[13])
-                        .icono((byte[]) row[14])
-                        .mimetype((String)row[15])
+                    .jerarquia(JerarquiaEntity.builder()
+                        .id((Long) row[3])
+                        .orden((Long) row[9])
+                        .idOrganigrama((Long) row[10])
+                        .idDependencia((Long) row[13])
+                        .organigrama(OrganigramaEntity.builder()
+                            .id((Long) row[10])
+                            .nombre((String)row[11])
+                            .descripcion((String)row[12]).build())
+                        .dependencia(DependenciaEntity.builder()
+                            .id((Long) row[13])
+                            .nombre((String) row[14])
+                            .icono((byte[]) row[15])
+                            .mimetype((String)row[16])
+                            .build())
                         .build())
                     .vigencia(VigenciaEntity.builder()
                         .id((Long) row[4])
-                        .nombre((String) row[16])
-                        .anio((String)row[17])
-                        .estado((String)row[18])
+                        .nombre((String) row[17])
+                        .anio((String)row[18])
+                        .estado((String)row[19])
                         .build())
                     .alcance(AlcanceEntity.builder()
                         .id((Long) row[5])
-                        .nombre((String) row[19])
+                        .nombre((String) row[20])
                         .build())
                     .normatividad(NormatividadEntity.builder()
                         .id((Long) row[6])
-                        .nombre((String) row[20])
+                        .nombre((String) row[21])
                         .build())
                     .nivel(NivelEntity.builder()
                         .id((Long) row[7])
-                        .descripcion((String) row[21])
+                        .descripcion((String) row[22])
                         .build())
                     .escalaSalarial(EscalaSalarialEntity.builder()
                         .id((Long) row[8])
-                        .nombre((String) row[22])
-                        .codigo((String) row[23])
+                        .nombre((String) row[23])
+                        .codigo((String) row[24])
                         .build())
                     .compensacionesLaboralesAplicadas(new ArrayList<>())
                     .build();
                 appointmentId = (Long) row[0];
+                clnvId = -1L;
             }
 
-            if(row[24] != null){
-                if((Long) row[24] != clnvId){
+            if(row[25] != null){
+                if((Long) row[25] != clnvId){
                     compensacionLabNivelVigencia = CompensacionLabNivelVigenciaEntity.builder()
-                        .id((Long) row[24])
-                        .idVigencia((Long) row[25])
-                        .idNivel((Long) row[26])
-                        .idEscalaSalarial((Long) row[27])
-                        .idCompensacionLaboral((Long) row[28])
+                        .id((Long) row[25])
+                        .idVigencia((Long) row[26])
+                        .idNivel((Long) row[27])
+                        .idEscalaSalarial((Long) row[28])
+                        .idCompensacionLaboral((Long) row[29])
                         .compensacionLaboral(CompensacionLaboralEntity.builder()
-                            .id((Long) row[28])
-                            .nombre((String) row[29])
-                            .idCategoria((Long) row[30])
-                            .idPeriodicidad((Long) row[31])
-                            .periodicidad(PeriodicidadEntity.builder().id((Long) row[31]).nombre((String) row[32]).frecuenciaAnual((Long) row[33]).build())
-                            .categoria(CategoriaEntity.builder().nombre((String) row[34]).build())
+                            .id((Long) row[29])
+                            .nombre((String) row[30])
+                            .idCategoria((Long) row[31])
+                            .idPeriodicidad((Long) row[32])
+                            .periodicidad(PeriodicidadEntity.builder().id((Long) row[32]).nombre((String) row[33]).frecuenciaAnual((Long) row[34]).build())
+                            .categoria(CategoriaEntity.builder().nombre((String) row[35]).build())
                             .build())
                         .valoresCompensacionLabNivelVigencia(new ArrayList<>())
                         .build();
                     appointment.getCompensacionesLaboralesAplicadas().add(compensacionLabNivelVigencia);
-                    clnvId = (Long) row[21];
+                    clnvId = (Long) row[25];
                 }
-                if(row[35] != null){
+                if(row[36] != null){
                     CompensacionLabNivelVigValorEntity cnvv = CompensacionLabNivelVigValorEntity.builder()
-                        .id((Long) row[35])
-                        .idCompensacionLabNivelVigencia((Long) row[36])
-                        .idRegla((Long) row[37])
-                        .idVariable((Long) row[38])
+                        .id((Long) row[36])
+                        .idCompensacionLabNivelVigencia((Long) row[37])
+                        .idRegla((Long) row[38])
+                        .idVariable((Long) row[39])
                         .build();
                     compensacionLabNivelVigencia.getValoresCompensacionLabNivelVigencia().add(cnvv);
                 }

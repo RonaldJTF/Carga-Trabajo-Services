@@ -41,13 +41,7 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
                                             @Param("orden") Long orden,
                                             @Param("id") Long id);
 
-    @Modifying
     @Query(value = """
-<<<<<<< Updated upstream
-        update GestionOperativaEntity g set g.orden = g.orden + :increment 
-        where ((:idPadre IS NULL AND g.idPadre IS NULL) OR g.idPadre = :idPadre)
-            and g.orden >= :inferiorOrder and  g.orden <= :superiorOrder and g.id != :id
-=======
     WITH RECURSIVE padres AS (
         SELECT go.*
         FROM FORTALECIMIENTO.GESTIONOPERATIVA go
@@ -68,14 +62,12 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
     @Query(value = """
         update EstructuraEntity e set e.orden = e.orden + :increment where e.idPadre = :idPadre 
         and e.orden >= :inferiorOrder and  e.orden <= :superiorOrder and e.id != :id
->>>>>>> Stashed changes
     """)
     int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(@Param("idPadre") Long idPadre,
                                                     @Param("inferiorOrder") Long inferiorOrder,
                                                     @Param("superiorOrder") Long superiorOrder,
                                                     @Param("id") Long id,
                                                     @Param("increment") int increment);
-
                                                     
     @Modifying
     @Query(value = """

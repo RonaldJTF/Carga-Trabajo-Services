@@ -2,11 +2,8 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-<<<<<<< Updated upstream
 import java.util.Collections;
-=======
 import java.util.HashMap;
->>>>>>> Stashed changes
 import java.util.List;
 import java.util.Map;
 
@@ -16,14 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.GestionOperativaDAO;
-<<<<<<< Updated upstream
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
-=======
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.JerarquiaGestionOperativaDAO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
->>>>>>> Stashed changes
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.JerarquiaGestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
@@ -36,9 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class GestionOperativaServiceImpl implements GestionOperativaService{
     @PersistenceContext
     private EntityManager entityManager;
-
     private final GestionOperativaDAO gestionOperativaDAO;
-    private final JerarquiaGestionOperativaDAO   jerarquiaGestionOperativaDAO;
 
     @Override
     @Transactional(readOnly = true)
@@ -174,12 +163,12 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
         return gestionOperativaDAO.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(idPadre, inferiorOrder, superiorOrder, id, increment);
     }
 
-<<<<<<< Updated upstream
     @Override
     @Transactional(readOnly = true)
     public ActividadEntity findActividadByIdGestionOperativa(Long idGestionOperativa) {
         return gestionOperativaDAO.findActividadByIdGestionOperativa(idGestionOperativa);
-=======
+    }
+    
     /**
      * Método para obtener la jerarquía completa de gestiones operativas a partir de un ID de jerarquía.
      * @param hierarchyId El ID de la jerarquía.
@@ -187,7 +176,6 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
      */
     public List<GestionOperativaEntity> findOperationalManagementByHierarchy(Long hierarchyId) {
         List<GestionOperativaEntity> operationalManagementList = gestionOperativaDAO.findOperationalManagementByHierarchy(hierarchyId);
-
         return buildHierarchy(operationalManagementList);
     }
 
@@ -217,6 +205,5 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
         }
 
         return parentOperationalManagement;
->>>>>>> Stashed changes
     }
 }

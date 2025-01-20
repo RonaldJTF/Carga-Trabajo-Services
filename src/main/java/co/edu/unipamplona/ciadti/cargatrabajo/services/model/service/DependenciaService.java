@@ -4,4 +4,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.DependenciaE
 
 public interface DependenciaService extends CommonService<DependenciaEntity>{
 
+    DependenciaEntity findByHierarchyId(Long hierarchyId);
+
 }

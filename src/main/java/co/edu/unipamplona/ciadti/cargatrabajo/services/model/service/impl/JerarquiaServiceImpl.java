@@ -42,7 +42,7 @@ public class JerarquiaServiceImpl implements JerarquiaService {
             jerarquiaDAO.update(
                 entity.getIdOrganigrama(), 
                 entity.getIdDependencia(), 
-                entity.getIdJerarquiaPadre(),
+                entity.getIdPadre(),
                 entity.getOrden(),
                 entity.getFechaCambio(), 
                 entity.getRegistradoPor(), 
@@ -136,4 +136,29 @@ public class JerarquiaServiceImpl implements JerarquiaService {
             }
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long findLastOrderByIdPadre(Long idPadre) {
+        return jerarquiaDAO.findLastOrderByIdPadre(idPadre);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(Long idPadre, Long orden, Long id, int increment) {
+        return jerarquiaDAO.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(idPadre, orden, id, increment);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByIdPadreAndOrdenAndNotId(Long idPadre, Long orden, Long id) {
+        return jerarquiaDAO.existsByIdPadreAndOrdenAndNotId(idPadre, orden, id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {RuntimeException.class, Exception.class})
+    public int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(Long idPadre, Long inferiorOrder, Long superiorOrder, Long id, int increment) {
+        return jerarquiaDAO.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(idPadre, inferiorOrder, superiorOrder, id, increment);
+    }
+
 }

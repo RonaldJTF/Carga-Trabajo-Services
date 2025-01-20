@@ -3,6 +3,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.r
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -82,15 +83,14 @@ public class AppointmentReportExcelJXLS {
         List<CategoriaEntity> categories = this.getCategories(appointments);
         List<ReportAppointmentDTO> dataset = new ArrayList<>();
 
-        List<PropertyComparator<CargoEntity>> propertyComparators = new ArrayList<>();
-        propertyComparators.add(new PropertyComparator<>("idAlcance", true));
-        propertyComparators.add(new PropertyComparator<>("idVigencia", true));
-        propertyComparators.add(new PropertyComparator<>("idEstructura", true));
-        propertyComparators.add(new PropertyComparator<>("idNormatividad", true));
-        propertyComparators.add(new PropertyComparator<>("idNivel", true));
-        propertyComparators.add(new PropertyComparator<>("idEscalaSalarial", true));
-        MultiPropertyComparator<CargoEntity> multiPropertyComparator = new MultiPropertyComparator<>(propertyComparators);
-        Collections.sort(appointments, multiPropertyComparator);
+        appointments.sort(Comparator
+            .comparing((CargoEntity appointment) -> appointment.getJerarquia().getIdOrganigrama())
+            .thenComparing(CargoEntity::getIdAlcance)
+            .thenComparing(CargoEntity::getIdVigencia)
+            .thenComparing((CargoEntity appointment) -> appointment.getJerarquia().getIdDependencia())
+            .thenComparing(CargoEntity::getIdNormatividad)
+            .thenComparing(CargoEntity::getIdNivel)
+            .thenComparing(CargoEntity::getIdEscalaSalarial));
 
         Long idOrganigrama = -1L;
         Long idAlcance = -1L;
@@ -108,10 +108,10 @@ public class AppointmentReportExcelJXLS {
         ReportAppointmentDTO level = null;
 
         for (CargoEntity e : appointments){
-            if (!idOrganigrama.equals(e.getOrganigrama().getId())){
-                org = ReportAppointmentDTO.builder().data(e.getOrganigrama()).children(new ArrayList<>()).build();
+            if (!idOrganigrama.equals(e.getJerarquia().getIdOrganigrama())){
+                org = ReportAppointmentDTO.builder().data(e.getJerarquia().getOrganigrama()).children(new ArrayList<>()).build();
                 dataset.add(org);
-                idOrganigrama = e.getOrganigrama().getId();
+                idOrganigrama = e.getJerarquia().getIdOrganigrama();
                 idAlcance = -1L;
             }
             if (!idAlcance.equals(e.getIdAlcance())){
@@ -126,14 +126,14 @@ public class AppointmentReportExcelJXLS {
                 idVigencia = e.getIdVigencia();
                 idDependencia = -1L;
             }
-            if(!idDependencia.equals(e.getDependencia().getId())){
-                dependency = ReportAppointmentDTO.builder().data(e.getDependencia()).children(new ArrayList<>()).build();
+            if(!idDependencia.equals(e.getJerarquia().getIdDependencia())){
+                dependency = ReportAppointmentDTO.builder().data(e.getJerarquia().getDependencia()).children(new ArrayList<>()).build();
                 validity.getChildren().add(dependency);
 
                 dependencyAppointment = ReportAppointmentDTO.builder().children(new ArrayList<>()).totalCargos(0).build();
                 dependency.getChildren().add(dependencyAppointment);
 
-                idDependencia = e.getDependencia().getId();
+                idDependencia = e.getJerarquia().getIdDependencia();
                 idNormatividad = -1L;
             }
             if(!idNormatividad.equals(e.getIdNormatividad())){
@@ -168,22 +168,29 @@ public class AppointmentReportExcelJXLS {
         List<ReportAppointmentDTO> dataset = new ArrayList<>();
         List<ReportAppointmentDTO.ComparativeAttribute> comparativesByScope = buildComperatives(appointments);
 
-        List<PropertyComparator<CargoEntity>> propertyComparators = new ArrayList<>();
-        propertyComparators.add(new PropertyComparator<>("idEstructura", true));
-        propertyComparators.add(new PropertyComparator<>("idNivel", true));
-        MultiPropertyComparator<CargoEntity> multiPropertyComparator = new MultiPropertyComparator<>(propertyComparators);
-        Collections.sort(appointments, multiPropertyComparator);
+        appointments.sort(Comparator
+            .comparing((CargoEntity appointment) -> appointment.getJerarquia().getIdOrganigrama())
+            .thenComparing((CargoEntity appointment) -> appointment.getJerarquia().getIdDependencia())
+            .thenComparing(CargoEntity::getIdNivel));
 
+        Long idOrganigrama = -1L;
         Long idDependencia = -1L;
         Long idNivel = -1L;
+        ReportAppointmentDTO organizationChart = null;
         ReportAppointmentDTO dependency = null;
         ReportAppointmentDTO level = null;
         
         for (CargoEntity e : appointments){
-            if(!idDependencia.equals(e.getDependencia().getId())){
-                dependency = ReportAppointmentDTO.builder().data(e.getDependencia()).children(new ArrayList<>()).build();
-                dataset.add(dependency);
-                idDependencia = e.getDependencia().getId();
+            if(!idOrganigrama.equals(e.getJerarquia().getIdOrganigrama())){
+                organizationChart = ReportAppointmentDTO.builder().data(e.getJerarquia().getOrganigrama()).children(new ArrayList<>()).build();
+                dataset.add(organizationChart);
+                idOrganigrama = e.getJerarquia().getIdOrganigrama();
+                idDependencia = -1L;
+            }
+            if(!idDependencia.equals(e.getJerarquia().getIdDependencia())){
+                dependency = ReportAppointmentDTO.builder().data(e.getJerarquia().getDependencia()).children(new ArrayList<>()).build();
+                organizationChart.getChildren().add(dependency);
+                idDependencia = e.getJerarquia().getIdDependencia();
                 idNivel = -1L;
             }
             if(!idNivel.equals(e.getIdNivel())){
@@ -214,19 +221,21 @@ public class AppointmentReportExcelJXLS {
         }
 
         for(ReportAppointmentDTO ra : dataset){
-            for (ReportAppointmentDTO l : ra.getChildren()){
-                for(ComparativeAttribute ca : l.getComparativesByScope()){
-                    if(ca.getKey().contains("-")){
-                        String[] partes = ca.getKey().split("-");
-                        String key1 = partes[0];
-                        String key2 = partes[1]; 
-                        ComparativeAttribute attr1 = getComparativeAttribute(l.getComparativesByScope(), key1);
-                        ComparativeAttribute attr2 = getComparativeAttribute(l.getComparativesByScope(), key2);
-                        ca.setAsignacionBasicaAnual(attr1.getAsignacionBasicaAnual() - attr2.getAsignacionBasicaAnual());
-                        ca.setTotalCargos(attr1.getTotalCargos() - attr2.getTotalCargos());
+           for(ReportAppointmentDTO s : ra.getChildren()){
+                for (ReportAppointmentDTO l : s.getChildren()){
+                    for(ComparativeAttribute ca : l.getComparativesByScope()){
+                        if(ca.getKey().contains("-")){
+                            String[] partes = ca.getKey().split("-");
+                            String key1 = partes[0];
+                            String key2 = partes[1]; 
+                            ComparativeAttribute attr1 = getComparativeAttribute(l.getComparativesByScope(), key1);
+                            ComparativeAttribute attr2 = getComparativeAttribute(l.getComparativesByScope(), key2);
+                            ca.setAsignacionBasicaAnual(attr1.getAsignacionBasicaAnual() - attr2.getAsignacionBasicaAnual());
+                            ca.setTotalCargos(attr1.getTotalCargos() - attr2.getTotalCargos());
+                        }
                     }
                 }
-            }
+           }
         }
         registry.put("comparativeDataset", dataset);
         registry.put("comparativesByScope", comparativesByScope);

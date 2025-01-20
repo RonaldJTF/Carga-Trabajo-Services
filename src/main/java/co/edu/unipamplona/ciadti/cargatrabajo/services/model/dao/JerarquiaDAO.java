@@ -15,12 +15,12 @@ public interface JerarquiaDAO extends JpaRepository<JerarquiaEntity, Long>, JpaS
     @Modifying
     @Query(value = """
         update  JerarquiaEntity j set j.idOrganigrama = :idOrganigrama, j.idDependencia = :idDependencia,
-        j.idJerarquiaPadre = :idJerarquiaPadre, j.orden = :orden,
+        j.idPadre = :idPadre, j.orden = :orden,
         j.fechaCambio = :fechaCambio, j.registradoPor = :registradoPor where j.id = :id
     """)
     int update(@Param("idOrganigrama") Long idOrganigrama,
                @Param("idDependencia") Long idDependencia,
-               @Param("idJerarquiaPadre") Long idJerarquiaPadre,
+               @Param("idPadre") Long idPadre,
                @Param("orden") Long orden,
                @Param("fechaCambio") Date fechaCambio,
                @Param("registradoPor") String registradoPor,
@@ -33,4 +33,43 @@ public interface JerarquiaDAO extends JpaRepository<JerarquiaEntity, Long>, JpaS
         SELECT j FROM JerarquiaEntity j WHERE j.idOrganigrama = :idOrganigrama AND j.idDependencia = :idDependencia       
     """)
     JerarquiaEntity findByIdOrganigramaAndIdDependencia(@Param("idOrganigrama") Long idOrganigrama, @Param("idDependencia") Long idDependencia);
+
+    @Query(value = """
+        SELECT COALESCE(MAX(j.orden), 0)
+        FROM JerarquiaEntity j
+        WHERE (:idPadre IS NULL AND j.idPadre IS NULL) OR j.idPadre = :idPadre
+    """)
+    Long findLastOrderByIdPadre(@Param("idPadre") Long idPadre);
+
+    @Modifying
+    @Query(value = """
+        update JerarquiaEntity j set j.orden = j.orden + :increment 
+        where ((:idPadre IS NULL AND j.idPadre IS NULL) OR j.idPadre = :idPadre) 
+            and j.orden >= :orden and j.id != :id
+    """)
+    int updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(@Param("idPadre") Long idPadre,
+                                                         @Param("orden") Long orden,
+                                                         @Param("id") Long id,
+                                                         @Param("increment") int increment);
+
+    @Query(value = """
+        select count(j) > 0 from JerarquiaEntity j 
+        where ((:idPadre IS NULL AND j.idPadre IS NULL) OR j.idPadre = :idPadre)
+            and j.orden = :orden and j.id != :id
+    """)
+    boolean existsByIdPadreAndOrdenAndNotId(@Param("idPadre") Long idPadre,
+                                            @Param("orden") Long orden,
+                                            @Param("id") Long id);
+
+    @Modifying
+    @Query(value = """
+        update JerarquiaEntity j set j.orden = j.orden + :increment 
+        where ((:idPadre IS NULL AND j.idPadre IS NULL) OR j.idPadre = :idPadre)
+            and j.orden >= :inferiorOrder and  j.orden <= :superiorOrder and j.id != :id
+    """)
+    int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(@Param("idPadre") Long idPadre,
+                                                    @Param("inferiorOrder") Long inferiorOrder,
+                                                    @Param("superiorOrder") Long superiorOrder,
+                                                    @Param("id") Long id,
+                                                    @Param("increment") int increment);
 }

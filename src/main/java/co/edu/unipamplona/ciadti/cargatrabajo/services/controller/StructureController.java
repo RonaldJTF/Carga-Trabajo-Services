@@ -169,7 +169,6 @@ public class StructureController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     @DeleteMapping
     public ResponseEntity<?> deleteStructures(@RequestBody List<Long> structureIds) throws CiadtiException {
         configurationMediator.deleteStructures(structureIds);

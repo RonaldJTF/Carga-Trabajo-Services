@@ -29,4 +29,11 @@ public interface DependenciaDAO extends JpaRepository<DependenciaEntity, Long>, 
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_DEPENDENCIA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    @Query(value = """
+        SELECT d FROM DependenciaEntity d 
+        INNER JOIN JerarquiaEntity j ON (d.id = j.idDependencia)
+        WHERE j.id = :hierarchyId        
+    """)
+    DependenciaEntity findByHierarchyId(@Param ("hierarchyId") Long hierarchyId);
 }
