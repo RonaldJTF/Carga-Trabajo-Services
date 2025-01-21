@@ -80,6 +80,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/compensation-category/**").hasAnyRole("ADMINISTRADOR")
 
                 .requestMatchers(HttpMethod.GET,"/api/operational-management/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers(HttpMethod.POST, "/api/operational-management/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers("/api/operational-management/**").hasAnyRole("ADMINISTRADOR")
 
                 .requestMatchers(HttpMethod.GET,"/api/organization-chart/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")

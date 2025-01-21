@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -25,4 +26,11 @@ public interface JerarquiaGestionOperativaDAO extends JpaRepository<JerarquiaGes
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_JERARQUIAGESTIONOPERATIVA(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure (Long id, String registradoPor);
+
+    @Query("SELECT jgo FROM JerarquiaGestionOperativaEntity jgo WHERE jgo.idJerarquia = :idJerarquia")
+    List<JerarquiaGestionOperativaEntity> findByIdJerarquia(@Param("idJerarquia") List<Long> idJerarquia);
+
+    @Modifying
+    @Query("DELETE FROM JerarquiaGestionOperativaEntity jgo WHERE jgo.idJerarquia IN :hierarchyIds")
+    void deleteByHierarchyIds(@Param("hierarchyIds") List<Long> hierarchyIds);
 }

@@ -6,9 +6,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.JerarquiaGestionOperativaDAO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.JerarquiaGestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
@@ -35,6 +38,7 @@ public class OperationalManagementController {
     private final GestionOperativaService gestionOperativaService;
     private final TipologiaService tipologiaService;
     private final ConfigurationMediator configurationMediator;
+    private final JerarquiaGestionOperativaDAO jerarquiaGestionOperativaDAO;
 
     @Operation(
         summary = "Obtener o listar las gestiones operativas",
@@ -124,15 +128,21 @@ public class OperationalManagementController {
         return new ResponseEntity<>(configurationMediator.migrateStructures(estructuras, idParent), HttpStatus.CREATED);
     }
 
-    @PostMapping("/create-operational-management-hierarchy")
+    @PostMapping("/operational-management")
     public ResponseEntity<?> createOperationalManagementHierarchy(@RequestBody List<GestionOperativaEntity> operationalManagements, @RequestParam(required = true) Long hierarchyId)  throws CiadtiException {
         return new ResponseEntity<>(configurationMediator.createOperationalManagementHierarchy(operationalManagements, hierarchyId), HttpStatus.CREATED);
     }
 
-    @GetMapping("/get-operational-management")
+    @GetMapping("/operational-management")
     public ResponseEntity<?> getOperationalManagementByHierarchy(@RequestParam(required = true) Long hierarchyId) throws CiadtiException {
         List<GestionOperativaEntity> gestiones = gestionOperativaService.findOperationalManagementByHierarchy(hierarchyId);
     return new ResponseEntity<>(gestiones, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/operational-management")
+    public ResponseEntity<?> deleteOperationalManagementHierarchy(@RequestBody List<Long> hierarchyIds) throws CiadtiException {
+        configurationMediator.deleteOperationalManagementHierarchy(hierarchyIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
 }

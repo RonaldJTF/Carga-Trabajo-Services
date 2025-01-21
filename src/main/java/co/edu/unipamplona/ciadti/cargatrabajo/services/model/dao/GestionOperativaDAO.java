@@ -42,19 +42,19 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
                                             @Param("id") Long id);
 
     @Query(value = """
-    WITH RECURSIVE padres AS (
-        SELECT go.*
-        FROM FORTALECIMIENTO.GESTIONOPERATIVA go
-        INNER JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = go.geop_id
-        WHERE jgo.jera_id = :hierarchyId AND go.tipo_id = 1
+        WITH RECURSIVE padres AS (
+            SELECT go.*
+            FROM FORTALECIMIENTO.GESTIONOPERATIVA go
+            INNER JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = go.geop_id
+            WHERE jgo.jera_id = :hierarchyId AND go.tipo_id = 1
 
-        UNION ALL
+            UNION ALL
 
-        SELECT padre.*
-        FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
-        INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
-    )
-    SELECT * FROM padres
+            SELECT padre.*
+            FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
+            INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
+        )
+        SELECT * FROM padres
     """, nativeQuery = true)
     List<GestionOperativaEntity> findOperationalManagementByHierarchy(@Param("hierarchyId") Long hierarchyId);                                   
 

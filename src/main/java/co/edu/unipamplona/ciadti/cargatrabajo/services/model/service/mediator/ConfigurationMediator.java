@@ -2032,4 +2032,14 @@ public class ConfigurationMediator {
         }
         return jerarquiaGestionOperativaList;
     }
+
+    /**
+     * Elimina las relaciones entre una jerarquía y sus gestiones operativas.
+     * @param hierarchyId ID de la jerarquía.
+     * @throws CiadtiException 
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteOperationalManagementHierarchy(List<Long> hierarchyIds) throws CiadtiException {
+        jerarquiaGestionOperativaService.deleteByHierarchyIds(hierarchyIds);
+    }
 }
