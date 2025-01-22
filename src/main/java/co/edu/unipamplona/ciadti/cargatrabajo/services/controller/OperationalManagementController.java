@@ -128,21 +128,6 @@ public class OperationalManagementController {
         return new ResponseEntity<>(configurationMediator.migrateStructures(estructuras, idParent), HttpStatus.CREATED);
     }
 
-    @PostMapping("/operational-management")
-    public ResponseEntity<?> createOperationalManagementHierarchy(@RequestBody List<GestionOperativaEntity> operationalManagements, @RequestParam(required = true) Long hierarchyId)  throws CiadtiException {
-        return new ResponseEntity<>(configurationMediator.createOperationalManagementHierarchy(operationalManagements, hierarchyId), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/operational-management")
-    public ResponseEntity<?> getOperationalManagementByHierarchy(@RequestParam(required = true) Long hierarchyId) throws CiadtiException {
-        List<GestionOperativaEntity> gestiones = gestionOperativaService.findOperationalManagementByHierarchy(hierarchyId);
-    return new ResponseEntity<>(gestiones, HttpStatus.OK);
-    }
-
-    @DeleteMapping("/operational-management")
-    public ResponseEntity<?> deleteOperationalManagementHierarchy(@RequestBody List<Long> hierarchyIds) throws CiadtiException {
-        configurationMediator.deleteOperationalManagementHierarchy(hierarchyIds);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+    
     
 }

@@ -41,22 +41,7 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
                                             @Param("orden") Long orden,
                                             @Param("id") Long id);
 
-    @Query(value = """
-        WITH RECURSIVE padres AS (
-            SELECT go.*
-            FROM FORTALECIMIENTO.GESTIONOPERATIVA go
-            INNER JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = go.geop_id
-            WHERE jgo.jera_id = :hierarchyId AND go.tipo_id = 1
-
-            UNION ALL
-
-            SELECT padre.*
-            FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
-            INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
-        )
-        SELECT * FROM padres
-    """, nativeQuery = true)
-    List<GestionOperativaEntity> findOperationalManagementByHierarchy(@Param("hierarchyId") Long hierarchyId);                                   
+                                  
 
     @Modifying
     @Query(value = """
@@ -93,4 +78,52 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
         where ago.idGestionOperativa = :idGestionOperativa
     """)
     ActividadEntity findActividadByIdGestionOperativa(@Param("idGestionOperativa") Long idGestionOperativa);
+
+    @Query(value = """
+        WITH RECURSIVE padres AS (
+        SELECT go.*, a.*
+        FROM FORTALECIMIENTO.GESTIONOPERATIVA go
+        INNER JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = go.geop_id
+        LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON go.geop_id = ago.geop_id
+        LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
+        INNER JOIN FORTALECIMIENTO.TIPOLOGIA t ON go.tipo_id = t.tipo_id
+        WHERE jgo.jera_id = :hierarchyId AND t.tipo_idtipologiasiguiente IS NULL
+
+        UNION ALL
+
+        SELECT padre.*, a.*
+        FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
+        INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
+        LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON padre.geop_id = ago.geop_id
+        LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
+    )
+    SELECT * FROM padres
+    """, nativeQuery = true)
+    List<GestionOperativaEntity> findOperationalManagementByHierarchy(@Param("hierarchyId") Long hierarchyId);     
+
+    @Query(value = """
+        WITH RECURSIVE padres AS (
+            SELECT go.*, a.*
+            FROM FORTALECIMIENTO.GESTIONOPERATIVA go
+            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON go.geop_id = ago.geop_id
+            LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
+            INNER JOIN FORTALECIMIENTO.TIPOLOGIA t ON go.tipo_id = t.tipo_id
+            WHERE t.tipo_idtipologiasiguiente IS NULL and a.acti_id IS NOT NULL and go.geop_id not in (
+                SELECT go.geop_id  FROM FORTALECIMIENTO.GESTIONOPERATIVA go
+                INNER JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = go.geop_id
+                INNER JOIN FORTALECIMIENTO.JERARQUIA j ON jgo.jera_id = j.jera_id 
+                where j.orga_id = :organizationalChartId
+            )
+
+            UNION ALL
+
+            SELECT padre.*, a.*
+            FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
+            INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
+            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON (padre.geop_id = ago.geop_id)
+            LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON (a.acti_id = ago.acti_id)
+        )
+        SELECT DISTINCT * FROM padres
+    """, nativeQuery = true)
+    List<GestionOperativaEntity> findOperationalManagementByOrganizationalChart(@Param("organizationalChartId") Long organizationalChartId); 
 }

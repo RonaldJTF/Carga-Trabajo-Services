@@ -206,4 +206,15 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
 
         return parentOperationalManagement;
     }
+
+    /**
+     * Método para obtener la jerarquía completa de gestiones operativas a partir de un ID de organigrama.
+     * @param organizationalChartId El ID del organigrama.
+     * @return Lista de gestiones operativas organizadas jerárquicamente.
+     */
+    @Override
+    public List<GestionOperativaEntity> findOperationalManagementByOrganizationalChart(Long organizationalChartId) {
+        List<GestionOperativaEntity> operationalManagementByOrgChartList = gestionOperativaDAO.findOperationalManagementByOrganizationalChart(organizationalChartId);
+        return buildHierarchy(operationalManagementByOrgChartList);
+    }
 }

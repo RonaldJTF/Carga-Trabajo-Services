@@ -2,9 +2,11 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ConvencionEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.DependenciaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.JerarquiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ConvencionService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.DependenciaService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.JerarquiaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,6 +38,7 @@ public class OrganizationStructureController {
     private final DependenciaService dependenciaService;
     private final ConvencionService convencionService;
     private final ConfigurationMediator configurationMediator;
+    private final GestionOperativaService gestionOperativaService;
 
     @Operation(
             summary = "Obtener o listar los organigramas",
@@ -210,5 +214,29 @@ public class OrganizationStructureController {
     public ResponseEntity<?> deleteWithDependency(@PathVariable Long hierarchyId) throws CiadtiException {
         configurationMediator.deleteDependencyWithHierarchy(hierarchyId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+    @PostMapping("/operational-management")
+    public ResponseEntity<?> createOperationalManagementHierarchy(@RequestBody List<GestionOperativaEntity> operationalManagements, @RequestParam(required = true) Long hierarchyId)  throws CiadtiException {
+        return new ResponseEntity<>(configurationMediator.createOperationalManagementHierarchy(operationalManagements, hierarchyId), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/operational-management")
+    public ResponseEntity<?> getOperationalManagementByHierarchy(@RequestParam(required = true) Long hierarchyId) throws CiadtiException {
+        List<GestionOperativaEntity> gestiones = gestionOperativaService.findOperationalManagementByHierarchy(hierarchyId);
+    return new ResponseEntity<>(gestiones, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/operational-management")
+    public ResponseEntity<?> deleteOperationalManagementHierarchy(@RequestBody List<Long> hierarchyIds) throws CiadtiException {
+        configurationMediator.deleteOperationalManagementHierarchy(hierarchyIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/operational-management-organization-chart")
+    public ResponseEntity<?> findOperationalManagementByOrganizationalChart(@RequestParam(required = true) Long organizationalChartId) throws CiadtiException {
+        List<GestionOperativaEntity> gestiones = gestionOperativaService.findOperationalManagementByOrganizationalChart(organizationalChartId);
+    return new ResponseEntity<>(gestiones, HttpStatus.OK);
     }
 }
