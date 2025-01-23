@@ -3,12 +3,15 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.jackson.JacksonCIADTI;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.RegistradorDTO;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Image;
+
 import com.fasterxml.jackson.annotation.JsonSetter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,6 +41,13 @@ public class OrganigramaEntity implements Serializable{
     @Column(name = "norm_id")
     private Long idNormatividad;
 
+    @JsonIgnore
+    @Column(name = "orga_diagrama")
+    private byte[] diagrama;
+
+    @Column(name = "orga_mimetype", length = 100)
+    private String mimetype;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "orga_fechacambio")
     @Temporal(TemporalType.TIMESTAMP)
@@ -50,6 +60,17 @@ public class OrganigramaEntity implements Serializable{
     @OneToOne
     @JoinColumn(name = "norm_id", insertable = false, updatable = false)
     private NormatividadEntity normatividad;
+
+    @Transient
+    private String srcDiagrama;
+    
+    @JsonGetter("srcDiagrama")
+    public String getSrcImage(){
+        return  srcDiagrama != null ? srcDiagrama :
+            diagrama != null
+            ? Image.getSrcImage(diagrama, mimetype)
+            : null;
+    }
 
     @JsonIgnore
     @Transient

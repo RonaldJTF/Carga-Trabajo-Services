@@ -29,8 +29,4 @@ public interface JerarquiaGestionOperativaDAO extends JpaRepository<JerarquiaGes
 
     @Query("SELECT jgo FROM JerarquiaGestionOperativaEntity jgo WHERE jgo.idJerarquia = :idJerarquia")
     List<JerarquiaGestionOperativaEntity> findByIdJerarquia(@Param("idJerarquia") List<Long> idJerarquia);
-
-    @Modifying
-    @Query("DELETE FROM JerarquiaGestionOperativaEntity jgo WHERE jgo.idJerarquia IN :hierarchyIds")
-    void deleteByHierarchyIds(@Param("hierarchyIds") List<Long> hierarchyIds);
 }

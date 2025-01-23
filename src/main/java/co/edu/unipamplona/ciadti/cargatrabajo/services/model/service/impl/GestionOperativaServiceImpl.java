@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.query.NativeQuery;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiProp
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class GestionOperativaServiceImpl implements GestionOperativaService{
     @PersistenceContext
     private EntityManager entityManager;
+
     private final GestionOperativaDAO gestionOperativaDAO;
 
     @Override
@@ -170,13 +174,44 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
     }
     
     /**
-     * Método para obtener la jerarquía completa de gestiones operativas a partir de un ID de jerarquía.
+     * Método para obtener las gestiones operativas a partir de un ID de jerarquía.
      * @param hierarchyId El ID de la jerarquía.
      * @return Lista de gestiones operativas organizadas jerárquicamente.
      */
-    public List<GestionOperativaEntity> findOperationalManagementByHierarchy(Long hierarchyId) {
-        List<GestionOperativaEntity> operationalManagementList = gestionOperativaDAO.findOperationalManagementByHierarchy(hierarchyId);
-        return buildHierarchy(operationalManagementList);
+    @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
+    public List<GestionOperativaEntity> findAssignedOperationalsManagements(Long hierarchyId) {
+        String sql= """
+            WITH RECURSIVE padres AS (
+                SELECT go.*
+                FROM FORTALECIMIENTO.GESTIONOPERATIVA go
+                INNER JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = go.geop_id
+                WHERE jgo.jera_id = :hierarchyId
+
+                UNION ALL
+
+                SELECT padre.*
+                FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
+                INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
+            )
+            SELECT p.*, a.*, jgo.jego_id  FROM padres as p
+            LEFT JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = p.geop_id and jgo.jera_id = :hierarchyId
+            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON p.geop_id = ago.geop_id
+            LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
+        """;    
+
+        Query query = entityManager.createNativeQuery(sql, Object[].class);
+        query.unwrap(NativeQuery.class)
+            .addEntity("p", GestionOperativaEntity.class)
+            .addScalar("jego_id", StandardBasicTypes.LONG)
+            .setTupleTransformer((tuple, aliases) -> {
+                GestionOperativaEntity entity = (GestionOperativaEntity) tuple[0];
+                entity.setIdJerarquiaGestionOperativa((Long) tuple[1]);
+                return entity;
+        });
+        query.setParameter("hierarchyId", hierarchyId);
+        List<GestionOperativaEntity> operationalsManagements =  query.getResultList();
+        return buildHierarchy(operationalsManagements);
     }
 
     /**
@@ -208,13 +243,14 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
     }
 
     /**
-     * Método para obtener la jerarquía completa de gestiones operativas a partir de un ID de organigrama.
+     * Método para obtener gestiones operativas no gestionadas en un organigrama.
      * @param organizationalChartId El ID del organigrama.
      * @return Lista de gestiones operativas organizadas jerárquicamente.
      */
     @Override
-    public List<GestionOperativaEntity> findOperationalManagementByOrganizationalChart(Long organizationalChartId) {
-        List<GestionOperativaEntity> operationalManagementByOrgChartList = gestionOperativaDAO.findOperationalManagementByOrganizationalChart(organizationalChartId);
+    @Transactional(readOnly = true)
+    public List<GestionOperativaEntity> findNoAssignedOperationalsManagements(Long organizationalChartId) {
+        List<GestionOperativaEntity> operationalManagementByOrgChartList = gestionOperativaDAO.findNoAssignedOperationalsManagements(organizationalChartId);
         return buildHierarchy(operationalManagementByOrgChartList);
     }
 }

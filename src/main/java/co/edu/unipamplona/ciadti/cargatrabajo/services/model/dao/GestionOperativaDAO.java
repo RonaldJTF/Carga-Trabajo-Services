@@ -39,9 +39,7 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
     """)
     boolean existsByIdPadreAndOrdenAndNotId(@Param("idPadre") Long idPadre,
                                             @Param("orden") Long orden,
-                                            @Param("id") Long id);
-
-                                  
+                                            @Param("id") Long id);                            
 
     @Modifying
     @Query(value = """
@@ -77,29 +75,7 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
         inner join ActividadGestionOperativaEntity ago on (a.id = ago.idActividad)
         where ago.idGestionOperativa = :idGestionOperativa
     """)
-    ActividadEntity findActividadByIdGestionOperativa(@Param("idGestionOperativa") Long idGestionOperativa);
-
-    @Query(value = """
-        WITH RECURSIVE padres AS (
-        SELECT go.*, a.*
-        FROM FORTALECIMIENTO.GESTIONOPERATIVA go
-        INNER JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = go.geop_id
-        LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON go.geop_id = ago.geop_id
-        LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
-        INNER JOIN FORTALECIMIENTO.TIPOLOGIA t ON go.tipo_id = t.tipo_id
-        WHERE jgo.jera_id = :hierarchyId AND t.tipo_idtipologiasiguiente IS NULL
-
-        UNION ALL
-
-        SELECT padre.*, a.*
-        FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
-        INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
-        LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON padre.geop_id = ago.geop_id
-        LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
-    )
-    SELECT * FROM padres
-    """, nativeQuery = true)
-    List<GestionOperativaEntity> findOperationalManagementByHierarchy(@Param("hierarchyId") Long hierarchyId);     
+    ActividadEntity findActividadByIdGestionOperativa(@Param("idGestionOperativa") Long idGestionOperativa);   
 
     @Query(value = """
         WITH RECURSIVE padres AS (
@@ -125,5 +101,5 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
         )
         SELECT DISTINCT * FROM padres
     """, nativeQuery = true)
-    List<GestionOperativaEntity> findOperationalManagementByOrganizationalChart(@Param("organizationalChartId") Long organizationalChartId); 
+    List<GestionOperativaEntity> findNoAssignedOperationalsManagements(@Param("organizationalChartId") Long organizationalChartId); 
 }

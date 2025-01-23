@@ -43,6 +43,8 @@ public class OrganigramaServiceImpl implements OrganigramaService{
                 entity.getNombre(),
                 entity.getDescripcion(),
                 entity.getIdNormatividad(),
+                entity.getDiagrama(),
+                entity.getMimetype(),
                 entity.getFechaCambio(), 
                 entity.getRegistradoPor(), 
                 entity.getId());

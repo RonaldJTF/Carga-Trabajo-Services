@@ -17,11 +17,13 @@ public interface OrganigramaDAO extends JpaRepository<OrganigramaEntity, Long>, 
     @Modifying
     @Query(value = """
         update OrganigramaEntity o set o.nombre = :nombre,  o.descripcion = :descripcion, o.idNormatividad = :idNormatividad,
-        o.fechaCambio = :fechaCambio, o.registradoPor = :registradoPor where o.id = :id
+        o.diagrama = :diagrama, o.mimetype = :mimetype,  o.fechaCambio = :fechaCambio, o.registradoPor = :registradoPor where o.id = :id
     """)
     int update(@Param("nombre") String nombre,
                @Param("descripcion") String descripcion,
                @Param("idNormatividad") Long idNormatividad,
+               @Param("diagrama") byte[] diagrama,
+               @Param("mimetype") String mimetype,
                @Param("fechaCambio") Date fechaCambio,
                @Param("registradoPor") String registradoPor,
                @Param("id") Long id);

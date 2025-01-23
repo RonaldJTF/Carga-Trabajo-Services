@@ -3,8 +3,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
 import java.util.List;
 
-import org.springframework.data.repository.query.Param;
-
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 
 public interface GestionOperativaService extends CommonService<GestionOperativaEntity>{
@@ -13,6 +11,6 @@ public interface GestionOperativaService extends CommonService<GestionOperativaE
     int updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(Long idPadre, Long orden, Long id, int increment);
     int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(Long idPadre, Long inferiorOrder, Long superiorOrder, Long id, int increment);
     ActividadEntity findActividadByIdGestionOperativa(Long idGestionOperativa);
-    List<GestionOperativaEntity> findOperationalManagementByHierarchy(Long id);
-    List<GestionOperativaEntity> findOperationalManagementByOrganizationalChart(Long organizationalChartId); 
+    List<GestionOperativaEntity> findAssignedOperationalsManagements(Long hierarchyId);
+    List<GestionOperativaEntity> findNoAssignedOperationalsManagements(Long organizationalChartId); 
 }

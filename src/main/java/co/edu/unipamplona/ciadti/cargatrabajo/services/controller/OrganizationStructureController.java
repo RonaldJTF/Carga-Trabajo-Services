@@ -2,12 +2,12 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ConvencionEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.DependenciaEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.JerarquiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ConvencionService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.DependenciaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.JerarquiaService;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,25 +58,43 @@ public class OrganizationStructureController {
     @Operation(
             summary = "Crear un organigrama",
             description = "Crea un organigrama. " +
-                    "Args: organigramaEntity: objeto con información del organigrama a registrar." +
+                    "Args: organizationChartJSON: objeto con información del organigrama a registrar." +
+                    "file: imagen del diagrama del organigrama" +
                     "Returns: Objeto con la información asociada.")
     @PostMapping
-    public ResponseEntity<?> createOrganizationChart(@Valid @RequestBody OrganigramaEntity organigramaEntity) {
+    public ResponseEntity<?> createOrganizationChart(@Valid @RequestParam("organizationChart") String organizationChartJSON,
+                                                     @RequestParam(value = "file", required = false) MultipartFile file) throws IOException, CiadtiException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        OrganigramaEntity organigramaEntity = objectMapper.readValue(organizationChartJSON, OrganigramaEntity.class);
+        if (file != null) {
+            organigramaEntity.setMimetype(file.getContentType());
+            organigramaEntity.setDiagrama(file.getBytes());
+        }
         return new ResponseEntity<>(organigramaService.save(organigramaEntity), HttpStatus.CREATED);
     }
 
     @Operation(
             summary = "Actualizar un organigrama",
             description = "Actualiza un organigrama. " +
-                    "Args: gestionOperativaEntity: objeto con información del organigrama." +
+                    "Args: organizationChartJSON: objeto con información del organigrama." +
+                    "file: imagen del diagrama del organigrama" +
                     "id: identificador del organigrama." +
                     "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateOrganizationChart(@Valid @RequestBody OrganigramaEntity organigramaEntity, @PathVariable Long id) throws CiadtiException {
+    public ResponseEntity<?> updateOrganizationChart(@Valid @RequestParam("organizationChart") String organizationChartJSON,
+                                                     @RequestParam(value = "file", required = false) MultipartFile file, 
+                                                     @PathVariable Long id) throws IOException, CiadtiException{
+        ObjectMapper objectMapper = new ObjectMapper();
+        OrganigramaEntity organigramaEntity = objectMapper.readValue(organizationChartJSON, OrganigramaEntity.class);
+        
         OrganigramaEntity organigramaEntityBD = organigramaService.findById(id);
         organigramaEntityBD.setDescripcion(organigramaEntity.getDescripcion());
         organigramaEntityBD.setNombre(organigramaEntity.getNombre());
         organigramaEntityBD.setIdNormatividad(organigramaEntity.getIdNormatividad());
+        if (file != null) {
+            organigramaEntityBD.setMimetype(file.getContentType());
+            organigramaEntityBD.setDiagrama(file.getBytes());
+        }
         return new ResponseEntity<>(organigramaService.save(organigramaEntityBD), HttpStatus.CREATED);
     }
 
@@ -179,7 +197,6 @@ public class OrganizationStructureController {
             : (lastOrder != null ? lastOrder + 1 : 1)
         );
         if(jerarquiaEntity.getDependencia() != null){
-            
             jerarquiaEntityBD.getDependencia().setNombre(jerarquiaEntity.getDependencia().getNombre());
             jerarquiaEntityBD.getDependencia().setDescripcion(jerarquiaEntity.getDependencia().getDescripcion());
             jerarquiaEntityBD.getDependencia().setIdConvencion(jerarquiaEntity.getDependencia().getIdConvencion());
@@ -217,26 +234,57 @@ public class OrganizationStructureController {
     }
 
 
+    @Operation(
+        summary = "Obtener las gestiones operativas asignadas a una dependencia en un organigrama a través del id de la jerarquía. ",
+        description = "Obtiene las gestiones operativas asignadas a una dependencia en un organigrama a través del id de la jerarquía. " +
+            "Args: hierarchyId: Identificador de la jerarquía. " +
+            "Returns: Objeto con la información asociada."
+    )
+    @GetMapping("/operational-management/assigned")
+    public ResponseEntity<?> getOperationalManagementByHierarchy(@RequestParam(name = "hierarchyId", required = true) Long hierarchyId) throws CiadtiException {
+        return new ResponseEntity<>(gestionOperativaService.findAssignedOperationalsManagements(hierarchyId), HttpStatus.OK);
+    }
+
+    @Operation(
+        summary = "Obtener las gestiones operativas que no han sido asignadas en un organigrama. ",
+        description = "Obtiene las gestiones operativas que no han sido asignadas en un organigrama. " +
+            "Args: organizationalChartId: Identificador del organigrama. " +
+            "Returns: Objeto con la información asociada."
+    )
+    @GetMapping("/operational-management/no-assigned")
+    public ResponseEntity<?> getAssignedOperationalsManagements(@RequestParam(name="organizationalChartId", required = true) Long organizationalChartId) throws CiadtiException {
+    return new ResponseEntity<>(gestionOperativaService.findNoAssignedOperationalsManagements(organizationalChartId), HttpStatus.OK);
+    }
+
+    @Operation(
+        summary = "Crear la relación de una dependencia en un organigrama (a través de la jerarquía) con ciertas gestiones operativas. ",
+        description = "Crea la relación de una dependencia en un organigrama (a través de la jerarquía) con ciertas gestiones operativas. " + 
+            "Args: operationalManagementIds: Lista de identificadores de gestiones operativas. "+ 
+            "hierarchyId: identificador de la jerarquía. " + 
+            "Return: Lista de relaciones."
+    )
     @PostMapping("/operational-management")
-    public ResponseEntity<?> createOperationalManagementHierarchy(@RequestBody List<GestionOperativaEntity> operationalManagements, @RequestParam(required = true) Long hierarchyId)  throws CiadtiException {
-        return new ResponseEntity<>(configurationMediator.createOperationalManagementHierarchy(operationalManagements, hierarchyId), HttpStatus.CREATED);
+    public ResponseEntity<?> createOperationalManagementHierarchy(@RequestBody List<Long> operationalManagementIds, @RequestParam(required = true) Long hierarchyId)  throws CiadtiException {
+        return new ResponseEntity<>(configurationMediator.createOperationalManagementHierarchy(operationalManagementIds, hierarchyId), HttpStatus.CREATED);
     }
 
-    @GetMapping("/operational-management")
-    public ResponseEntity<?> getOperationalManagementByHierarchy(@RequestParam(required = true) Long hierarchyId) throws CiadtiException {
-        List<GestionOperativaEntity> gestiones = gestionOperativaService.findOperationalManagementByHierarchy(hierarchyId);
-    return new ResponseEntity<>(gestiones, HttpStatus.OK);
-    }
-
+    @Operation(
+        summary = "Eliminar lista de relaciones de gestiones operativas con una jerarquía (define la dependencia en un organigrama) por su id",
+        description = "Elimina lista de relaciones de gestiones operativas con una jerarquía." +
+                "Args: id: identificador de la jerarquía a eliminar.")
     @DeleteMapping("/operational-management")
-    public ResponseEntity<?> deleteOperationalManagementHierarchy(@RequestBody List<Long> hierarchyIds) throws CiadtiException {
-        configurationMediator.deleteOperationalManagementHierarchy(hierarchyIds);
+    public ResponseEntity<?> deleteHierarchyRelationshipWithOperationalsManagements(@RequestBody List<Long> relationshipIds) throws CiadtiException {
+        configurationMediator.deleteHierarchyRelationshipWithOperationalsManagements(relationshipIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+    }    
 
-    @GetMapping("/operational-management-organization-chart")
-    public ResponseEntity<?> findOperationalManagementByOrganizationalChart(@RequestParam(required = true) Long organizationalChartId) throws CiadtiException {
-        List<GestionOperativaEntity> gestiones = gestionOperativaService.findOperationalManagementByOrganizationalChart(organizationalChartId);
-    return new ResponseEntity<>(gestiones, HttpStatus.OK);
-    }
+    @Operation(
+        summary = "Eliminar la relación de una gestión operativa con una jerarquía (define la dependencia en un organigrama) por su id",
+        description = "Elimina la relación de una gestión operativa con una jerarquía. " +
+                "Args: relationshipId: identificador de la relación a eliminar (es lo mismo que idJerarquiaGestionOperativa).")
+    @DeleteMapping("/operational-management/{relationshipId}")
+    public ResponseEntity<?> deleteHierarchyRelationshipWithOperationalManagement(@PathVariable Long relationshipId) throws CiadtiException {
+        configurationMediator.deleteHierarchyRelationshipWithOperationalManagement(relationshipId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }    
 }

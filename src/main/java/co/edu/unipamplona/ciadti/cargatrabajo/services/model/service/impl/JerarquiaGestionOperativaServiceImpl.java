@@ -65,10 +65,4 @@ public class JerarquiaGestionOperativaServiceImpl implements JerarquiaGestionOpe
         SpecificationCiadti<JerarquiaGestionOperativaEntity> specification = new SpecificationCiadti<JerarquiaGestionOperativaEntity>(filter);
         return jerarquiaGestionOperativaDAO.findAll(specification);
     }
-
-
-    @Override
-    public void deleteByHierarchyIds(List<Long> relaciones) {
-        jerarquiaGestionOperativaDAO.deleteByHierarchyIds(relaciones);
-    }
 }

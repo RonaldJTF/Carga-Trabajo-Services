@@ -252,12 +252,12 @@ public class ConfigurationMediator {
      * @param estructuras: lista de estructuras a migrar
      * @param idPadre: id del nuevo padre de la estructura a migrar
      * @return
-    * @throws CiadtiException 
-    * @throws Exception
-    */
-     
+     * @throws CiadtiException 
+     * @throws CloneNotSupportedException 
+     * @throws Exception
+     */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public List<GestionOperativaEntity> migrateStructures(List<EstructuraEntity> estructuras, Long idPadre) throws CiadtiException {
+    public List<GestionOperativaEntity> migrateStructures(List<EstructuraEntity> estructuras, Long idPadre) throws CiadtiException, CloneNotSupportedException {
         Long lastOrder = gestionOperativaService.findLastOrderByIdPadre(idPadre);
         List<GestionOperativaEntity> operationalsManagements = new ArrayList<>();
         GestionOperativaEntity operationalManagement;
@@ -286,16 +286,15 @@ public class ConfigurationMediator {
                 List<GestionOperativaEntity> temp = migrateStructures(estructura.getSubEstructuras(), operationalManagement.getId());
                 operationalManagement.setSubGestionesOperativas(temp);
             }
-            operationalsManagements.add(operationalManagement);
-            ActividadEntity estructuraActividad = actividadService.findByIdEstructura(structure.getId());
-            if(estructuraActividad != null){
+            ActividadEntity activity = structure.getActividad();
+            if(activity != null){
                 ActividadGestionOperativaEntity actividadGestionOperativaEntity = ActividadGestionOperativaEntity.builder()
                     .idGestionOperativa(operationalManagement.getId())
-                    .idActividad(estructuraActividad.getId())
+                    .idActividad(activity.getId())
                     .build();
                 actividadGestionOperativaService.save(actividadGestionOperativaEntity);
-                operationalManagement.setActividad(estructuraActividad);
             }
+            operationalsManagements.add(gestionOperativaService.findById(operationalManagement.getId()));
         }
         return operationalsManagements;
     }
@@ -1784,7 +1783,6 @@ public class ConfigurationMediator {
         gestionOperativaService.save(operationalManagement);
         boolean exists = gestionOperativaService.existsByIdPadreAndOrdenAndNotId(operationalManagement.getIdPadre(), operationalManagement.getOrden(), operationalManagement.getId());
         if (exists) {
-            System.out.println("EXISTE");
             gestionOperativaService.updateOrdenByIdPadreAndOrdenMajorOrEqualAndNotId(operationalManagement.getIdPadre(), operationalManagement.getOrden(), operationalManagement.getId(), 1);
         }
         return operationalManagement;
@@ -1874,18 +1872,6 @@ public class ConfigurationMediator {
         }
     }
 
-    public List<GestionOperativaEntity> createOperationalManagementsFromStructures(List<EstructuraEntity> structures) {
-        List<GestionOperativaEntity> operationalManagements = new ArrayList<>();
-        GestionOperativaEntity operationalManagement;
-        for (EstructuraEntity e : structures){
-            operationalManagement = GestionOperativaEntity.builder().build();
-            if(e.getSubEstructuras() != null){
-                operationalManagement.setSubGestionesOperativas(createOperationalManagementsFromStructures(e.getSubEstructuras()));
-            }
-            operationalManagements.add(operationalManagement);
-        }
-        return operationalManagements;
-    }
 
     /**
      * Elimina la convención para una dependencia.
@@ -2019,13 +2005,12 @@ public class ConfigurationMediator {
     * @throws CloneNotSupportedException
     */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public List<JerarquiaGestionOperativaEntity> createOperationalManagementHierarchy(List<GestionOperativaEntity> operationalManagementList, Long hierarchyId) throws CiadtiException {
+    public List<JerarquiaGestionOperativaEntity> createOperationalManagementHierarchy(List<Long> operationalManagementIds, Long hierarchyId) throws CiadtiException {
         List<JerarquiaGestionOperativaEntity> jerarquiaGestionOperativaList = new ArrayList<>();
-        for(GestionOperativaEntity operationalManagement: operationalManagementList ){
-            GestionOperativaEntity operationalManagementEntity = gestionOperativaService.findById(operationalManagement.getId());
+        for(Long operationalManagementId : operationalManagementIds ){
             JerarquiaGestionOperativaEntity jerarquiaGestionOperativaEntity = JerarquiaGestionOperativaEntity.builder()
                 .idJerarquia(hierarchyId)
-                .idGestionOperativa(operationalManagementEntity.getId())
+                .idGestionOperativa(operationalManagementId)
                 .build();
             jerarquiaGestionOperativaService.save(jerarquiaGestionOperativaEntity);
             jerarquiaGestionOperativaList.add(jerarquiaGestionOperativaEntity);
@@ -2034,12 +2019,24 @@ public class ConfigurationMediator {
     }
 
     /**
+     * Eliminar la relación de la jerarquía con una gestión operativa.
+     * @param relationshipId: identificador de la relacion de la jerarquía con la gestión operativa.
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteHierarchyRelationshipWithOperationalManagement(Long relationshipId) throws CiadtiException {
+        jerarquiaGestionOperativaService.deleteByProcedure(relationshipId, RegisterContext.getRegistradorDTO().getJsonAsString());
+    }
+
+    /**
      * Elimina las relaciones entre una jerarquía y sus gestiones operativas.
-     * @param hierarchyId ID de la jerarquía.
+     * @param relationshipIds: lista identificadores de relaciones de una jerarquía(s) con gestiones operativas.
      * @throws CiadtiException 
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void deleteOperationalManagementHierarchy(List<Long> hierarchyIds) throws CiadtiException {
-        jerarquiaGestionOperativaService.deleteByHierarchyIds(hierarchyIds);
+    public void deleteHierarchyRelationshipWithOperationalsManagements(List<Long> relationshipIds) throws CiadtiException {
+        for(Long relationshipId : relationshipIds){
+            deleteHierarchyRelationshipWithOperationalManagement(relationshipId);
+        }
     }
 }
