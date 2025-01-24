@@ -278,8 +278,6 @@ public class OrganizationChartReportPlainedExcelJXLS {
      * @param item El ítem de gestión operativa a procesar.
      */
     private void processReportItem(ReportOperationalManagementDTO item) {
-        System.out.println(item.getIdGestionOperativa());
-        System.out.println(item.getActividad());
         List<NivelEntity> levels = (List<NivelEntity>) registry.get("levels");
         List<Double> tiemposPorNivel = item.getIdActividad() != null ? calculateTiemposPorNivel(item, levels) : initializedTiemposPorNivel(levels);
 
