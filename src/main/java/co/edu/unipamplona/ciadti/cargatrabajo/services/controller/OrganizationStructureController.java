@@ -7,9 +7,11 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ConvencionS
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.DependenciaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.JerarquiaService;
-
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.OrganizationChartReportPlainedExcelJXLS;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +30,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,6 +45,7 @@ public class OrganizationStructureController {
     private final DependenciaService dependenciaService;
     private final ConvencionService convencionService;
     private final ConfigurationMediator configurationMediator;
+    private final OrganizationChartReportPlainedExcelJXLS organizationChartReportPlainedExcelJXLS;
     private final GestionOperativaService gestionOperativaService;
 
     @Operation(
@@ -82,11 +90,11 @@ public class OrganizationStructureController {
                     "Returns: Objeto con la información asociada.")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateOrganizationChart(@Valid @RequestParam("organizationChart") String organizationChartJSON,
-                                                     @RequestParam(value = "file", required = false) MultipartFile file, 
+                                                     @RequestParam(value = "file", required = false) MultipartFile file,
                                                      @PathVariable Long id) throws IOException, CiadtiException{
         ObjectMapper objectMapper = new ObjectMapper();
         OrganigramaEntity organigramaEntity = objectMapper.readValue(organizationChartJSON, OrganigramaEntity.class);
-        
+
         OrganigramaEntity organigramaEntityBD = organigramaService.findById(id);
         organigramaEntityBD.setDescripcion(organigramaEntity.getDescripcion());
         organigramaEntityBD.setNombre(organigramaEntity.getNombre());
@@ -258,9 +266,9 @@ public class OrganizationStructureController {
 
     @Operation(
         summary = "Crear la relación de una dependencia en un organigrama (a través de la jerarquía) con ciertas gestiones operativas. ",
-        description = "Crea la relación de una dependencia en un organigrama (a través de la jerarquía) con ciertas gestiones operativas. " + 
-            "Args: operationalManagementIds: Lista de identificadores de gestiones operativas. "+ 
-            "hierarchyId: identificador de la jerarquía. " + 
+        description = "Crea la relación de una dependencia en un organigrama (a través de la jerarquía) con ciertas gestiones operativas. " +
+            "Args: operationalManagementIds: Lista de identificadores de gestiones operativas. "+
+            "hierarchyId: identificador de la jerarquía. " +
             "Return: Lista de relaciones."
     )
     @PostMapping("/operational-management")
@@ -276,7 +284,7 @@ public class OrganizationStructureController {
     public ResponseEntity<?> deleteHierarchyRelationshipWithOperationalsManagements(@RequestBody List<Long> relationshipIds) throws CiadtiException {
         configurationMediator.deleteHierarchyRelationshipWithOperationalsManagements(relationshipIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }    
+    }
 
     @Operation(
         summary = "Eliminar la relación de una gestión operativa con una jerarquía (define la dependencia en un organigrama) por su id",
@@ -286,5 +294,44 @@ public class OrganizationStructureController {
     public ResponseEntity<?> deleteHierarchyRelationshipWithOperationalManagement(@PathVariable Long relationshipId) throws CiadtiException {
         configurationMediator.deleteHierarchyRelationshipWithOperationalManagement(relationshipId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }    
+    }
+
+    @SuppressWarnings("null")
+    @GetMapping("report")
+    public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type, @RequestParam(name = "organizationChartIds", required = false) String organizationChartIds) throws Exception {
+        organizationChartIds = organizationChartIds.replaceAll("\\[|\\]|\\s", "");
+        List<Long> organizationChartsIds = new ArrayList<>();
+        if (!organizationChartIds.isEmpty()) {
+            String[] parts = organizationChartIds.split(",");
+            for (String part : parts) {
+                organizationChartsIds.add(Long.parseLong(part));
+            }
+        }
+
+        byte[] fileBytes = null;
+        String extension = null;
+        String mediaType = null;
+
+        if ("excel".equalsIgnoreCase(type)) {
+            extension = "xlsx";
+            mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            fileBytes = organizationChartReportPlainedExcelJXLS.generate(organizationChartsIds);
+        }
+
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+        String fileName = String.format("reporte_%s.%s", currentDateTime, extension);
+
+        if (fileBytes != null) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+            headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition, Content-Type");
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.parseMediaType(mediaType))
+                    .body(fileBytes);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }

@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.DependenciaEntity;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ReportOperationalManagementDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,7 +169,6 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
         return gestionOperativaDAO.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(idPadre, inferiorOrder, superiorOrder, id, increment);
     }
 
-    @Override
     @Transactional(readOnly = true)
     public ActividadEntity findActividadByIdGestionOperativa(Long idGestionOperativa) {
         return gestionOperativaDAO.findActividadByIdGestionOperativa(idGestionOperativa);
@@ -198,7 +199,7 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
             LEFT JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = p.geop_id and jgo.jera_id = :hierarchyId
             LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON p.geop_id = ago.geop_id
             LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
-        """;    
+        """;
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query.unwrap(NativeQuery.class)
@@ -252,5 +253,50 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
     public List<GestionOperativaEntity> findNoAssignedOperationalsManagements(Long organizationalChartId) {
         List<GestionOperativaEntity> operationalManagementByOrgChartList = gestionOperativaDAO.findNoAssignedOperationalsManagements(organizationalChartId);
         return buildHierarchy(operationalManagementByOrgChartList);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Object[]> findOperationalManagementByOrganizationChart(List<Long> organizationChartId){
+        return gestionOperativaDAO.findOperationalManagementByOrganizationChart(organizationChartId);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
+    public List<GestionOperativaEntity> findAssignedOperationalsManagementsByOrganizationChartId(Long organizationChartId) {
+        String sql= """
+               WITH RECURSIVE padres AS (
+                    SELECT go.*, d.depe_id as idDependencia
+                    FROM FORTALECIMIENTO.GESTIONOPERATIVA go
+                    INNER JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = go.geop_id
+                    INNER JOIN FORTALECIMIENTO.JERARQUIA j ON j.jera_id = jgo.jera_id
+                    INNER JOIN FORTALECIMIENTO.DEPENDENCIA d ON d.depe_id = j.depe_id
+                    WHERE j.orga_id = :organizationChartId
+        
+                    UNION ALL
+        
+                    SELECT padre.*, null::numeric(30,0)  as idDependencia
+                    FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
+                    INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
+                )
+                SELECT DISTINCT(p.*), a.*, d.* FROM padres as p
+                LEFT JOIN FORTALECIMIENTO.DEPENDENCIA d ON d.depe_id = p.idDependencia
+                LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON p.geop_id = ago.geop_id
+                LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
+        """;
+
+        Query query = entityManager.createNativeQuery(sql, Object[].class);
+        query.unwrap(NativeQuery.class)
+                .addEntity("p", GestionOperativaEntity.class)
+                .addScalar("d", DependenciaEntity.class)
+                .setTupleTransformer((tuple, aliases) -> {
+                    GestionOperativaEntity entity = (GestionOperativaEntity) tuple[0];
+                    entity.setDependencia((DependenciaEntity) tuple[1]);
+                    return entity;
+                });
+        query.setParameter("hierarchyId", organizationChartId);
+        List<GestionOperativaEntity> operationalsManagements =  query.getResultList();
+        return buildHierarchy(operationalsManagements);
     }
 }

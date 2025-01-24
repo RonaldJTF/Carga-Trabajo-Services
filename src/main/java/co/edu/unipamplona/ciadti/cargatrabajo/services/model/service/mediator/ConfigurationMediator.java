@@ -1904,7 +1904,7 @@ public class ConfigurationMediator {
      * Crea una jerarquía junto a su dependencia si esta es definida y reorganiza las subjerarquías del padre que lo contiene
      * @param hierarchy
      * @return
-     * @throws CiadtiException 
+     * @throws CiadtiException
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public JerarquiaEntity createHierarchy(JerarquiaEntity hierarchy) throws CiadtiException {
@@ -1967,11 +1967,11 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Elimina una dependencia y la jerarquía definida. Aquí la dependencia y la jerarquía estan relacionadas, 
+     * Elimina una dependencia y la jerarquía definida. Aquí la dependencia y la jerarquía estan relacionadas,
      * pero no elimina las dependencias relacionadas en las jerarquías hijas.
      * @param dependencyId
      * @param hierarchyId
-     * @throws CiadtiException 
+     * @throws CiadtiException
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteDependencyWithHierarchy(Long hierarchyId) throws CiadtiException {
@@ -1994,13 +1994,13 @@ public class ConfigurationMediator {
         organigramaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
 
-    
+
     /**
      * Crea la relación entre jerarquias y gestiones operativas
      * @param operationalManagementList lista de gestiones operativas
      * @param hierarchyId id de la jerarquia
      * @return
-    * @throws CiadtiException 
+    * @throws CiadtiException
     * @throws IOException
     * @throws CloneNotSupportedException
     */

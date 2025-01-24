@@ -9,7 +9,6 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class ReportStructureDTO {
     private Map<Long, String> nombrePorTipologia;
     private String dependencia;

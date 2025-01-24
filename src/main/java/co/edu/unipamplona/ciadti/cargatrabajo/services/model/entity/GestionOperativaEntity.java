@@ -96,6 +96,9 @@ public class GestionOperativaEntity implements Serializable {
     @Transient
     private Long idJerarquiaGestionOperativa;
 
+    @Transient
+    private DependenciaEntity dependencia;
+
     @PrePersist
     void onCreate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();

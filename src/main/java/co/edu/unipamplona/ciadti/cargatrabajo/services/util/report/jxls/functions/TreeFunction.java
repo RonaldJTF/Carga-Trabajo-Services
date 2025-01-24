@@ -14,6 +14,9 @@ public class TreeFunction implements NeedsPublicContext {
     private String childName;
 
     public List<Number> sum(String propertyName, Object children, String childName) {
+        if (this.context == null) {
+            throw new IllegalStateException("PublicContext no ha sido establecido en TreeFunction.");
+        }
         this.propertyName = propertyName;
         this.childName = childName;
         if (children instanceof String){
