@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.DependenciaEntity;
-import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Service;
@@ -61,12 +60,9 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
                 entity.getFechaCambio(), 
                 entity.getRegistradoPor(), 
                 entity.getId());
-        }else{
-            gestionOperativaDAO.save(entity);
+            return entity;
         }
-        Session session = entityManager.unwrap(Session.class);
-        session.evict(entity);
-        return entity;
+        return gestionOperativaDAO.save(entity);
     }
 
     @Override

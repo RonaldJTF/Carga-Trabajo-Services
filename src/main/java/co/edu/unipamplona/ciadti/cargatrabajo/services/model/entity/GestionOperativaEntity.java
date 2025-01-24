@@ -38,7 +38,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name="GESTIONOPERATIVA", schema = "FORTALECIMIENTO")
-public class GestionOperativaEntity implements Serializable {
+public class GestionOperativaEntity implements Serializable, Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "geop_id", nullable=false)
@@ -68,11 +68,11 @@ public class GestionOperativaEntity implements Serializable {
     @Column(name = "geop_registradopor", nullable = false, length = 250)
     private String registradoPor;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "tipo_id", insertable = false, updatable = false)
     private TipologiaEntity tipologia;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany
     @JoinColumn(name="geop_idpadre", insertable=false, updatable=false)
     private List<GestionOperativaEntity> subGestionesOperativas;
 
@@ -109,5 +109,10 @@ public class GestionOperativaEntity implements Serializable {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
         this.registradoPor = registradorDTO.getJsonAsString();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

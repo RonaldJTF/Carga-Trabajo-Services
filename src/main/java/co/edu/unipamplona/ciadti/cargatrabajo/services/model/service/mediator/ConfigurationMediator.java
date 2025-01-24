@@ -260,7 +260,8 @@ public class ConfigurationMediator {
     public List<GestionOperativaEntity> migrateStructures(List<EstructuraEntity> estructuras, Long idPadre) throws CiadtiException, CloneNotSupportedException {
         Long lastOrder = gestionOperativaService.findLastOrderByIdPadre(idPadre);
         List<GestionOperativaEntity> operationalsManagements = new ArrayList<>();
-        GestionOperativaEntity operationalManagement;
+        GestionOperativaEntity savedOperationalManagement;
+        GestionOperativaEntity entity;
         for (EstructuraEntity estructura : estructuras) {
             lastOrder++; 
             EstructuraEntity structure = estructuraService.findById(estructura.getId());
@@ -272,30 +273,32 @@ public class ConfigurationMediator {
                     throw new RuntimeException("Error: La tipología de la estructura a migrar es mayor a la tipología del padre.");
                 }
             }
-            operationalManagement = gestionOperativaService.save(GestionOperativaEntity
-                .builder()
-                .nombre(structure.getNombre())
-                .descripcion(structure.getDescripcion())
-                .idTipologia(structure.getIdTipologia())
-                .tipologia(structure.getTipologia())
-                .idPadre(idPadre)
-                .orden(lastOrder)
-                .build());
-                
+            entity = GestionOperativaEntity
+                    .builder()
+                    .nombre(structure.getNombre())
+                    .descripcion(structure.getDescripcion())
+                    .idTipologia(structure.getIdTipologia())
+                    .tipologia(structure.getTipologia())
+                    .idPadre(idPadre)
+                    .orden(lastOrder)
+                    .build();
+
+            savedOperationalManagement = gestionOperativaService.save((GestionOperativaEntity) entity.clone());
             if (estructura.getSubEstructuras() != null && !estructura.getSubEstructuras().isEmpty()) {
-                List<GestionOperativaEntity> temp = migrateStructures(estructura.getSubEstructuras(), operationalManagement.getId());
-                operationalManagement.setSubGestionesOperativas(temp);
+                List<GestionOperativaEntity> temp = migrateStructures(estructura.getSubEstructuras(), savedOperationalManagement.getId());
+                entity.setSubGestionesOperativas(temp);
             }
             ActividadEntity activity = structure.getActividad();
             if(activity != null){
                 ActividadGestionOperativaEntity actividadGestionOperativaEntity = ActividadGestionOperativaEntity.builder()
-                    .idGestionOperativa(operationalManagement.getId())
+                    .idGestionOperativa(savedOperationalManagement.getId())
                     .idActividad(activity.getId())
                     .build();
                 actividadGestionOperativaService.save(actividadGestionOperativaEntity);
             }
-            operationalManagement.setActividad(activity);
-            operationalsManagements.add(operationalManagement);
+            entity.setId(savedOperationalManagement.getId());
+            entity.setActividad(activity);
+            operationalsManagements.add(entity);
         }
         return operationalsManagements;
     }

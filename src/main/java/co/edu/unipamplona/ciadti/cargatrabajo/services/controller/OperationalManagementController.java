@@ -124,44 +124,4 @@ public class OperationalManagementController {
     public ResponseEntity<?> migrateStructures(@RequestBody ArrayList<EstructuraEntity> estructuras, @RequestParam(required = false) Long idParent) throws CiadtiException, CloneNotSupportedException {
         return new ResponseEntity<>(configurationMediator.migrateStructures(estructuras, idParent), HttpStatus.CREATED);
     }
-
-    @SuppressWarnings("null")
-    @GetMapping("/report")
-    public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type, @RequestParam(name = "operationalManagement", required = false) String operationalManagement, @RequestParam(name = "organizationChartIds", required = false) String organizationChartIds) throws Exception {
-        organizationChartIds = organizationChartIds.replaceAll("\\[|\\]|\\s", "");
-        List<Long> organizationChartsIds = new ArrayList<>();
-        if (!organizationChartIds.isEmpty()) {
-            String[] parts = organizationChartIds.split(",");
-            for (String part : parts) {
-                organizationChartsIds.add(Long.parseLong(part));
-            }
-        }
-
-        byte[] fileBytes = null;
-        String extension = null;
-        String mediaType = null;
-
-        if ("excel".equalsIgnoreCase(type)) {
-            extension = "xlsx";
-            mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            fileBytes = organizationChartReportPlainedExcelJXLS.generate(organizationChartsIds);
-        }
-
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
-        String currentDateTime = dateFormatter.format(new Date());
-        String fileName = String.format("reporte_%s.%s", currentDateTime, extension);
-
-        if (fileBytes != null) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
-            headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition, Content-Type");
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .contentType(MediaType.parseMediaType(mediaType))
-                    .body(fileBytes);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
 }
