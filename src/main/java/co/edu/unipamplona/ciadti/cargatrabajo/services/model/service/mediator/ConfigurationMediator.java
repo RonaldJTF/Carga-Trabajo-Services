@@ -294,7 +294,8 @@ public class ConfigurationMediator {
                     .build();
                 actividadGestionOperativaService.save(actividadGestionOperativaEntity);
             }
-            operationalsManagements.add(gestionOperativaService.findById(operationalManagement.getId()));
+            operationalManagement.setActividad(activity);
+            operationalsManagements.add(operationalManagement);
         }
         return operationalsManagements;
     }
@@ -2005,7 +2006,7 @@ public class ConfigurationMediator {
     * @throws CloneNotSupportedException
     */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public List<JerarquiaGestionOperativaEntity> createOperationalManagementHierarchy(List<Long> operationalManagementIds, Long hierarchyId) throws CiadtiException {
+    public List<GestionOperativaEntity> createOperationalManagementHierarchy(List<Long> operationalManagementIds, Long hierarchyId) throws CiadtiException {
         List<JerarquiaGestionOperativaEntity> jerarquiaGestionOperativaList = new ArrayList<>();
         for(Long operationalManagementId : operationalManagementIds ){
             JerarquiaGestionOperativaEntity jerarquiaGestionOperativaEntity = JerarquiaGestionOperativaEntity.builder()
@@ -2015,7 +2016,7 @@ public class ConfigurationMediator {
             jerarquiaGestionOperativaService.save(jerarquiaGestionOperativaEntity);
             jerarquiaGestionOperativaList.add(jerarquiaGestionOperativaEntity);
         }
-        return jerarquiaGestionOperativaList;
+        return gestionOperativaService.findAssignedOperationalsManagements(hierarchyId, operationalManagementIds);
     }
 
     /**

@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.DependenciaEntity;
+import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ReportOperationalManagementDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,9 +61,12 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
                 entity.getFechaCambio(), 
                 entity.getRegistradoPor(), 
                 entity.getId());
-            return entity;
+        }else{
+            gestionOperativaDAO.save(entity);
         }
-        return gestionOperativaDAO.save(entity);
+        Session session = entityManager.unwrap(Session.class);
+        session.evict(entity);
+        return entity;
     }
 
     @Override
@@ -179,6 +182,7 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
      * @param hierarchyId El ID de la jerarquía.
      * @return Lista de gestiones operativas organizadas jerárquicamente.
      */
+    @Override
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public List<GestionOperativaEntity> findAssignedOperationalsManagements(Long hierarchyId) {
@@ -195,7 +199,7 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
                 FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
                 INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
             )
-            SELECT p.*, a.*, jgo.jego_id  FROM padres as p
+            SELECT DISTINCT(p.*), a.*, jgo.jego_id  FROM padres as p
             LEFT JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = p.geop_id and jgo.jera_id = :hierarchyId
             LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON p.geop_id = ago.geop_id
             LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
@@ -211,6 +215,49 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
                 return entity;
         });
         query.setParameter("hierarchyId", hierarchyId);
+        List<GestionOperativaEntity> operationalsManagements =  query.getResultList();
+        return buildHierarchy(operationalsManagements);
+    }
+
+    /**
+     * Método para obtener las gestiones operativas a partir de un ID de jerarquía.
+     * @param hierarchyId El ID de la jerarquía.
+     * @return Lista de gestiones operativas organizadas jerárquicamente.
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
+    public List<GestionOperativaEntity> findAssignedOperationalsManagements(Long hierarchyId, List<Long> operationalManagementIds) {
+        String sql= """
+            WITH RECURSIVE padres AS (
+                SELECT go.*
+                FROM FORTALECIMIENTO.GESTIONOPERATIVA go
+                INNER JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = go.geop_id
+                WHERE jgo.jera_id = :hierarchyId AND go.geop_id IN (:operationalManagementIds)
+
+                UNION ALL
+
+                SELECT padre.*
+                FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
+                INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
+            )
+            SELECT DISTINCT(p.*), a.*, jgo.jego_id  FROM padres as p
+            LEFT JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = p.geop_id and jgo.jera_id = :hierarchyId
+            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON p.geop_id = ago.geop_id
+            LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
+        """;    
+
+        Query query = entityManager.createNativeQuery(sql, Object[].class);
+        query.unwrap(NativeQuery.class)
+            .addEntity("p", GestionOperativaEntity.class)
+            .addScalar("jego_id", StandardBasicTypes.LONG)
+            .setTupleTransformer((tuple, aliases) -> {
+                GestionOperativaEntity entity = (GestionOperativaEntity) tuple[0];
+                entity.setIdJerarquiaGestionOperativa((Long) tuple[1]);
+                return entity;
+        });
+        query.setParameter("hierarchyId", hierarchyId);
+        query.setParameter("operationalManagementIds", operationalManagementIds);
         List<GestionOperativaEntity> operationalsManagements =  query.getResultList();
         return buildHierarchy(operationalsManagements);
     }
@@ -239,7 +286,6 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
                 }
             }
         }
-
         return parentOperationalManagement;
     }
 

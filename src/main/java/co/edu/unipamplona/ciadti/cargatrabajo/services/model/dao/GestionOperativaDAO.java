@@ -80,12 +80,10 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
 
     @Query(value = """
         WITH RECURSIVE padres AS (
-            SELECT go.*, a.*
+            SELECT go.*
             FROM FORTALECIMIENTO.GESTIONOPERATIVA go
-            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON go.geop_id = ago.geop_id
-            LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
-            INNER JOIN FORTALECIMIENTO.TIPOLOGIA t ON go.tipo_id = t.tipo_id
-            WHERE t.tipo_idtipologiasiguiente IS NULL and a.acti_id IS NOT NULL and go.geop_id not in (
+            INNER JOIN FORTALECIMIENTO.TIPOLOGIA t on (t.tipo_id = go.tipo_id)
+            WHERE t.tipo_idtipologiasiguiente IS NULL AND  go.geop_id not in (
                 SELECT go.geop_id  FROM FORTALECIMIENTO.GESTIONOPERATIVA go
                 INNER JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = go.geop_id
                 INNER JOIN FORTALECIMIENTO.JERARQUIA j ON jgo.jera_id = j.jera_id 
@@ -94,13 +92,13 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
 
             UNION ALL
 
-            SELECT padre.*, a.*
+            SELECT padre.*
             FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
             INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
-            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON (padre.geop_id = ago.geop_id)
-            LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON (a.acti_id = ago.acti_id)
         )
-        SELECT DISTINCT * FROM padres
+        SELECT DISTINCT(p.*), a.* FROM padres as p
+        LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON p.geop_id = ago.geop_id
+        LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
     """, nativeQuery = true)
     List<GestionOperativaEntity> findNoAssignedOperationalsManagements(@Param("organizationalChartId") Long organizationalChartId);
 

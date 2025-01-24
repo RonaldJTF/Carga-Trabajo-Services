@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.JerarquiaGestionOperativaDAO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
@@ -42,7 +41,6 @@ public class OperationalManagementController {
     private final GestionOperativaService gestionOperativaService;
     private final TipologiaService tipologiaService;
     private final ConfigurationMediator configurationMediator;
-    private final JerarquiaGestionOperativaDAO jerarquiaGestionOperativaDAO;
     private final OrganizationChartReportPlainedExcelJXLS organizationChartReportPlainedExcelJXLS;
 
     @Operation(
