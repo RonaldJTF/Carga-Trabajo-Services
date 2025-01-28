@@ -10,7 +10,7 @@ public interface GestionOperativaService extends CommonService<GestionOperativaE
     int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(Long idPadre, Long inferiorOrder, Long superiorOrder, Long id, int increment);
     List<GestionOperativaEntity> findAssignedOperationalsManagements(Long hierarchyId);
     List<GestionOperativaEntity> findNoAssignedOperationalsManagements(Long organizationalChartId);
-    List<Object[]> findOperationalManagementByOrganizationChart(List<Long> id);
+    List<Object[]> findOperationalManagementByOrganizationChart(Long id);
     List<GestionOperativaEntity> findAssignedOperationalsManagementsByOrganizationChartId(Long organizationalChartId);
     List<GestionOperativaEntity> findAssignedOperationalsManagements(Long hierarchyId, List<Long> operationalManagementIds);
 }

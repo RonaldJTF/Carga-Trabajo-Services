@@ -300,7 +300,7 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<Object[]> findOperationalManagementByOrganizationChart(List<Long> organizationChartId){
+    public List<Object[]> findOperationalManagementByOrganizationChart(Long organizationChartId){
         return gestionOperativaDAO.findOperationalManagementByOrganizationChart(organizationChartId);
     }
 

@@ -102,89 +102,59 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
     List<GestionOperativaEntity> findNoAssignedOperationalsManagements(@Param("organizationalChartId") Long organizationalChartId);
 
     @Query(value = """
-            WITH RECURSIVE GESTIONJERARQUICA AS (
-                SELECT
-                    GO.GEOP_ID AS idGestionOperativa,
-                    NULL AS proceso,
-                    NULL AS procesoDescripcion,
-                    NULL AS procedimiento,
-                    NULL AS procedimientoDescripcion,
-                    GO.GEOP_NOMBRE AS actividad,
-                    GO.GEOP_DESCRIPCION AS actividadDescripcion,
-                    D.DEPE_NOMBRE AS dependencia,
-                    D.DEPE_DESCRIPCION AS dependenciaDescripcion,
-                    GO.GEOP_IDPADRE AS idGestionOperativaPadre,
-                    T.TIPO_NOMBRE AS tipo
-                FROM
-                    FORTALECIMIENTO.ORGANIGRAMA O
-                        JOIN FORTALECIMIENTO.JERARQUIA J ON O.ORGA_ID = J.ORGA_ID
-                        JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA JGO ON J.JERA_ID = JGO.JERA_ID
-                        JOIN FORTALECIMIENTO.GESTIONOPERATIVA GO ON JGO.GEOP_ID = GO.GEOP_ID
-                        JOIN FORTALECIMIENTO.TIPOLOGIA T ON GO.TIPO_ID = T.TIPO_ID
-                        JOIN FORTALECIMIENTO.DEPENDENCIA D ON J.DEPE_ID = D.DEPE_ID
-                WHERE
-                    O.ORGA_ID = :organizationChartId
-            
-                UNION ALL
-            
-                SELECT
-                    GJ.idGestionOperativa AS idGestionOperativa,
-                    CASE
-                        WHEN T.TIPO_NOMBRE = 'Proceso' THEN GO_PADRE.GEOP_NOMBRE
-                        ELSE GJ.proceso
-                        END AS proceso,
-                    CASE
-                        WHEN T.TIPO_NOMBRE = 'Proceso' THEN GO_PADRE.GEOP_DESCRIPCION
-                        ELSE GJ.procesoDescripcion
-                        END AS procesoDescripcion,
-                    CASE
-                        WHEN T.TIPO_NOMBRE = 'Procedimiento' THEN GO_PADRE.GEOP_NOMBRE
-                        ELSE GJ.procedimiento
-                        END AS procedimiento,
-                    CASE
-                        WHEN T.TIPO_NOMBRE = 'Procedimiento' THEN GO_PADRE.GEOP_DESCRIPCION
-                        ELSE GJ.procedimientoDescripcion
-                        END AS procedimientoDescripcion,
-                    GJ.actividad,
-                    GJ.actividadDescripcion,
-                    GJ.dependencia,
-                    GJ.dependenciaDescripcion,
-                    GO_PADRE.GEOP_IDPADRE AS idGestionOperativaPadre,
-                    T.TIPO_NOMBRE AS tipo
-                FROM
-                    FORTALECIMIENTO.GESTIONOPERATIVA GO_PADRE
-                        JOIN GESTIONJERARQUICA GJ ON GO_PADRE.GEOP_ID = GJ.idGestionOperativaPadre
-                        JOIN FORTALECIMIENTO.TIPOLOGIA T ON GO_PADRE.TIPO_ID = T.TIPO_ID
-            )
-            
-            SELECT
-                GJ.idGestionOperativa,
-                MAX(GJ.proceso) AS proceso,
-                MAX(GJ.procesoDescripcion) AS procesoDescripcion,
-                MAX(GJ.procedimiento) AS procedimiento,
-                MAX(GJ.procedimientoDescripcion) AS procedimientoDescripcion,
-                MAX(GJ.actividad) AS actividad,
-                MAX(GJ.actividadDescripcion) AS actividadDescripcion,
-                MAX(GJ.dependencia) AS dependencia,
-                MAX(GJ.dependenciaDescripcion) AS dependenciaDescripcion,
-                MAX(A.ACTI_ID) AS idActividad,
-                MAX(A.ACTI_FRECUENCIA) AS frecuencia,
-                MAX(A.ACTI_TIEMPOMINIMO) AS tiempoMinimo,
-                MAX(A.ACTI_TIEMPOMAXIMO) AS tiempoMaximo,
-                MAX(A.ACTI_TIEMPOPROMEDIO) AS tiempoPromedio,
-                MAX(N.NIVE_ID) AS idNivel,
-                MAX(N.NIVE_DESCRIPCION) AS nivel,
-                MAX(GJ.idGestionOperativaPadre) AS idGestionOperativaPadre
-            FROM
-                GESTIONJERARQUICA GJ
-                    LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA AGO ON GJ.idGestionOperativa = AGO.GEOP_ID
-                    LEFT JOIN FORTALECIMIENTO.ACTIVIDAD A ON AGO.ACTI_ID = A.ACTI_ID
-                    LEFT JOIN FORTALECIMIENTO.NIVEL N ON A.NIVE_ID = N.NIVE_ID
-            GROUP BY
-                GJ.idGestionOperativa
-            ORDER BY
-                proceso,
-                procedimiento;
+              WITH RECURSIVE GESTIONJERARQUICA AS (
+                            SELECT
+                                GEO.GEOP_ID,
+                                GEO.GEOP_NOMBRE,
+                                GEO.GEOP_DESCRIPCION,
+                                GEO.GEOP_IDPADRE,
+                                GEO.TIPO_ID AS idtipologia,
+                                0 AS nivel,
+                                DEP.DEPE_NOMBRE AS dependencia,
+                                O.ORGA_NOMBRE,
+                                O.ORGA_DESCRIPCION
+                            FROM
+                                FORTALECIMIENTO.ORGANIGRAMA O
+                                    JOIN FORTALECIMIENTO.JERARQUIA JERA ON O.ORGA_ID = JERA.ORGA_ID
+                                    JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA JGEO ON JERA.JERA_ID = JGEO.JERA_ID
+                                    JOIN FORTALECIMIENTO.GESTIONOPERATIVA GEO ON JGEO.GEOP_ID = GEO.GEOP_ID
+                                    JOIN FORTALECIMIENTO.DEPENDENCIA DEP ON JERA.DEPE_ID = DEP.DEPE_ID
+                            WHERE
+                                O.ORGA_ID = :organizationChartId
+                       
+                            UNION ALL
+                       
+                            SELECT
+                                GPADRE.GEOP_ID,
+                                GPADRE.GEOP_NOMBRE,
+                                GPADRE.GEOP_DESCRIPCION,
+                                GPADRE.GEOP_IDPADRE,
+                                GPADRE.TIPO_ID AS idTipologia,
+                                GACTUAL.nivel + 1,
+                                GACTUAL.dependencia,
+                                GACTUAL.ORGA_NOMBRE,
+                                GACTUAL.ORGA_DESCRIPCION
+                            FROM
+                                FORTALECIMIENTO.GESTIONOPERATIVA GPADRE
+                                JOIN GESTIONJERARQUICA GACTUAL ON GACTUAL.GEOP_IDPADRE = GPADRE.GEOP_ID
+                        )
+                       
+                        SELECT
+                            GJ.*,
+                            ACTI.ACTI_ID,
+                            ACTI.NIVE_ID,
+                            ACTI.ACTI_FRECUENCIA,
+                            ACTI.ACTI_TIEMPOMAXIMO,
+                            ACTI.ACTI_TIEMPOMINIMO,
+                            ACTI.ACTI_TIEMPOPROMEDIO,
+                            N.NIVE_DESCRIPCION,
+                            TACTUAL.TIPO_NOMBRE AS tipologia
+                        FROM
+                            GESTIONJERARQUICA GJ
+                            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA AGOP ON GJ.GEOP_ID = AGOP.GEOP_ID
+                            LEFT JOIN FORTALECIMIENTO.ACTIVIDAD ACTI ON AGOP.ACTI_ID = ACTI.ACTI_ID
+                            LEFT JOIN FORTALECIMIENTO.NIVEL N ON ACTI.NIVE_ID = N.NIVE_ID
+                            LEFT JOIN FORTALECIMIENTO.TIPOLOGIA TACTUAL ON GJ.idTipologia = TACTUAL.TIPO_ID
             """, nativeQuery = true)
-    List<Object[]> findOperationalManagementByOrganizationChart(@Param("organizationChartId") List<Long> organizationChartId);
+    List<Object[]> findOperationalManagementByOrganizationChart(@Param("organizationChartId") Long organizationChartId);
 }

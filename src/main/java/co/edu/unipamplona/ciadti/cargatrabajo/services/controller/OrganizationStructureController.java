@@ -298,7 +298,7 @@ public class OrganizationStructureController {
 
     @SuppressWarnings("null")
     @GetMapping("report")
-    public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type, 
+    public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type,
                                                  @RequestParam(name = "organizationChartId", required = false) Long organizationChartId) throws Exception {
         byte[] fileBytes = null;
         String extension = null;
@@ -311,7 +311,7 @@ public class OrganizationStructureController {
         }else if ("flat-excel".equalsIgnoreCase(type)) {
             extension = "xlsx";
             mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            fileBytes = organizationChartReportPlainedExcelJXLS.generate(List.of(organizationChartId));
+            fileBytes = organizationChartReportPlainedExcelJXLS.generate(organizationChartId);
         }
 
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");

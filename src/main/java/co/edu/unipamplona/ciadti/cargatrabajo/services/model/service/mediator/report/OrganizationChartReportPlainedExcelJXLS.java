@@ -1,9 +1,12 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ReportOperationalManagementDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.OrganigramaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.NivelService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.OrganigramaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.StaticResourceMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Corporate;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.ImageCommand;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -31,6 +35,7 @@ public class OrganizationChartReportPlainedExcelJXLS {
     private final StaticResourceMediator staticResourceMediator;
     private final GestionOperativaService gestionOperativaService;
     private final NivelService nivelService;
+    private final OrganigramaService organigramaService;
 
     private Map<String, Object> registry;
     private Double hoursPerMonth;
@@ -57,7 +62,7 @@ public class OrganizationChartReportPlainedExcelJXLS {
      * @throws Exception Si ocurre un error durante la generación del informe, como problemas al obtener
      *                   los recursos, procesar los datos o llenar la plantilla.
      */
-    public byte[] generate(List<Long> organizationChartIds) throws Exception {
+    public byte[] generate(Long organizationChartIds) throws Exception {
         initializeRegistry();
         hoursPerMonth = Corporate.MONTHLY_WORKING_TIME.getValue();
 
@@ -119,11 +124,13 @@ public class OrganizationChartReportPlainedExcelJXLS {
      *         - Los datos agrupados por proceso y sumados por nivel.
      * @throws Exception Si ocurre un error al obtener o procesar los datos.
      */
-    private Map<String, Object> prepareContextMap(List<Long> organizationChartIds) {
+    private Map<String, Object> prepareContextMap(Long organizationChartIds) throws CiadtiException {
         Map<String, Object> contextMap = new LinkedHashMap<>();
-        List<ReportOperationalManagementDTO> reportData = fetchAndProcessReportData(organizationChartIds);
 
+        List<ReportOperationalManagementDTO> reportData = fetchAndProcessReportData(organizationChartIds);
         List<ReportOperationalManagementDTO> resultProcess = groupByProcesoAndSumTiemposPorNivel(reportData);
+
+        OrganigramaEntity organigrama = organigramaService.findById(organizationChartIds);
 
         TreeFunction t = new TreeFunction();
         contextMap.put("T", t);
@@ -132,6 +139,7 @@ public class OrganizationChartReportPlainedExcelJXLS {
         contextMap.put("logo", staticResourceMediator.getResourceBytes(LOGO_PATH));
         contextMap.put("HOURS_PER_MONTH", hoursPerMonth);
         contextMap.put("reportDate", new SimpleDateFormat(DATE_FORMAT).format(new Date()));
+        contextMap.put("organizationChart", organigrama);
         contextMap.put("dataOperationalManagement", reportData);
         contextMap.put("plainProcess", resultProcess);
 
@@ -151,9 +159,10 @@ public class OrganizationChartReportPlainedExcelJXLS {
      * @param organizationChartIds Lista de IDs de organigrama para los cuales se generará el informe.
      * @return Una lista de objetos {@link ReportOperationalManagementDTO} que representan los datos procesados del informe.
      */
-    private List<ReportOperationalManagementDTO> fetchAndProcessReportData(List<Long> organizationChartIds) {
+    private List<ReportOperationalManagementDTO> fetchAndProcessReportData(Long organizationChartIds) {
         List<Object[]> rawData = gestionOperativaService.findOperationalManagementByOrganizationChart(organizationChartIds);
-        List<ReportOperationalManagementDTO> reportData = mapRawDataToDTOs(rawData);
+        List<ReportOperationalManagementDTO> resultDTO = mapToDTO(rawData);
+        List<ReportOperationalManagementDTO> reportData = processGroupedByDependencies(resultDTO);
         calculateDepthLevels(reportData);
         buildStructureData(reportData);
         registry.put("dataOperationalManagement", reportData);
@@ -171,11 +180,11 @@ public class OrganizationChartReportPlainedExcelJXLS {
      * @return Una lista de objetos {@link ReportOperationalManagementDTO}, donde cada DTO representa
      *         una fila de datos mapeada.
      */
-    private List<ReportOperationalManagementDTO> mapRawDataToDTOs(List<Object[]> rawData) {
-        return rawData.stream()
-                .map(this::mapRowToDTO)
-                .collect(Collectors.toList());
-    }
+//    private List<ReportOperationalManagementDTO> mapRawDataToDTOs(List<Object[]> rawData) {
+//        return rawData.stream()
+//                .map(this::mapRowToDTO)
+//                .collect(Collectors.toList());
+//    }
 
     /**
      * Convierte una fila de datos (representada como un arreglo de objetos) en un objeto de tipo
@@ -186,27 +195,27 @@ public class OrganizationChartReportPlainedExcelJXLS {
      * @return Un objeto {@link ReportOperationalManagementDTO} con los valores mapeados desde la fila.
      *         Si algún valor es nulo, se maneja adecuadamente para evitar excepciones.
      */
-    private ReportOperationalManagementDTO mapRowToDTO(Object[] row) {
-        return new ReportOperationalManagementDTO(
-                ((BigDecimal) row[0]).longValue(), // idGestionOperativa
-                (String) row[1], // proceso
-                (String) row[2], // procesoDescripcion
-                (String) row[3], // procedimiento
-                (String) row[4], // procedimientoDescripcion
-                (String) row[5], // actividad
-                (String) row[6], // actividadDescripcion
-                (String) row[7], // dependencia
-                (String) row[8], // dependenciaDescripcion
-                Optional.ofNullable((BigDecimal) row[9]).map(BigDecimal::longValue).orElse(null), // idActividad
-                Optional.ofNullable((BigDecimal) row[10]).map(BigDecimal::doubleValue).orElse(null), // frecuencia
-                Optional.ofNullable((BigDecimal) row[11]).map(BigDecimal::doubleValue).orElse(null), // tiempoMinimo
-                Optional.ofNullable((BigDecimal) row[12]).map(BigDecimal::doubleValue).orElse(null), // tiempoMaximo
-                Optional.ofNullable((BigDecimal) row[13]).map(BigDecimal::doubleValue).orElse(null), // tiempoPromedio
-                Optional.ofNullable((BigDecimal) row[14]).map(BigDecimal::longValue).orElse(null), // idNivel
-                Optional.ofNullable((String) row[15]).orElse(""), // nivel
-                Optional.ofNullable((BigDecimal) row[16]).map(BigDecimal::longValue).orElse(null) // idActividadPadre
-        );
-    }
+//    private ReportOperationalManagementDTO mapRowToDTO(Object[] row) {
+//        return new ReportOperationalManagementDTO(
+//                ((BigDecimal) row[0]).longValue(), // idGestionOperativa
+//                (String) row[1], // proceso
+//                (String) row[2], // procesoDescripcion
+//                (String) row[3], // procedimiento
+//                (String) row[4], // procedimientoDescripcion
+//                (String) row[5], // actividad
+//                (String) row[6], // actividadDescripcion
+//                (String) row[7], // dependencia
+//                (String) row[8], // dependenciaDescripcion
+//                Optional.ofNullable((BigDecimal) row[9]).map(BigDecimal::longValue).orElse(null), // idActividad
+//                Optional.ofNullable((BigDecimal) row[10]).map(BigDecimal::doubleValue).orElse(null), // frecuencia
+//                Optional.ofNullable((BigDecimal) row[11]).map(BigDecimal::doubleValue).orElse(null), // tiempoMinimo
+//                Optional.ofNullable((BigDecimal) row[12]).map(BigDecimal::doubleValue).orElse(null), // tiempoMaximo
+//                Optional.ofNullable((BigDecimal) row[13]).map(BigDecimal::doubleValue).orElse(null), // tiempoPromedio
+//                Optional.ofNullable((BigDecimal) row[14]).map(BigDecimal::longValue).orElse(null), // idNivel
+//                Optional.ofNullable((String) row[15]).orElse(""), // nivel
+//                Optional.ofNullable((BigDecimal) row[16]).map(BigDecimal::longValue).orElse(null) // idActividadPadre
+//        );
+//    }
 
     /**
      * Calcula los niveles de profundidad de cada ítem en la lista de datos de gestión operativa
@@ -223,7 +232,12 @@ public class OrganizationChartReportPlainedExcelJXLS {
      */
     private void calculateDepthLevels(List<ReportOperationalManagementDTO> reportData) {
         Map<Long, ReportOperationalManagementDTO> activityMap = reportData.stream()
-                .collect(Collectors.toMap(ReportOperationalManagementDTO::getIdGestionOperativa, dto -> dto));
+                .collect(Collectors.toMap(
+                        ReportOperationalManagementDTO::getIdGestionOperativa, // clave
+                        Function.identity(), // valor
+                        (existing, duplicate) -> existing // en caso de duplicado, conservar el existente
+                ));
+
         for (ReportOperationalManagementDTO dto : reportData) {
             dto.setElementDepth(calculateDepth(dto, activityMap));
             dto.setActividad("      ".repeat(dto.getElementDepth()) + dto.getActividad());
@@ -243,11 +257,11 @@ public class OrganizationChartReportPlainedExcelJXLS {
      *         también se retorna 0.
      */
     private int calculateDepth(ReportOperationalManagementDTO dto, Map<Long, ReportOperationalManagementDTO> activityMap) {
-        if (dto.getIdGestionOperativaPadre() == null) {
+        if (dto.getIdGestionOperativaPadre() == null || !dto.getTipologia().equalsIgnoreCase("actividad")) {
             return 0;
         } else {
             ReportOperationalManagementDTO parent = activityMap.get(dto.getIdGestionOperativaPadre().longValue());
-            if (parent == null) {
+            if (parent == null || !Objects.equals(parent.getIdTipologia(), dto.getIdTipologia())) {
                 return 0;
             }
             return calculateDepth(parent, activityMap) + 1;
@@ -263,6 +277,10 @@ public class OrganizationChartReportPlainedExcelJXLS {
      *                los datos de gestión operativa a procesar.
      */
     private void buildStructureData(List<ReportOperationalManagementDTO> results) {
+        if (results == null || results.isEmpty()) {
+            results = new ArrayList<>();
+            results.add(new ReportOperationalManagementDTO());
+        }
         results.forEach(this::processReportItem);
     }
 
@@ -320,15 +338,15 @@ public class OrganizationChartReportPlainedExcelJXLS {
         double minTime = roundToTwoDecimals(item.getTiempoMinimo() / 60.0);
         double maxTime = roundToTwoDecimals(item.getTiempoMaximo() / 60.0);
         double meanTime = roundToTwoDecimals(item.getTiempoPromedio() / 60.0);
-        double standarTime = roundToTwoDecimals(1.07 * (minTime + 4 * meanTime + maxTime) / 6);
+        double standardTime = roundToTwoDecimals(1.07 * (minTime + 4 * meanTime + maxTime) / 6);
 
         item.setTiempoMinimo(minTime);
         item.setTiempoMaximo(maxTime);
         item.setTiempoPromedio(meanTime);
-        item.setTiempoEstandar(standarTime);
+        item.setTiempoEstandar(standardTime);
 
         return levels.stream()
-                .map(level -> Objects.equals(level.getId(), item.getIdNivel()) ? roundToOneDecimal(item.getFrecuencia() * standarTime) : null)
+                .map(level -> Objects.equals(level.getId(), item.getIdNivel()) ? roundToOneDecimal(item.getFrecuencia() * standardTime) : null)
                 .collect(Collectors.toList());
     }
 
@@ -433,5 +451,176 @@ public class OrganizationChartReportPlainedExcelJXLS {
                 .tiemposPorNivel(tiemposPorNivel)
                 .build();
     }
+
+    private List<ReportOperationalManagementDTO> mapToDTO(List<Object[]> resultList) {
+
+        List<ReportOperationalManagementDTO> report = new ArrayList<>();
+        for (Object[] result : resultList) {
+            ReportOperationalManagementDTO dto = new ReportOperationalManagementDTO();
+
+            // Mapeo común
+            dto.setIdGestionOperativa(((Number) result[0]).longValue());
+            String geopNombre = (String) result[1];
+            String geopDescripcion = (String) result[2];
+            dto.setIdGestionOperativaPadre(result[3] != null ? ((Number) result[3]).longValue() : null);
+            Long idTipologia = result[4] != null ? ((Number) result[4]).longValue() : null;
+            //dto.setNivel(result[5] != null ? ((Number) result[5]).intValue() : null);
+            dto.setDependencia((String) result[6]);
+
+            dto.setOrganigrama((String) result[7]);
+            dto.setOrganigramaDescripcion((String) result[8]);
+
+            dto.setIdActividad(result[9] != null ? ((Number) result[9]).longValue() : null);
+            dto.setIdNivel(result[10] != null ? ((Number) result[10]).longValue() : null);
+            dto.setFrecuencia(result[11] != null ? ((Number) result[11]).doubleValue() : null);
+            dto.setTiempoMaximo(result[12] != null ? ((Number) result[12]).doubleValue() : null);
+            dto.setTiempoMinimo(result[13] != null ? ((Number) result[13]).doubleValue() : null);
+            dto.setTiempoPromedio(result[14] != null ? ((Number) result[14]).doubleValue() : null);
+            dto.setNivel((String) result[15]);
+
+            String tipologia = (String) result[16];
+
+            dto.setIdTipologia(idTipologia);
+            dto.setTipologia(tipologia);
+
+            if (idTipologia != null) {
+                switch (tipologia) {
+                    case "Proceso":
+                        dto.setProceso(geopNombre);
+                        dto.setProcesoDescripcion(geopDescripcion);
+                        break;
+                    case "Procedimiento":
+                        dto.setProcedimiento(geopNombre);
+                        dto.setProcedimientoDescripcion(geopDescripcion);
+                        break;
+                    case "Actividad":
+                        dto.setActividad(geopNombre);
+                        dto.setActividadDescripcion(geopDescripcion);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            report.add(dto);
+        }
+
+        return report;
+    }
+
+    private List<ReportOperationalManagementDTO> processGroupedByDependencies(List<ReportOperationalManagementDTO> flatList) {
+        // Paso 1: Agrupar por dependencia
+        Map<String, List<ReportOperationalManagementDTO>> groupedByDependencies = flatList.stream()
+                .collect(Collectors.groupingBy(ReportOperationalManagementDTO::getDependencia));
+
+        List<ReportOperationalManagementDTO> finalList = new ArrayList<>();
+
+        // Paso 2: Procesar cada grupo de dependencia
+        for (Map.Entry<String, List<ReportOperationalManagementDTO>> entry : groupedByDependencies.entrySet()) {
+            String dependencia = entry.getKey();
+            List<ReportOperationalManagementDTO> group = entry.getValue();
+
+            group.sort(Comparator.comparing(ReportOperationalManagementDTO::getIdGestionOperativa));
+
+            // Paso 3: Crear un mapa de acceso rápido para todos los elementos del grupo
+            Map<Long, Set<ReportOperationalManagementDTO>> dtoMap = new HashMap<>();
+
+            // Paso 4: Procesar jerarquía de cada elemento dentro del grupo
+            for (ReportOperationalManagementDTO dto : group) {
+                Long currentParentId = dto.getIdGestionOperativaPadre();
+
+                ReportOperationalManagementDTO newDto = new ReportOperationalManagementDTO();
+
+                // Copiar todos los campos del hijo
+                newDto.setIdGestionOperativa(dto.getIdGestionOperativa());
+                newDto.setIdActividad(dto.getIdActividad());
+                newDto.setActividad(dto.getActividad() != null ? dto.getActividad() : "");
+                newDto.setDependencia(dependencia);
+                newDto.setNivel(dto.getNivel());
+                newDto.setIdNivel(dto.getIdNivel());
+                newDto.setIdGestionOperativaPadre(currentParentId);
+                newDto.setIdTipologia(dto.getIdTipologia());
+                newDto.setTipologia(dto.getTipologia());
+
+                newDto.setProceso(dto.getProceso());
+                newDto.setProcesoDescripcion(dto.getProcesoDescripcion());
+                newDto.setProcedimiento(dto.getProcedimiento());
+                newDto.setProcedimientoDescripcion(dto.getProcedimientoDescripcion());
+
+                // Copiar los tiempos del hijo (si existen), sin reemplazar por los del padre
+                if (dto.getTiempoMinimo() != null) {
+                    newDto.setTiempoMinimo(dto.getTiempoMinimo());
+                }
+                if (dto.getTiempoMaximo() != null) {
+                    newDto.setTiempoMaximo(dto.getTiempoMaximo());
+                }
+                if (dto.getTiempoPromedio() != null) {
+                    newDto.setTiempoPromedio(dto.getTiempoPromedio());
+                }
+                if (dto.getTiempoEstandar() != null) {
+                    newDto.setTiempoEstandar(dto.getTiempoEstandar());
+                }
+                if (dto.getFrecuencia() != null) {
+                    newDto.setFrecuencia(dto.getFrecuencia());
+                }
+
+                // Buscar el proceso y procedimiento para cada hijo
+                while (currentParentId != null) {
+                    Long finalCurrentParentId = currentParentId;
+                    ReportOperationalManagementDTO parent = group.stream()
+                            .filter(d -> d.getIdGestionOperativa().equals(finalCurrentParentId))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (parent != null) {
+
+                        Set<ReportOperationalManagementDTO> parentMap = dtoMap.get(parent.getIdGestionOperativa());
+
+                        if (!parent.getIdTipologia().equals(newDto.getIdTipologia())) {
+                            if (parent.getProceso() != null && newDto.getProceso() == null) {
+                                // Solo reemplazar si el campo proceso del hijo está vacío
+                                newDto.setProceso(parent.getProceso());
+                                newDto.setProcesoDescripcion(parent.getProcesoDescripcion());
+
+                                if (parentMap != null && !parentMap.isEmpty()) {
+                                    ReportOperationalManagementDTO temp = parentMap.iterator().next();
+                                    if (temp.getIdActividad() == null && newDto.getProceso().equals(temp.getProceso())){
+                                        dtoMap.remove(newDto.getIdGestionOperativaPadre());
+                                    }
+                                }
+                            } else if (parent.getProcedimiento() != null && newDto.getProcedimiento() == null) {
+                                // Solo reemplazar si el campo procedimiento del hijo está vacío
+                                newDto.setProcedimiento(parent.getProcedimiento());
+                                newDto.setProcedimientoDescripcion(parent.getProcedimientoDescripcion());
+
+                                if (parentMap != null && !parentMap.isEmpty()) {
+                                    ReportOperationalManagementDTO temp = parentMap.iterator().next();
+                                    if (temp.getIdActividad() == null && newDto.getProcedimiento().equals(temp.getProcedimiento())){
+                                        dtoMap.remove(newDto.getIdGestionOperativaPadre());
+                                    }
+                                }
+                            }
+                        }
+
+                        // Continuar con el padre del nivel superior
+                        currentParentId = parent.getIdGestionOperativaPadre();
+                    } else {
+                        break; // Detener si no hay más padres
+                    }
+                }
+                // Agregar el nuevo DTO al mapa para asegurar no agregar duplicados por idGestionOperativa
+                dtoMap.computeIfAbsent(newDto.getIdGestionOperativa(), k -> new HashSet<>()).add(newDto);
+
+            }
+
+            // Paso 5: Aplanar el mapa (esto solo afecta el mapa, pero no duplica en la lista final)
+            dtoMap.values().stream()
+                    .flatMap(Set::stream)
+                    .sorted(Comparator.comparing(ReportOperationalManagementDTO::getIdGestionOperativa)) // Ordenar antes de agregar
+                    .forEach(finalList::add);
+        }
+
+        return finalList;
+    }
+
 
 }
