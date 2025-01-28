@@ -1,6 +1,5 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.OrganizationChartReportPlainedExcelJXLS;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +15,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEnt
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.OrganizationChartReportExcelJXLS;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +41,7 @@ public class OperationalManagementController {
     private final GestionOperativaService gestionOperativaService;
     private final TipologiaService tipologiaService;
     private final ConfigurationMediator configurationMediator;
-    private final OrganizationChartReportPlainedExcelJXLS organizationChartReportPlainedExcelJXLS;
+    private final OrganizationChartReportExcelJXLS organizationChartReportExcelJXLS;
 
     @Operation(
         summary = "Obtener o listar las gestiones operativas",
@@ -123,5 +123,35 @@ public class OperationalManagementController {
     @PostMapping("/migrate-structures")
     public ResponseEntity<?> migrateStructures(@RequestBody ArrayList<EstructuraEntity> estructuras, @RequestParam(required = false) Long idParent) throws CiadtiException, CloneNotSupportedException {
         return new ResponseEntity<>(configurationMediator.migrateStructures(estructuras, idParent), HttpStatus.CREATED);
+    }
+
+    @SuppressWarnings("null")
+    @GetMapping("report")
+    public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type) throws Exception {
+        byte[] fileBytes = null;
+        String extension = null;
+        String mediaType = null;
+
+        if ("excel".equalsIgnoreCase(type)) {
+            extension = "xlsx";
+            mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            fileBytes = organizationChartReportExcelJXLS.generate();
+        }
+
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+        String fileName = String.format("reporte_%s.%s", currentDateTime, extension);
+
+        if (fileBytes != null) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+            headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition, Content-Type");
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.parseMediaType(mediaType))
+                    .body(fileBytes);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

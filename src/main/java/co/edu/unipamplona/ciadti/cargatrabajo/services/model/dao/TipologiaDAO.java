@@ -2,7 +2,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.InventarioTipologiaDTO;
 import org.springframework.data.jpa.repository.JpaRepository;

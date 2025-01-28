@@ -96,7 +96,6 @@ public class ReportPOI {
     private void reset(){
         items = new ArrayList<>();
         styleRegistry_ = new HashMap<>();
-        System.out.println(cellStyles_.size());
         this.cellStyles_ = new HashMap<>();
     }
 

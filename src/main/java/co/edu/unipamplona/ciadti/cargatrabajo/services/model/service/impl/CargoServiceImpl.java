@@ -39,7 +39,7 @@ public class CargoServiceImpl implements CargoService{
     @Override
     @Transactional(readOnly = true)
     public CargoEntity findById(Long id) throws CiadtiException {
-        return cargoDAO.findById(id).orElseThrow(() -> new CiadtiException("Actividad no encontrada para el id :: " + id, 404));
+        return cargoDAO.findById(id).orElseThrow(() -> new CiadtiException("Cargo no encontrada para el id :: " + id, 404));
     }
 
     @Override
@@ -102,7 +102,7 @@ public class CargoServiceImpl implements CargoService{
         Long[] levelIds = filter.get("levels");
 
         String jpql= """
-            select c.id, c.asignacionBasicaMensual, c.totalCargos, c.idJerarquia, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial,
+            select distinct c.id, c.asignacionBasicaMensual, c.totalCargos, c.idJerarquia, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial,
                 j.orden, 
                 o.id, o.nombre, o.descripcion, 
                 d.id, d.nombre, d.icono, d.mimetype,
@@ -173,7 +173,7 @@ public class CargoServiceImpl implements CargoService{
         CompensacionLabNivelVigenciaEntity compensacionLabNivelVigencia = null;
 
         for (Object[] row : results) {
-            if (((Long) row[0]) != appointmentId){
+            if (((Long) row[0]).longValue() != appointmentId.longValue()){
                 appointment = CargoEntity.builder()
                     .id((Long) row[0])
                     .asignacionBasicaMensual((Double) row[1])
@@ -270,7 +270,7 @@ public class CargoServiceImpl implements CargoService{
     @Transactional(readOnly = true)
     public CargoEntity findByAppointmentId(Long id) {
         String jpql= """
-            select c.id, c.asignacionBasicaMensual, c.totalCargos, c.idJerarquia, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial,
+            select distinct c.id, c.asignacionBasicaMensual, c.totalCargos, c.idJerarquia, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial,
                 j.orden, 
                 o.id, o.nombre, o.descripcion, 
                 d.id, d.nombre, d.icono, d.mimetype,
@@ -299,7 +299,7 @@ public class CargoServiceImpl implements CargoService{
                 left outer join PeriodicidadEntity p on (cl.idPeriodicidad = p.id ) 
                 left outer join CategoriaEntity cat on (cl.idCategoria = cat.id )
             where c.id = :id  
-            order by c.id asc, j.idOrganigrama asc, j.idDependencia asc, c.idVigencia asc, c.idAlcance asc, c.idNivel asc, clnv.id asc 
+            order by c.id asc, clnv.id asc, cnvv.id asc 
         """;
 
         Query query = entityManager.createQuery(jpql);

@@ -7,6 +7,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ConvencionS
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.DependenciaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.JerarquiaService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.AssignedOrganizationChartReportExcelJXLS;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.OrganizationChartReportPlainedExcelJXLS;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;
@@ -32,9 +33,7 @@ import java.io.IOException;
 import java.util.List;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,6 +45,7 @@ public class OrganizationStructureController {
     private final ConvencionService convencionService;
     private final ConfigurationMediator configurationMediator;
     private final OrganizationChartReportPlainedExcelJXLS organizationChartReportPlainedExcelJXLS;
+    private final AssignedOrganizationChartReportExcelJXLS organizationChartReportExcelJXLS;
     private final GestionOperativaService gestionOperativaService;
 
     @Operation(
@@ -298,16 +298,8 @@ public class OrganizationStructureController {
 
     @SuppressWarnings("null")
     @GetMapping("report")
-    public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type, @RequestParam(name = "organizationChartIds", required = false) String organizationChartIds) throws Exception {
-        organizationChartIds = organizationChartIds.replaceAll("\\[|\\]|\\s", "");
-        List<Long> organizationChartsIds = new ArrayList<>();
-        if (!organizationChartIds.isEmpty()) {
-            String[] parts = organizationChartIds.split(",");
-            for (String part : parts) {
-                organizationChartsIds.add(Long.parseLong(part));
-            }
-        }
-
+    public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type, 
+                                                 @RequestParam(name = "organizationChartId", required = false) Long organizationChartId) throws Exception {
         byte[] fileBytes = null;
         String extension = null;
         String mediaType = null;
@@ -315,7 +307,11 @@ public class OrganizationStructureController {
         if ("excel".equalsIgnoreCase(type)) {
             extension = "xlsx";
             mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            fileBytes = organizationChartReportPlainedExcelJXLS.generate(organizationChartsIds);
+            fileBytes = organizationChartReportExcelJXLS.generate(organizationChartId);
+        }else if ("flat-excel".equalsIgnoreCase(type)) {
+            extension = "xlsx";
+            mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            fileBytes = organizationChartReportPlainedExcelJXLS.generate(List.of(organizationChartId));
         }
 
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");

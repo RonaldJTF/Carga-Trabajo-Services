@@ -99,6 +99,9 @@ public class CargoEntity implements Serializable, Cloneable {
     private VigenciaEntity vigencia;
 
     @Transient
+    private List<DenominacionEmpleoEntity> denominacionesEmpleos;
+
+    @Transient
     private List<CompensacionLabNivelVigenciaEntity> compensacionesLaboralesAplicadas;
 
     @Transient

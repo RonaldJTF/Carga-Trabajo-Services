@@ -2,7 +2,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.r
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,8 +20,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.Compensacion
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CompensacionLaboralEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.StaticResourceMediator;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.EachMergeCommand;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.HeaderCommand;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jxls.command.ImageCommand;

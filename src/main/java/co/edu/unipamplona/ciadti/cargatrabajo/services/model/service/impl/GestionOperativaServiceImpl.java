@@ -18,6 +18,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.GestionOperativaDAO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
@@ -318,12 +319,13 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
         
                     UNION ALL
         
-                    SELECT padre.*, null::numeric(30,0)  as idDependencia
+                    SELECT padre.*, CAST(null AS NUMERIC(30,0))  as idDependencia
                     FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
                     INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
                 )
-                SELECT DISTINCT(p.*), a.*, d.* FROM padres as p
-                LEFT JOIN FORTALECIMIENTO.DEPENDENCIA d ON d.depe_id = p.idDependencia
+                SELECT DISTINCT p.*, t.tipo_nombre, a.*, d.* FROM padres as p
+                INNER JOIN FORTALECIMIENTO.TIPOLOGIA AS t ON t.tipo_id = p.tipo_id
+                LEFT JOIN FORTALECIMIENTO.DEPENDENCIA AS d ON d.depe_id = p.idDependencia
                 LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON p.geop_id = ago.geop_id
                 LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
         """;
@@ -331,13 +333,13 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
         Query query = entityManager.createNativeQuery(sql, Object[].class);
         query.unwrap(NativeQuery.class)
                 .addEntity("p", GestionOperativaEntity.class)
-                .addScalar("d", DependenciaEntity.class)
+                .addEntity("d", DependenciaEntity.class)
                 .setTupleTransformer((tuple, aliases) -> {
                     GestionOperativaEntity entity = (GestionOperativaEntity) tuple[0];
                     entity.setDependencia((DependenciaEntity) tuple[1]);
                     return entity;
                 });
-        query.setParameter("hierarchyId", organizationChartId);
+        query.setParameter("organizationChartId", organizationChartId);
         List<GestionOperativaEntity> operationalsManagements =  query.getResultList();
         return buildHierarchy(operationalsManagements);
     }

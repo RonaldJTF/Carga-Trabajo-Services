@@ -99,9 +99,14 @@ public class StructureReportPDF {
         chartParameters.put("requiredTotalHours", requiredTotalHours);
         chartParameters.put("requiredTotalPeople", requiredTotalPeople);
 
-        JasperReport chartReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(structureIds != null && structureIds.size() > 0 ? filePathChart : filePathBlobalChart));
-
-        parameters.put("chartReport", chartReport);
+        if(structureIds != null && structureIds.size() > 0){
+            JasperReport chartReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(filePathChart));
+            parameters.put("chartReport", chartReport);
+        }/*else{
+            JasperReport chartReport = JasperCompileManager.compileReport(getClass().getClassLoader().getResourceAsStream(filePathBlobalChart));
+            parameters.put("chartReport", chartReport);
+        }*/
+        
         parameters.put("chartParameter", chartParameters);
         parameters.put("logo", new ByteArrayInputStream(logo));
         parameters.put("headerImage", new ByteArrayInputStream(headerImage));

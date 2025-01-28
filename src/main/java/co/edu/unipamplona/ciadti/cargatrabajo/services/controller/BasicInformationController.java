@@ -39,6 +39,7 @@ public class BasicInformationController {
     private final VariableService variableService;
     private final StatisticsMediator statisticsMediator;
     private final ConvencionService convencionService;
+    private final DenominacionEmpleoService denominacionEmpleoService;
 
     @Operation(
             summary = "Obtener o listar los tipos de documentos",
@@ -784,12 +785,73 @@ public class BasicInformationController {
     }
 
     @Operation(
-            summary = "Eliminar variables primarias por el id",
-            description = "Elimina lista de variables primarias  por su id." +
-                    "Args: primaryVariableIds: identificadores de los tipos de variables primarias a eliminar.")
+            summary = "Eliminar convenciones por el id",
+            description = "Elimina lista de convenciones  por su id." +
+                    "Args: conventionIds: identificadores de las convenciones a eliminar.")
     @DeleteMapping("/convention")
     public ResponseEntity<?> deleteConventions(@RequestBody List<Long> conventionIds) throws CiadtiException {
         configurationMediator.deleteConventions(conventionIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+    @Operation(
+        summary = "Obtener o listar una denominacion de empleo",
+        description = "Obtiene o lista las denominaciones de empleos de acuerdo a ciertos parámetros. " +
+            "Args: id: identificador de una denominación de empleo. " +
+            "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase DenominacionEmpleoEntity). " +
+            "Returns: Objeto o lista de objetos con información del valor de denominación de empleo. " +
+            "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las denominaciones o parámetros especificados. ")
+    @GetMapping(value = {"/job-title", "/job-title/{id}"})
+    public ResponseEntity<?> getJobTitle(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException{
+        ParameterConverter parameterConverter = new ParameterConverter(DenominacionEmpleoEntity.class);
+        DenominacionEmpleoEntity filter = (DenominacionEmpleoEntity) parameterConverter.converter(request.getParameterMap());
+        filter.setId(id==null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, denominacionEmpleoService.findAllFilteredBy(filter));
+        
+    }
+
+    @Operation(
+        summary="Crear una denominación de empleo",
+        description = "Crea una denominación de empleo" +
+            "Args: denominacionEmpleoEntity: objeto con información de la denominación de empleo. " +
+            "Returns: Objeto con la información asociada.")
+    @PostMapping("/job-title")
+    public ResponseEntity<?> createJobTitle(@Valid @RequestBody DenominacionEmpleoEntity denominacionEmpleoEntity) {
+        return new ResponseEntity<>(denominacionEmpleoService.save(denominacionEmpleoEntity), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary="Actualizar una denominación de empleo",
+        description = "Actualiza una denominación de empleo. " + 
+            "Args: denominacionEmpleoEntity: objeto con información de la denominación. " +
+            "id: identificador de la denominación. " +
+            "Returns: Objeto con la información asociada.")
+    @PutMapping("/job-title/{id}")
+    public ResponseEntity<?> updateJobTitle(@Valid @RequestBody DenominacionEmpleoEntity denominacionEmpleoEntity, @PathVariable Long id) throws CiadtiException{
+        DenominacionEmpleoEntity denominacionEmpleoEntityBD = denominacionEmpleoService.findById(id);
+        denominacionEmpleoEntityBD.setNombre(denominacionEmpleoEntity.getNombre());
+        denominacionEmpleoEntityBD.setDescripcion(denominacionEmpleoEntity.getDescripcion());
+        return new ResponseEntity<>(denominacionEmpleoService.save(denominacionEmpleoEntityBD), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary = "Elimina una denominación de empleo",
+        description = "Eliminar una denominación. " + 
+            "Args: id: identificador de la denominación de empleo a eliminar. ")
+    @DeleteMapping("/job-title/{id}")
+    public ResponseEntity<?> deleteJobTitle(@PathVariable Long id) throws CiadtiException{
+        configurationMediator.deleteJobTitle(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Eliminar denominación de empleos por el id",
+            description = "Elimina lista de denominaciones de empleos por su id." +
+                    "Args: jobTitleIds: identificadores de las denominaciones a eliminar.")
+    @DeleteMapping("/job-title")
+    public ResponseEntity<?> deleteJobTitles(@RequestBody List<Long> jobTitleIds) throws CiadtiException {
+        configurationMediator.deleteJobTitles(jobTitleIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

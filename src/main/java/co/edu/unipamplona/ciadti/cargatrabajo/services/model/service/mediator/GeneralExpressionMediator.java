@@ -126,7 +126,6 @@ public class GeneralExpressionMediator {
             referencedValue = this.getValueOfVariable(referencedId, idValidity, variables, primaryVariables);
             expression = expression.replace(matcher.group(), String.valueOf(referencedValue));
         }
-        System.out.println(expression);
         Expression expressionBuilder = new ExpressionBuilder(expression).build();
         return expressionBuilder.evaluate();
     }

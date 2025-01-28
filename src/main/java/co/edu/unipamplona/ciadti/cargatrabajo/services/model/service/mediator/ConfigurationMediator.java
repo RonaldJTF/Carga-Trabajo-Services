@@ -73,6 +73,8 @@ public class ConfigurationMediator {
     private final DependenciaService dependenciaService;
     private final OrganigramaService organigramaService;
     private final JerarquiaGestionOperativaService jerarquiaGestionOperativaService;
+    private final DenominacionEmpleoService denominacionEmpleoService;
+    private final CargoDenominacionEmpleoService cargoDenominacionEmpleoService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -2041,6 +2043,33 @@ public class ConfigurationMediator {
     public void deleteHierarchyRelationshipWithOperationalsManagements(List<Long> relationshipIds) throws CiadtiException {
         for(Long relationshipId : relationshipIds){
             deleteHierarchyRelationshipWithOperationalManagement(relationshipId);
+        }
+    }
+
+    /**
+     * Elimina la denominación de empleo.
+     *
+     * @param id, identificador único de la denominación de empleo. 
+     * @throws CiadtiException, excepción
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteJobTitle(Long id) throws CiadtiException {
+        DenominacionEmpleoEntity denominacionBD = denominacionEmpleoService.findById(id);
+        if (denominacionBD != null) {
+            denominacionEmpleoService.deleteByProcedure(denominacionBD.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+     }
+ 
+     /**
+      * Elimina lista de denominaciones de empleos.
+      *
+      * @param jobTitleIds, lista de identificadores de objetos de denominaciones de empleos a eliminar.
+      * @throws CiadtiException, excepción
+      */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void deleteJobTitles(List<Long> jobTitleIds) throws CiadtiException {
+        for (Long id : jobTitleIds) {
+            deleteJobTitle(id);
         }
     }
 }

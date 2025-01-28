@@ -65,7 +65,7 @@ public class EstructuraEntity implements Serializable, Cloneable{
     @Column(name = "estr_registradopor", nullable =  false, length = 250)
     private String registradoPor;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany
     @JoinColumn(name="estr_idpadre", insertable=false, updatable=false)
     private List<EstructuraEntity> subEstructuras;
 
@@ -73,7 +73,7 @@ public class EstructuraEntity implements Serializable, Cloneable{
     @OneToOne(mappedBy="estructura")
     private ActividadEntity actividad;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "tipo_id", insertable = false, updatable = false)
     private TipologiaEntity tipologia;
 
@@ -115,5 +115,10 @@ public class EstructuraEntity implements Serializable, Cloneable{
             }
         }
         return cloned;
+    }
+
+    @Override
+    public String toString(){
+        return this.nombre;
     }
 }
