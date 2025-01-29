@@ -149,73 +149,31 @@ public class OrganizationChartReportPlainedExcelJXLS {
     /**
      * Obtiene y procesa los datos del informe de gestión operativa para los IDs de organigrama proporcionados.
      * Este método realiza las siguientes acciones:
-     * 1. Obtiene los datos sin procesar (rawData) desde el servicio `gestionOperativaService`.
-     * 2. Convierte los datos en una lista de DTOs utilizando el método {@link #mapRawDataToDTOs(List)}.
-     * 3. Calcula los niveles de profundidad de cada ítem en la lista de DTOs utilizando el método {@link #calculateDepthLevels(List)}.
-     * 4. Construye la estructura de datos necesaria para el informe utilizando el método {@link #buildStructureData(List)}.
-     * 5. Almacena los datos procesados en el registro (`registry`) bajo la clave "dataOperationalManagement".
-     * 6. Retorna la lista de DTOs procesados.
+     * 1. Obtiene los datos sin procesar (rawData) desde el servicio {@code gestionOperativaService} para los
+     *    IDs de organigrama proporcionados.
+     * 2. Convierte los datos sin procesar en una lista de objetos {@link ReportOperationalManagementDTO}
+     *    utilizando el método {@link #mapRawDataToDTOs(List)}.
+     * 3. Agrupa los datos procesados por dependencias y calcula la jerarquía interna utilizando el método
+     *    {@link #processGroupedByDependencies(List)}.
+     * 4. Calcula los niveles de profundidad de cada ítem en la lista de DTOs utilizando el método
+     *    {@link #calculateDepthLevels(List)}.
+     * 5. Construye la estructura de datos necesaria para el informe utilizando el método {@link #buildStructureData(List)}.
+     * 6. Almacena los datos procesados en el registro (`registry`) bajo la clave {@code "dataOperationalManagement"}.
+     * 7. Retorna la lista de DTOs procesados, que contiene los datos listos para ser utilizados en la construcción del informe.
      *
      * @param organizationChartIds Lista de IDs de organigrama para los cuales se generará el informe.
-     * @return Una lista de objetos {@link ReportOperationalManagementDTO} que representan los datos procesados del informe.
+     * @return Una lista de objetos {@link ReportOperationalManagementDTO} que representan los datos procesados
+     *         del informe, listos para ser utilizados en la generación del reporte.
      */
     private List<ReportOperationalManagementDTO> fetchAndProcessReportData(Long organizationChartIds) {
         List<Object[]> rawData = gestionOperativaService.findOperationalManagementByOrganizationChart(organizationChartIds);
-        List<ReportOperationalManagementDTO> resultDTO = mapToDTO(rawData);
+        List<ReportOperationalManagementDTO> resultDTO = mapRawDataToDTOs(rawData);
         List<ReportOperationalManagementDTO> reportData = processGroupedByDependencies(resultDTO);
         calculateDepthLevels(reportData);
         buildStructureData(reportData);
         registry.put("dataOperationalManagement", reportData);
         return reportData;
     }
-
-    /**
-     * Convierte una lista de filas de datos (representadas como arreglos de objetos) en una lista de
-     * objetos de tipo {@link ReportOperationalManagementDTO}. Este método utiliza el método
-     * {@link #mapRowToDTO(Object[])} para mapear cada fila individual a un DTO.
-     *
-     * @param rawData Una lista de arreglos de objetos, donde cada arreglo representa una fila de datos
-     *                obtenida de una consulta. Cada arreglo debe contener los valores en el orden
-     *                esperado por el método {@link #mapRowToDTO(Object[])}.
-     * @return Una lista de objetos {@link ReportOperationalManagementDTO}, donde cada DTO representa
-     *         una fila de datos mapeada.
-     */
-//    private List<ReportOperationalManagementDTO> mapRawDataToDTOs(List<Object[]> rawData) {
-//        return rawData.stream()
-//                .map(this::mapRowToDTO)
-//                .collect(Collectors.toList());
-//    }
-
-    /**
-     * Convierte una fila de datos (representada como un arreglo de objetos) en un objeto de tipo
-     * {@link ReportOperationalManagementDTO}. Este método se utiliza para mapear los resultados de una
-     * consulta de base de datos a un DTO que representa la gestión operativa.
-     *
-     * @param row Un arreglo de objetos que contiene los valores de una fila de la consulta.
-     * @return Un objeto {@link ReportOperationalManagementDTO} con los valores mapeados desde la fila.
-     *         Si algún valor es nulo, se maneja adecuadamente para evitar excepciones.
-     */
-//    private ReportOperationalManagementDTO mapRowToDTO(Object[] row) {
-//        return new ReportOperationalManagementDTO(
-//                ((BigDecimal) row[0]).longValue(), // idGestionOperativa
-//                (String) row[1], // proceso
-//                (String) row[2], // procesoDescripcion
-//                (String) row[3], // procedimiento
-//                (String) row[4], // procedimientoDescripcion
-//                (String) row[5], // actividad
-//                (String) row[6], // actividadDescripcion
-//                (String) row[7], // dependencia
-//                (String) row[8], // dependenciaDescripcion
-//                Optional.ofNullable((BigDecimal) row[9]).map(BigDecimal::longValue).orElse(null), // idActividad
-//                Optional.ofNullable((BigDecimal) row[10]).map(BigDecimal::doubleValue).orElse(null), // frecuencia
-//                Optional.ofNullable((BigDecimal) row[11]).map(BigDecimal::doubleValue).orElse(null), // tiempoMinimo
-//                Optional.ofNullable((BigDecimal) row[12]).map(BigDecimal::doubleValue).orElse(null), // tiempoMaximo
-//                Optional.ofNullable((BigDecimal) row[13]).map(BigDecimal::doubleValue).orElse(null), // tiempoPromedio
-//                Optional.ofNullable((BigDecimal) row[14]).map(BigDecimal::longValue).orElse(null), // idNivel
-//                Optional.ofNullable((String) row[15]).orElse(""), // nivel
-//                Optional.ofNullable((BigDecimal) row[16]).map(BigDecimal::longValue).orElse(null) // idActividadPadre
-//        );
-//    }
 
     /**
      * Calcula los niveles de profundidad de cada ítem en la lista de datos de gestión operativa
@@ -260,7 +218,7 @@ public class OrganizationChartReportPlainedExcelJXLS {
         if (dto.getIdGestionOperativaPadre() == null || !dto.getTipologia().equalsIgnoreCase("actividad")) {
             return 0;
         } else {
-            ReportOperationalManagementDTO parent = activityMap.get(dto.getIdGestionOperativaPadre().longValue());
+            ReportOperationalManagementDTO parent = activityMap.get(dto.getIdGestionOperativaPadre());
             if (parent == null || !Objects.equals(parent.getIdTipologia(), dto.getIdTipologia())) {
                 return 0;
             }
@@ -452,61 +410,151 @@ public class OrganizationChartReportPlainedExcelJXLS {
                 .build();
     }
 
-    private List<ReportOperationalManagementDTO> mapToDTO(List<Object[]> resultList) {
-
+    /**
+     * Convierte una lista de arreglos de objetos en una lista de objetos {@link ReportOperationalManagementDTO}.
+     * Este método realiza las siguientes acciones:
+     * 1. Crea una nueva lista vacía para almacenar los objetos DTO procesados.
+     * 2. Itera sobre cada arreglo de objetos (`result`) en la lista de entrada (`resultList`).
+     * 3. Para cada arreglo, llama al método {@link #createDTOFromResult(Object[])} para crear un objeto DTO.
+     * 4. Agrega el objeto DTO generado a la lista.
+     * 5. Retorna la lista completa de objetos DTO procesados.
+     *
+     * @param resultList Lista de arreglos de objetos que contienen los datos crudos a procesar.
+     *                   Cada arreglo representa una fila de datos obtenida de una consulta.
+     * @return Una lista de objetos {@link ReportOperationalManagementDTO} mapeados desde los datos crudos.
+     */
+    private List<ReportOperationalManagementDTO> mapRawDataToDTOs(List<Object[]> resultList) {
         List<ReportOperationalManagementDTO> report = new ArrayList<>();
         for (Object[] result : resultList) {
-            ReportOperationalManagementDTO dto = new ReportOperationalManagementDTO();
-
-            // Mapeo común
-            dto.setIdGestionOperativa(((Number) result[0]).longValue());
-            String geopNombre = (String) result[1];
-            String geopDescripcion = (String) result[2];
-            dto.setIdGestionOperativaPadre(result[3] != null ? ((Number) result[3]).longValue() : null);
-            Long idTipologia = result[4] != null ? ((Number) result[4]).longValue() : null;
-            //dto.setNivel(result[5] != null ? ((Number) result[5]).intValue() : null);
-            dto.setDependencia((String) result[6]);
-
-            dto.setOrganigrama((String) result[7]);
-            dto.setOrganigramaDescripcion((String) result[8]);
-
-            dto.setIdActividad(result[9] != null ? ((Number) result[9]).longValue() : null);
-            dto.setIdNivel(result[10] != null ? ((Number) result[10]).longValue() : null);
-            dto.setFrecuencia(result[11] != null ? ((Number) result[11]).doubleValue() : null);
-            dto.setTiempoMaximo(result[12] != null ? ((Number) result[12]).doubleValue() : null);
-            dto.setTiempoMinimo(result[13] != null ? ((Number) result[13]).doubleValue() : null);
-            dto.setTiempoPromedio(result[14] != null ? ((Number) result[14]).doubleValue() : null);
-            dto.setNivel((String) result[15]);
-
-            String tipologia = (String) result[16];
-
-            dto.setIdTipologia(idTipologia);
-            dto.setTipologia(tipologia);
-
-            if (idTipologia != null) {
-                switch (tipologia) {
-                    case "Proceso":
-                        dto.setProceso(geopNombre);
-                        dto.setProcesoDescripcion(geopDescripcion);
-                        break;
-                    case "Procedimiento":
-                        dto.setProcedimiento(geopNombre);
-                        dto.setProcedimientoDescripcion(geopDescripcion);
-                        break;
-                    case "Actividad":
-                        dto.setActividad(geopNombre);
-                        dto.setActividadDescripcion(geopDescripcion);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            ReportOperationalManagementDTO dto = createDTOFromResult(result);
             report.add(dto);
         }
-
         return report;
     }
 
+    /**
+     * Crea y retorna un objeto {@link ReportOperationalManagementDTO} a partir de un arreglo de datos.
+     * Este método realiza las siguientes acciones:
+     * 1. Crea una nueva instancia de {@link ReportOperationalManagementDTO}.
+     * 2. Mapea los campos comunes al DTO utilizando el método {@link #mapCommonFields(ReportOperationalManagementDTO, Object[])}.
+     * 3. Mapea los campos específicos de tipología al DTO utilizando el método {@link #mapTipologiaFields(ReportOperationalManagementDTO, Object[])}.
+     * 4. Retorna el objeto {@link ReportOperationalManagementDTO} completamente mapeado.
+     *
+     * @param result Un arreglo de objetos que contiene los datos sin procesar necesarios para construir el DTO.
+     *               Cada posición del arreglo representa un atributo del DTO.
+     * @return Un objeto {@link ReportOperationalManagementDTO} que contiene los datos mapeados desde el arreglo.
+     */
+    private ReportOperationalManagementDTO createDTOFromResult(Object[] result) {
+        ReportOperationalManagementDTO dto = new ReportOperationalManagementDTO();
+
+        mapCommonFields(dto, result);
+        mapTipologiaFields(dto, result);
+
+        return dto;
+    }
+
+    /**
+     * Mapea los campos comunes desde un arreglo de datos al objeto {@link ReportOperationalManagementDTO}.
+     * Este método realiza las siguientes acciones:
+     * 1. Extrae los valores necesarios del arreglo de datos `result` utilizando índices específicos.
+     * 2. Convierte los valores sin procesar a los tipos correspondientes (Long, String, Double) usando métodos auxiliares
+     *    como {@link #getLongValue(Object)} y {@link #getDoubleValue(Object)}.
+     * 3. Asigna los valores extraídos a los atributos del objeto {@link ReportOperationalManagementDTO}.
+     *
+     * @param dto    El objeto {@link ReportOperationalManagementDTO} donde se asignarán los datos mapeados.
+     * @param result Un arreglo de objetos que contiene los datos sin procesar necesarios para mapear los campos comunes del DTO.
+     *               Cada posición del arreglo representa un atributo específico.
+     */
+    private void mapCommonFields(ReportOperationalManagementDTO dto, Object[] result) {
+        dto.setIdGestionOperativa(getLongValue(result[0]));
+        dto.setIdGestionOperativaPadre(getLongValue(result[3]));
+        dto.setDependencia((String) result[6]);
+        dto.setOrganigrama((String) result[7]);
+        dto.setOrganigramaDescripcion((String) result[8]);
+        dto.setIdActividad(getLongValue(result[9]));
+        dto.setIdNivel(getLongValue(result[10]));
+        dto.setFrecuencia(getDoubleValue(result[11]));
+        dto.setTiempoMaximo(getDoubleValue(result[12]));
+        dto.setTiempoMinimo(getDoubleValue(result[13]));
+        dto.setTiempoPromedio(getDoubleValue(result[14]));
+        dto.setNivel((String) result[15]);
+        dto.setIdTipologia(getLongValue(result[4]));
+        dto.setTipologia((String) result[16]);
+    }
+
+    /**
+     * Mapea los campos relacionados con la tipología desde un arreglo de datos al objeto {@link ReportOperationalManagementDTO}.
+     * Este método realiza las siguientes acciones:
+     * 1. Extrae los valores de los campos `geopNombre`, `geopDescripcion`, `idTipologia` y `tipologia` desde el arreglo `result`.
+     * 2. Verifica si `idTipologia` no es nulo antes de realizar el mapeo.
+     * 3. Dependiendo del valor del campo `tipologia`, asigna los valores extraídos a los atributos correspondientes
+     *    del objeto {@link ReportOperationalManagementDTO}.
+     *
+     * @param dto    El objeto {@link ReportOperationalManagementDTO} donde se asignarán los datos mapeados.
+     * @param result Un arreglo de objetos que contiene los datos sin procesar necesarios para mapear los campos de tipología.
+     *               Las posiciones relevantes en el arreglo son:
+     *               - `result[1]`: Nombre gestión operativa (geopNombre).
+     *               - `result[2]`: Descripción gestión operativa (geopDescripcion).
+     *               - `result[4]`: ID de tipología (idTipologia).
+     *               - `result[16]`: Nombre de la tipología (tipologia).
+     */
+    private void mapTipologiaFields(ReportOperationalManagementDTO dto, Object[] result) {
+        String geopNombre = (String) result[1];
+        String geopDescripcion = (String) result[2];
+        Long idTipologia = getLongValue(result[4]);
+        String tipologia = (String) result[16];
+
+        if (idTipologia != null) {
+            switch (tipologia) {
+                case "Proceso":
+                    dto.setProceso(geopNombre);
+                    dto.setProcesoDescripcion(geopDescripcion);
+                    break;
+                case "Procedimiento":
+                    dto.setProcedimiento(geopNombre);
+                    dto.setProcedimientoDescripcion(geopDescripcion);
+                    break;
+                case "Actividad":
+                    dto.setActividad(geopNombre);
+                    dto.setActividadDescripcion(geopDescripcion);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private Long getLongValue(Object value) {
+        return value != null ? ((Number) value).longValue() : null;
+    }
+
+    private Double getDoubleValue(Object value) {
+        return value != null ? ((Number) value).doubleValue() : null;
+    }
+
+    /**
+     * Procesa una lista plana de objetos {@link ReportOperationalManagementDTO} agrupándolos por la dependencia a la que pertenecen.
+     * El objetivo es completar la información de cada elemento de la lista llenando el resto de atributos (`Proceso`, `Procedimiento` o `Actividad`)
+     * de los elementos de la lista siguiendo la estructura jerárquica de las gestiones operativas, cuya jerarquía sigue el orden:
+     * **Proceso -> Procedimiento -> Actividad**. Esta estructura jerárquica es utilizada para la construcción del reporte.
+     *
+     * Cada elemento en la lista tiene una tipología específica (`Proceso`, `Procedimiento` o `Actividad`), lo que determina
+     * qué atributos del elemento contienen información. Por ejemplo:
+     * - Si un elemento tiene la tipología `Actividad`, los atributos `actividad` y `actividadDescripcion` contienen la información correspondiente.
+     * - Si un elemento tiene la tipología `Procedimiento`, los atributos `procedimiento` y `procedimientoDescripcion` están completos.
+     * - Si un elemento tiene la tipología `Proceso`, los atributos `proceso` y `procesoDescripcion` contienen la información.
+     *
+     * Este método realiza las siguientes acciones:
+     * 1. Agrupa los objetos {@link ReportOperationalManagementDTO} por el campo `dependencia`, creando grupos basados en este atributo.
+     * 2. Para cada grupo:
+     *    - Ordena los elementos por el campo `idGestionOperativa` para mantener un orden lógico dentro del grupo.
+     *    - Completa la información jerárquica del grupo utilizando el método {@link #processGroupHierarchy(List, String)}.
+     * 3. Aplana la estructura jerárquica generada y la agrega a una lista final utilizando el método {@link #flattenDtoMap(Map, List)}.
+     * 4. Retorna la lista procesada, que contiene los datos estructurados y listos para la construcción del reporte.
+     *
+     * @param flatList Una lista plana de objetos {@link ReportOperationalManagementDTO} que representan los datos iniciales sin procesar.
+     * @return Una lista de objetos {@link ReportOperationalManagementDTO} lista para ser utilizada en la construcción del reporte.
+     */
     private List<ReportOperationalManagementDTO> processGroupedByDependencies(List<ReportOperationalManagementDTO> flatList) {
         // Paso 1: Agrupar por dependencia
         Map<String, List<ReportOperationalManagementDTO>> groupedByDependencies = flatList.stream()
@@ -521,106 +569,263 @@ public class OrganizationChartReportPlainedExcelJXLS {
 
             group.sort(Comparator.comparing(ReportOperationalManagementDTO::getIdGestionOperativa));
 
-            // Paso 3: Crear un mapa de acceso rápido para todos los elementos del grupo
-            Map<Long, Set<ReportOperationalManagementDTO>> dtoMap = new HashMap<>();
+            Map<Long, Set<ReportOperationalManagementDTO>> dtoMap = processGroupHierarchy(group, dependencia);
 
-            // Paso 4: Procesar jerarquía de cada elemento dentro del grupo
-            for (ReportOperationalManagementDTO dto : group) {
-                Long currentParentId = dto.getIdGestionOperativaPadre();
-
-                ReportOperationalManagementDTO newDto = new ReportOperationalManagementDTO();
-
-                // Copiar todos los campos del hijo
-                newDto.setIdGestionOperativa(dto.getIdGestionOperativa());
-                newDto.setIdActividad(dto.getIdActividad());
-                newDto.setActividad(dto.getActividad() != null ? dto.getActividad() : "");
-                newDto.setDependencia(dependencia);
-                newDto.setNivel(dto.getNivel());
-                newDto.setIdNivel(dto.getIdNivel());
-                newDto.setIdGestionOperativaPadre(currentParentId);
-                newDto.setIdTipologia(dto.getIdTipologia());
-                newDto.setTipologia(dto.getTipologia());
-
-                newDto.setProceso(dto.getProceso());
-                newDto.setProcesoDescripcion(dto.getProcesoDescripcion());
-                newDto.setProcedimiento(dto.getProcedimiento());
-                newDto.setProcedimientoDescripcion(dto.getProcedimientoDescripcion());
-
-                // Copiar los tiempos del hijo (si existen), sin reemplazar por los del padre
-                if (dto.getTiempoMinimo() != null) {
-                    newDto.setTiempoMinimo(dto.getTiempoMinimo());
-                }
-                if (dto.getTiempoMaximo() != null) {
-                    newDto.setTiempoMaximo(dto.getTiempoMaximo());
-                }
-                if (dto.getTiempoPromedio() != null) {
-                    newDto.setTiempoPromedio(dto.getTiempoPromedio());
-                }
-                if (dto.getTiempoEstandar() != null) {
-                    newDto.setTiempoEstandar(dto.getTiempoEstandar());
-                }
-                if (dto.getFrecuencia() != null) {
-                    newDto.setFrecuencia(dto.getFrecuencia());
-                }
-
-                // Buscar el proceso y procedimiento para cada hijo
-                while (currentParentId != null) {
-                    Long finalCurrentParentId = currentParentId;
-                    ReportOperationalManagementDTO parent = group.stream()
-                            .filter(d -> d.getIdGestionOperativa().equals(finalCurrentParentId))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (parent != null) {
-
-                        Set<ReportOperationalManagementDTO> parentMap = dtoMap.get(parent.getIdGestionOperativa());
-
-                        if (!parent.getIdTipologia().equals(newDto.getIdTipologia())) {
-                            if (parent.getProceso() != null && newDto.getProceso() == null) {
-                                // Solo reemplazar si el campo proceso del hijo está vacío
-                                newDto.setProceso(parent.getProceso());
-                                newDto.setProcesoDescripcion(parent.getProcesoDescripcion());
-
-                                if (parentMap != null && !parentMap.isEmpty()) {
-                                    ReportOperationalManagementDTO temp = parentMap.iterator().next();
-                                    if (temp.getIdActividad() == null && newDto.getProceso().equals(temp.getProceso())){
-                                        dtoMap.remove(newDto.getIdGestionOperativaPadre());
-                                    }
-                                }
-                            } else if (parent.getProcedimiento() != null && newDto.getProcedimiento() == null) {
-                                // Solo reemplazar si el campo procedimiento del hijo está vacío
-                                newDto.setProcedimiento(parent.getProcedimiento());
-                                newDto.setProcedimientoDescripcion(parent.getProcedimientoDescripcion());
-
-                                if (parentMap != null && !parentMap.isEmpty()) {
-                                    ReportOperationalManagementDTO temp = parentMap.iterator().next();
-                                    if (temp.getIdActividad() == null && newDto.getProcedimiento().equals(temp.getProcedimiento())){
-                                        dtoMap.remove(newDto.getIdGestionOperativaPadre());
-                                    }
-                                }
-                            }
-                        }
-
-                        // Continuar con el padre del nivel superior
-                        currentParentId = parent.getIdGestionOperativaPadre();
-                    } else {
-                        break; // Detener si no hay más padres
-                    }
-                }
-                // Agregar el nuevo DTO al mapa para asegurar no agregar duplicados por idGestionOperativa
-                dtoMap.computeIfAbsent(newDto.getIdGestionOperativa(), k -> new HashSet<>()).add(newDto);
-
-            }
-
-            // Paso 5: Aplanar el mapa (esto solo afecta el mapa, pero no duplica en la lista final)
-            dtoMap.values().stream()
-                    .flatMap(Set::stream)
-                    .sorted(Comparator.comparing(ReportOperationalManagementDTO::getIdGestionOperativa)) // Ordenar antes de agregar
-                    .forEach(finalList::add);
+            // Paso 4: Aplanar el mapa y agregar a la lista final
+            flattenDtoMap(dtoMap, finalList);
         }
-
         return finalList;
     }
 
+    /**
+     * Procesa un grupo de objetos {@link ReportOperationalManagementDTO} y genera un mapa que organiza los elementos
+     * con su información completa en función de sus relaciones padre-hijo utilizando en el atributo `idGestionOperativaPadre`.
+     * Este método realiza las siguientes acciones:
+     * 1. Itera sobre cada objeto del grupo y crea un nuevo objeto {@link ReportOperationalManagementDTO}
+     *    con base en la información existente, utilizando el método {@link #createNewDto(ReportOperationalManagementDTO, String)}.
+     * 2. Vincula cada elemento con su jerarquía padre-hijo utilizando el método {@link #processParentHierarchy(ReportOperationalManagementDTO, ReportOperationalManagementDTO, List, Map)}.
+     * 3. Almacena cada elemento en el mapa jerárquico `dtoMap`, donde la clave es el ID del objeto (`idGestionOperativa`)
+     *    y el valor es un conjunto de elementos relacionados con dicho ID.
+     *
+     * @param group Lista de objetos {@link ReportOperationalManagementDTO} pertenecientes a un grupo específico de dependencia.
+     * @param dependencia La dependencia a la que pertenece el grupo procesado.
+     * @return Un mapa jerárquico donde la clave es el ID del elemento de gestión operativa y el valor es un conjunto de elementos relacionados.
+     */
+    private Map<Long, Set<ReportOperationalManagementDTO>> processGroupHierarchy(List<ReportOperationalManagementDTO> group, String dependencia) {
+        Map<Long, Set<ReportOperationalManagementDTO>> dtoMap = new HashMap<>();
 
+        for (ReportOperationalManagementDTO dto : group) {
+            ReportOperationalManagementDTO newDto = createNewDto(dto, dependencia);
+            processParentHierarchy(dto, newDto, group, dtoMap);
+            dtoMap.computeIfAbsent(newDto.getIdGestionOperativa(), k -> new HashSet<>()).add(newDto);
+        }
+
+        return dtoMap;
+    }
+
+    /**
+     * Crea una nueva instancia de {@link ReportOperationalManagementDTO} copiando los datos del DTO original
+     * y asignando la dependencia correspondiente. Este método se utiliza para generar una representación
+     * individual de un elemento de gestión operativa.
+     * Este método realiza las siguientes acciones:
+     * 1. Crea una nueva instancia de {@link ReportOperationalManagementDTO}.
+     * 2. Copia todos los campos del objeto original al nuevo objeto, incluyendo:
+     *    - Información básica como ID, actividad, dependencia, nivel, tipología, proceso y procedimiento.
+     *    - Tiempos asociados al elemento, utilizando el método auxiliar {@link #copyTimes(ReportOperationalManagementDTO, ReportOperationalManagementDTO)}.
+     * 3. Asigna la dependencia proporcionada al nuevo objeto.
+     *
+     * @param dto El objeto original de tipo {@link ReportOperationalManagementDTO} del cual se copiarán los datos.
+     * @param dependencia La dependencia a asignar al nuevo objeto.
+     * @return Un nuevo objeto {@link ReportOperationalManagementDTO} con los datos copiados y la dependencia asignada.
+     */
+    private ReportOperationalManagementDTO createNewDto(ReportOperationalManagementDTO dto, String dependencia) {
+        ReportOperationalManagementDTO newDto = new ReportOperationalManagementDTO();
+
+        // Copiar todos los campos del hijo
+        newDto.setIdGestionOperativa(dto.getIdGestionOperativa());
+        newDto.setIdActividad(dto.getIdActividad());
+        newDto.setActividad(dto.getActividad() != null ? dto.getActividad() : "");
+        newDto.setDependencia(dependencia);
+        newDto.setNivel(dto.getNivel());
+        newDto.setIdNivel(dto.getIdNivel());
+        newDto.setIdGestionOperativaPadre(dto.getIdGestionOperativaPadre());
+        newDto.setIdTipologia(dto.getIdTipologia());
+        newDto.setTipologia(dto.getTipologia());
+        newDto.setProceso(dto.getProceso());
+        newDto.setProcesoDescripcion(dto.getProcesoDescripcion());
+        newDto.setProcedimiento(dto.getProcedimiento());
+        newDto.setProcedimientoDescripcion(dto.getProcedimientoDescripcion());
+
+        // Copiar los tiempos del hijo (si existen)
+        if (dto.getIdActividad() != null)
+            copyTimes(dto, newDto);
+
+        return newDto;
+    }
+
+    /**
+     * Copia los valores de los campos relacionados con el tiempo desde el objeto fuente
+     * ({@link ReportOperationalManagementDTO}) al objeto destino. Este método asegura que los valores de tiempo
+     * como el tiempo mínimo, máximo, promedio, estándar y frecuencia sean asignados si están disponibles
+     * en el objeto fuente.
+     * Este método realiza las siguientes acciones:
+     * 1. Copia al objeto destino los campos `tiempoMinimo`, `tiempoMaximo`, `tiempoPromedio`, `tiempoEstandar` y `frecuencia`.
+     *
+     * @param source El objeto fuente de tipo {@link ReportOperationalManagementDTO} desde el cual se copiarán los valores de tiempo.
+     * @param target El objeto destino de tipo {@link ReportOperationalManagementDTO} al cual se asignarán los valores de tiempo.
+     */
+    private void copyTimes(ReportOperationalManagementDTO source, ReportOperationalManagementDTO target) {
+        target.setTiempoMinimo(source.getTiempoMinimo());
+        target.setTiempoMaximo(source.getTiempoMaximo());
+        target.setTiempoPromedio(source.getTiempoPromedio());
+        target.setTiempoEstandar(source.getTiempoEstandar());
+        target.setFrecuencia(source.getFrecuencia());
+    }
+
+    /**
+     * Procesa la jerarquía de padres para un objeto {@link ReportOperationalManagementDTO} dado. Este método
+     * recorre la jerarquía de padres utilizando el campo `idGestionOperativaPadre` del objeto actual y va buscando
+     * en el grupo de objetos para actualizar el DTO hijo con la información de sus padres.
+     * El proceso se detiene cuando no se encuentra más información de padres o cuando el campo `idGestionOperativaPadre`
+     * es nulo.
+     * Este método realiza las siguientes acciones:
+     * 1. Obtiene el `idGestionOperativaPadre` del objeto actual (`dto`).
+     * 2. En un bucle, busca al padre correspondiente utilizando el método {@link #findParentById(Long, List)}.
+     * 3. Si se encuentra un padre, se actualiza el DTO hijo con la información del padre utilizando el método
+     *    {@link #updateDtoFromParent(ReportOperationalManagementDTO, ReportOperationalManagementDTO, Map)}.
+     * 4. El proceso continúa hasta que se alcanza un nivel donde no hay más padres o el `idGestionOperativaPadre` es nulo.
+     *
+     * @param dto El objeto hijo de tipo {@link ReportOperationalManagementDTO} que se está procesando.
+     * @param newDto El objeto hijo modificado que se va actualizando con la información de los padres.
+     * @param group La lista de objetos {@link ReportOperationalManagementDTO} del grupo, utilizada para encontrar los padres.
+     * @param dtoMap El mapa que contiene los objetos de tipo {@link ReportOperationalManagementDTO} organizados por su ID
+     */
+    private void processParentHierarchy(ReportOperationalManagementDTO dto, ReportOperationalManagementDTO newDto, List<ReportOperationalManagementDTO> group, Map<Long, Set<ReportOperationalManagementDTO>> dtoMap) {
+        Long currentParentId = dto.getIdGestionOperativaPadre();
+
+        while (currentParentId != null) {
+            ReportOperationalManagementDTO parent = findParentById(currentParentId, group);
+            if (parent != null) {
+                updateDtoFromParent(newDto, parent, dtoMap);
+                currentParentId = parent.getIdGestionOperativaPadre();
+            } else {
+                break;
+            }
+        }
+    }
+
+    /**
+     * Busca un padre en el grupo de objetos {@link ReportOperationalManagementDTO} utilizando el
+     * `idGestionOperativa` correspondiente al `parentId`. Este método realiza una búsqueda en la lista de
+     * objetos y retorna el primer padre encontrado cuyo `idGestionOperativa` coincida con el `parentId` proporcionado.
+     * Si no se encuentra un padre con ese ID, se retorna `null`.
+     * Este método realiza las siguientes acciones:
+     * 1. Filtra la lista `group` de objetos {@link ReportOperationalManagementDTO} buscando un objeto cuyo
+     *    `idGestionOperativa` coincida con el `parentId`.
+     * 2. Si se encuentra un objeto que coincida, lo retorna.
+     * 3. Si no se encuentra ningún objeto que coincida, retorna `null`.
+     *
+     * @param parentId El ID del padre que se busca en el grupo de objetos.
+     * @param group La lista de objetos {@link ReportOperationalManagementDTO} en la que se realizará la búsqueda.
+     * @return El objeto {@link ReportOperationalManagementDTO} que corresponde al padre encontrado, o `null` si no se encuentra.
+     */
+    private ReportOperationalManagementDTO findParentById(Long parentId, List<ReportOperationalManagementDTO> group) {
+        return group.stream()
+                .filter(d -> d.getIdGestionOperativa().equals(parentId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Actualiza un objeto {@link ReportOperationalManagementDTO} con información proveniente de su objeto padre,
+     * si el padre tiene información adicional que falta en el objeto hijo (representado por `newDto`).
+     * Si el padre tiene información relevante en los campos `proceso` o `procedimiento`, y el objeto hijo
+     * no tiene estos campos completos, se actualizan los valores correspondientes del hijo.
+     * Además, se verifica y se elimina el objeto padre del mapa `dtoMap` si corresponde.
+     * Este método realiza las siguientes acciones:
+     * 1. Verifica si la tipología del padre y del hijo son diferentes.
+     * 2. Si el tipo es diferente y el padre tiene información relevante en el campo `proceso`,
+     *    pero el hijo no, se copia esa información al hijo.
+     * 3. Si el padre tiene información en el campo `procedimiento`, pero el hijo no, se copia esa información al hijo.
+     * 4. Después de actualizar el hijo con la información del padre, se realiza una comprobación
+     *    y posible eliminación del padre en el mapa `dtoMap` mediante el método {@link #checkAndRemoveFromMap(ReportOperationalManagementDTO, Map, ReportOperationalManagementDTO)}.
+     *
+     * @param newDto El objeto {@link ReportOperationalManagementDTO} que se va a actualizar con los datos del padre.
+     * @param parent El objeto {@link ReportOperationalManagementDTO} que contiene los datos que se van a copiar al hijo.
+     * @param dtoMap El mapa que contiene los objetos {@link ReportOperationalManagementDTO}, utilizado para verificar
+     *               y eliminar el padre cuando se actualiza la información del hijo con los datos del padre.
+     */
+    private void updateDtoFromParent(ReportOperationalManagementDTO newDto, ReportOperationalManagementDTO parent, Map<Long, Set<ReportOperationalManagementDTO>> dtoMap) {
+        if (!parent.getIdTipologia().equals(newDto.getIdTipologia())) {
+            if (parent.getProceso() != null && newDto.getProceso() == null) {
+                newDto.setProceso(parent.getProceso());
+                newDto.setProcesoDescripcion(parent.getProcesoDescripcion());
+                checkAndRemoveFromMap(newDto, dtoMap, parent);
+            } else if (parent.getProcedimiento() != null && newDto.getProcedimiento() == null) {
+                newDto.setProcedimiento(parent.getProcedimiento());
+                newDto.setProcedimientoDescripcion(parent.getProcedimientoDescripcion());
+                checkAndRemoveFromMap(newDto, dtoMap, parent);
+            }
+        }
+    }
+
+    /**
+     * Verifica si un objeto {@link ReportOperationalManagementDTO} debe ser eliminado del mapa {@code dtoMap}
+     * basado en ciertos criterios. Si el objeto hijo cumple con la condición definida en el método
+     * {@link #shouldRemoveFromMap(ReportOperationalManagementDTO, ReportOperationalManagementDTO)},
+     * el objeto padre se elimina del mapa utilizando el `idGestionOperativaPadre` del hijo.
+     * Este método realiza las siguientes acciones:
+     * 1. Obtiene el conjunto de objetos {@link ReportOperationalManagementDTO} asociado al `idGestionOperativa` del padre
+     *    en el mapa {@code dtoMap}.
+     * 2. Si el objeto no está vacío, se verifica si el objeto padre debe ser eliminado del mapa utilizando el método
+     *    {@link #shouldRemoveFromMap(ReportOperationalManagementDTO, ReportOperationalManagementDTO)}.
+     * 3. Si la condición es verdadera, el objeto hijo se elimina del mapa utilizando su `idGestionOperativaPadre`.
+     *
+     * @param newDto El objeto {@link ReportOperationalManagementDTO} que representa al hijo que se evaluará para
+     *               eliminación del padre del mapa.
+     * @param dtoMap El mapa que contiene los objetos {@link ReportOperationalManagementDTO}, utilizado para verificar
+     *               y eliminar el objeto padre si corresponde.
+     * @param parent El objeto {@link ReportOperationalManagementDTO} que representa al padre.
+     */
+    private void checkAndRemoveFromMap(ReportOperationalManagementDTO newDto, Map<Long, Set<ReportOperationalManagementDTO>> dtoMap, ReportOperationalManagementDTO parent) {
+        Set<ReportOperationalManagementDTO> parentMap = dtoMap.get(parent.getIdGestionOperativa());
+        if (parentMap != null && !parentMap.isEmpty()) {
+            ReportOperationalManagementDTO temp = parentMap.iterator().next();
+            if (shouldRemoveFromMap(temp, newDto)) {
+                dtoMap.remove(newDto.getIdGestionOperativaPadre());
+            }
+        }
+    }
+
+    /**
+     * Determina si un objeto {@link ReportOperationalManagementDTO} debe ser eliminado del mapa {@code dtoMap}
+     * en base a ciertos criterios. La eliminación se realiza si el objeto hijo cumple con una condición definida
+     * según su tipología (proceso o procedimiento) y si la información del objeto hijo coincide con la del objeto
+     * padre en el mapa.
+     * Este método evalúa las siguientes condiciones:
+     * 1. Si el objeto `temp` de tipo {@link ReportOperationalManagementDTO} tiene un `idActividad` no nulo,
+     *    se devuelve {@code false}, indicando que no debe ser eliminado.
+     * 2. Si la tipología de `temp` es "Proceso", se compara el campo `proceso` del objeto hijo con el del objeto padre.
+     *    Si coinciden, se devuelve {@code true} (el objeto debe eliminarse).
+     * 3. Si la tipología de `temp` es "Procedimiento", se compara el campo `procedimiento` del objeto hijo con el del objeto padre.
+     *    Si coinciden, se devuelve {@code true} (el objeto debe eliminarse).
+     * 4. Si ninguna de las condiciones anteriores se cumple, se devuelve {@code false}.
+     *
+     * @param temp El objeto {@link ReportOperationalManagementDTO} que representa al padre en el mapa, usado para la comparación.
+     * @param newDto El objeto {@link ReportOperationalManagementDTO} que representa al hijo que se evaluará para eliminación.
+     * @return {@code true} si el objeto hijo debe ser eliminado del mapa, {@code false} si no.
+     */
+    private boolean shouldRemoveFromMap(ReportOperationalManagementDTO temp, ReportOperationalManagementDTO newDto) {
+        if (temp.getIdActividad() != null) {
+            return false;
+        }
+
+        return switch (temp.getTipologia()) {
+            case "Proceso" -> newDto.getProceso().equals(temp.getProceso());
+            case "Procedimiento" -> newDto.getProcedimiento().equals(temp.getProcedimiento());
+            default -> false;
+        };
+    }
+
+    /**
+     * Aplana un mapa de objetos {@link ReportOperationalManagementDTO} agrupados por su `idGestionOperativa`
+     * y agrega los elementos a una lista final, manteniendo el orden lógico de los objetos en función del
+     * campo `idGestionOperativa`.
+     * Este método realiza las siguientes acciones:
+     * 1. Toma todos los valores del mapa {@code dtoMap}, los cuales son conjuntos de objetos {@link ReportOperationalManagementDTO}.
+     * 2. Aplana los conjuntos de valores, convirtiéndolos en una secuencia continua de objetos.
+     * 3. Ordena los objetos aplanados en función del campo {@code idGestionOperativa}, asegurando que los elementos
+     *    estén en un orden lógico basado en este campo.
+     * 4. Agrega los objetos ordenados a la lista {@code finalList}.
+     *
+     * @param dtoMap El mapa que contiene conjuntos de objetos {@link ReportOperationalManagementDTO}, donde la clave
+     *               es un identificador único de gestión operativa y los valores son los conjuntos de objetos relacionados.
+     * @param finalList La lista en la que se agregarán los objetos aplanados y ordenados.
+     */
+    private void flattenDtoMap(Map<Long, Set<ReportOperationalManagementDTO>> dtoMap, List<ReportOperationalManagementDTO> finalList) {
+        dtoMap.values().stream()
+                .flatMap(Set::stream)
+                .sorted(Comparator.comparing(ReportOperationalManagementDTO::getIdGestionOperativa))
+                .forEach(finalList::add);
+    }
 }

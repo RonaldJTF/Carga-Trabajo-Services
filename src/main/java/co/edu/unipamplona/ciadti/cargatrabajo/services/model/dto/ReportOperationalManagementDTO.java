@@ -1,6 +1,5 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.OrganigramaEntity;
 import lombok.*;
 
 import java.util.List;
