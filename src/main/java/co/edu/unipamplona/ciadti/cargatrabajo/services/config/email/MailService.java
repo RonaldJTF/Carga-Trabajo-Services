@@ -4,8 +4,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.St
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.StaticResource;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -26,6 +28,9 @@ import java.util.concurrent.CompletableFuture;
 @Service
 @RequiredArgsConstructor
 public class MailService {
+
+    @Value("${mail.sender}")
+    private String sender;
 
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
@@ -91,6 +96,7 @@ public class MailService {
     * */
     private MimeMessageHelper buildCommonMimeMessageHelper(MimeMessage correo, String destinatario, String asunto, ArrayList<ArchivoDTO> listaArchivos) throws MessagingException {
         MimeMessageHelper helper = new MimeMessageHelper(correo, true, "UTF-8");
+        helper.setFrom(sender);
         helper.setTo(destinatario);
         helper.setSubject(asunto);
         helper.setSentDate(new Date());
