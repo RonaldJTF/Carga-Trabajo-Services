@@ -1653,12 +1653,27 @@ public class ConfigurationMediator {
      * @throws CiadtiException
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public CargoEntity saveAppointment(CargoEntity appointment) throws CiadtiException{
-        if (appointment.getIdJerarquia() == null && appointment.getJerarquia() != null){
-            JerarquiaEntity hierarchy = jerarquiaService.findByIdOrganigramaAndIdDependencia(appointment.getJerarquia().getIdOrganigrama(), appointment.getJerarquia().getIdDependencia());
-            
-        }
+    public CargoEntity saveAppointment(CargoEntity appointment, List<DenominacionEmpleoEntity> newJobTitles) throws CiadtiException{
         cargoService.save(appointment);
+        List<DenominacionEmpleoEntity> oldJobTitles = cargoService.findAllJobTitlesByAppointmentId(appointment.getId());
+        List<DenominacionEmpleoEntity> jobTitlesToDelete = oldJobTitles.stream()
+                .filter(e -> !newJobTitles.stream().map(DenominacionEmpleoEntity :: getId).collect(Collectors.toList()).contains(e.getId()))
+                .collect(Collectors.toList());
+
+        for (DenominacionEmpleoEntity e : newJobTitles) {
+            CargoDenominacionEmpleoEntity cde = CargoDenominacionEmpleoEntity
+                .builder()
+                .idCargo(appointment.getId())
+                .idDenominacionEmpleo(e.getId())
+                .totalCargos(e.getTotalCargos())
+                .build();
+            cargoDenominacionEmpleoService.save(cde);
+        }
+
+        for (DenominacionEmpleoEntity e : jobTitlesToDelete) {
+            CargoDenominacionEmpleoEntity cdeToDelete = cargoDenominacionEmpleoService.findByIdCargoAndIdDenominacionEmpleo(appointment.getId(), e.getId());
+            cargoDenominacionEmpleoService.deleteByProcedure(cdeToDelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
         appointment = cargoService.findByAppointmentId(appointment.getId());
         List<VariableEntity> allVariablesInDB = variableService.findAll();
         completeAppointmentInformation(appointment, allVariablesInDB);

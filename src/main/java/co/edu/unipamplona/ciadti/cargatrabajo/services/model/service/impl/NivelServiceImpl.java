@@ -67,4 +67,14 @@ public class NivelServiceImpl implements NivelService{
         SpecificationCiadti<NivelEntity> specification = new SpecificationCiadti<NivelEntity>(filter);
         return nivelDAO.findAll(specification);
     }
+
+    /**
+     * Método para obtener los niveles ocupacionales que han sido asociados a alguna actividad (donde se definen los tiempos).
+     * @return Lista de niveles ocupacionales
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<NivelEntity> findAllInSomeActivity() {
+        return nivelDAO.findAllInSomeActivity();
+    }
 }

@@ -13,6 +13,7 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CargoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CompensacionLabNivelVigValorEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CompensacionLabNivelVigenciaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CompensacionLaboralEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.DenominacionEmpleoEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.DependenciaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EscalaSalarialEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.JerarquiaEntity;
@@ -100,6 +101,7 @@ public class CargoServiceImpl implements CargoService{
         Long[] validityIds = filter.get("validities");
         Long[] scopeIds = filter.get("scopes");
         Long[] levelIds = filter.get("levels");
+        Long[] hierarchyIds = filter.get("hierarchies");
 
         String jpql= """
             select distinct c.id, c.asignacionBasicaMensual, c.totalCargos, c.idJerarquia, c.idVigencia, c.idAlcance, c.idNormatividad, c.idNivel, c.idEscalaSalarial,
@@ -115,7 +117,8 @@ public class CargoServiceImpl implements CargoService{
                 cl.nombre, cl.idCategoria,
                 p.id, p.nombre, p.frecuenciaAnual, 
                 cat.nombre, 
-                cnvv.id, cnvv.idCompensacionLabNivelVigencia, cnvv.idRegla, cnvv.idVariable
+                cnvv.id, cnvv.idCompensacionLabNivelVigencia, cnvv.idRegla, cnvv.idVariable,
+                de.id, de.nombre, cde.totalCargos
             from CargoEntity c 
                 inner join JerarquiaEntity j on (c.idJerarquia = j.id) 
                 inner join DependenciaEntity d on (j.idDependencia = d.id) 
@@ -130,6 +133,8 @@ public class CargoServiceImpl implements CargoService{
                 left outer join CompensacionLaboralEntity cl on (clnv.idCompensacionLaboral = cl.id )
                 left outer join PeriodicidadEntity p on (cl.idPeriodicidad = p.id ) 
                 left outer join CategoriaEntity cat on (cl.idCategoria = cat.id ) 
+                left outer join CargoDenominacionEmpleoEntity cde on (c.id = cde.idCargo) 
+                left outer join DenominacionEmpleoEntity de on (cde.idDenominacionEmpleo = de.id)
             where 2 > 1
         """;    
 
@@ -155,6 +160,10 @@ public class CargoServiceImpl implements CargoService{
             jpql += "AND c.idNivel IN :levelIds ";
             parameters.put("levelIds", Arrays.asList(levelIds));
         }
+        if (hierarchyIds != null && hierarchyIds.length > 0){
+            jpql += "AND c.idJerarquia IN :hierarchyIds ";
+            parameters.put("hierarchyIds", Arrays.asList(hierarchyIds));
+        }
 
         jpql += " order by c.id asc, clnv.id asc, cnvv.id asc ";
 
@@ -169,8 +178,10 @@ public class CargoServiceImpl implements CargoService{
         List<CargoEntity> appointments = new ArrayList<>();
         Long appointmentId = -1L;
         Long clnvId = -1L;
+        Long jobTitleId = -1L;
         CargoEntity appointment = null;
         CompensacionLabNivelVigenciaEntity compensacionLabNivelVigencia = null;
+        DenominacionEmpleoEntity jobTitle = null;
 
         for (Object[] row : results) {
             if (((Long) row[0]).longValue() != appointmentId.longValue()){
@@ -224,6 +235,7 @@ public class CargoServiceImpl implements CargoService{
                         .codigo((String) row[24])
                         .build())
                     .compensacionesLaboralesAplicadas(new ArrayList<>())
+                    .denominacionesEmpleos(new ArrayList<>())
                     .build();
                 appointments.add(appointment);
                 appointmentId = (Long) row[0];
@@ -261,6 +273,18 @@ public class CargoServiceImpl implements CargoService{
                     compensacionLabNivelVigencia.getValoresCompensacionLabNivelVigencia().add(cnvv);
                 }
             }
+            if(row[40] != null){
+                if((Long) row[40] != jobTitleId){
+                    jobTitle = DenominacionEmpleoEntity
+                        .builder()
+                        .id((Long) row[40])
+                        .nombre((String) row[41])
+                        .totalCargos((Long) row[42])
+                        .build();
+                    appointment.getDenominacionesEmpleos().add(jobTitle);
+                    jobTitleId = (Long) row[40] ;
+                }
+            }
         }
         return appointments;
     }
@@ -283,7 +307,8 @@ public class CargoServiceImpl implements CargoService{
                 cl.nombre, cl.idCategoria,
                 p.id, p.nombre, p.frecuenciaAnual, 
                 cat.nombre, 
-                cnvv.id, cnvv.idCompensacionLabNivelVigencia, cnvv.idRegla, cnvv.idVariable
+                cnvv.id, cnvv.idCompensacionLabNivelVigencia, cnvv.idRegla, cnvv.idVariable,
+                de.id, de.nombre, cde.totalCargos
             from CargoEntity c 
                 inner join JerarquiaEntity j on (c.idJerarquia = j.id) 
                 inner join DependenciaEntity d on (j.idDependencia = d.id) 
@@ -295,9 +320,11 @@ public class CargoServiceImpl implements CargoService{
                 left outer join EscalaSalarialEntity es on (c.idEscalaSalarial = es.id)
                 left outer join CompensacionLabNivelVigenciaEntity clnv on (v.id = clnv.idVigencia and ni.id = clnv.idNivel and (es.id = clnv.idEscalaSalarial OR clnv.idEscalaSalarial IS NULL)) 
                 left outer join CompensacionLabNivelVigValorEntity cnvv on (clnv.id = cnvv.idCompensacionLabNivelVigencia) 
-                left outer join CompensacionLaboralEntity cl on (clnv.idCompensacionLaboral = cl.id )
+                left outer join CompensacionLaboralEntity cl on (clnv.idCompensacionLaboral = cl.id ) 
                 left outer join PeriodicidadEntity p on (cl.idPeriodicidad = p.id ) 
-                left outer join CategoriaEntity cat on (cl.idCategoria = cat.id )
+                left outer join CategoriaEntity cat on (cl.idCategoria = cat.id ) 
+                left outer join CargoDenominacionEmpleoEntity cde on (c.id = cde.idCargo) 
+                left outer join DenominacionEmpleoEntity de on (cde.idDenominacionEmpleo = de.id) 
             where c.id = :id  
             order by c.id asc, clnv.id asc, cnvv.id asc 
         """;
@@ -310,8 +337,10 @@ public class CargoServiceImpl implements CargoService{
         
         Long appointmentId = -1L;
         Long clnvId = -1L;
+        Long jobTitleId = -1L;
         CargoEntity appointment = null;
         CompensacionLabNivelVigenciaEntity compensacionLabNivelVigencia = null;
+        DenominacionEmpleoEntity jobTitle = null;
 
         for (Object[] row : results) {
             if (((Long) row[0]) != appointmentId){
@@ -365,9 +394,11 @@ public class CargoServiceImpl implements CargoService{
                         .codigo((String) row[24])
                         .build())
                     .compensacionesLaboralesAplicadas(new ArrayList<>())
+                    .denominacionesEmpleos(new ArrayList<>())
                     .build();
                 appointmentId = (Long) row[0];
                 clnvId = -1L;
+                jobTitleId = -1L;
             }
 
             if(row[25] != null){
@@ -401,8 +432,27 @@ public class CargoServiceImpl implements CargoService{
                     compensacionLabNivelVigencia.getValoresCompensacionLabNivelVigencia().add(cnvv);
                 }
             }
+
+            if(row[40] != null){
+                if((Long) row[40] != jobTitleId){
+                    jobTitle = DenominacionEmpleoEntity
+                        .builder()
+                        .id((Long) row[40])
+                        .nombre((String) row[41])
+                        .totalCargos((Long) row[42])
+                        .build();
+                    appointment.getDenominacionesEmpleos().add(jobTitle);
+                    jobTitleId = (Long) row[40] ;
+                }
+            }
         }
         return appointment;
+    }
+
+    @Override
+    @Transactional
+    public List<DenominacionEmpleoEntity> findAllJobTitlesByAppointmentId(Long appointmentId) {
+        return cargoDAO.findAllJobTitlesByAppointmentId(appointmentId);
     }
     
 }

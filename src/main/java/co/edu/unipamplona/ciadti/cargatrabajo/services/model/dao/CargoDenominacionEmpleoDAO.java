@@ -16,14 +16,17 @@ public interface CargoDenominacionEmpleoDAO extends JpaRepository<CargoDenominac
     @Modifying
     @Query(value = """
         update CargoDenominacionEmpleoEntity cde set cde.idCargo = :idCargo, cde.idDenominacionEmpleo = :idDenominacionEmpleo,
-        cde.fechaCambio = :fechaCambio, cde.registradoPor = :registradoPor where cde.id = :id
+        cde.totalCargos = :totalCargos, cde.fechaCambio = :fechaCambio, cde.registradoPor = :registradoPor where cde.id = :id
     """)
     int update(@Param("idCargo") Long idCargo,
                @Param("idDenominacionEmpleo") Long idDenominacionEmpleo,
+               @Param("totalCargos") Long totalCargos,
                @Param("fechaCambio") Date fechaCambio,
                @Param("registradoPor") String registradoPor,
                @Param("id") Long id);
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_CARGODENOMINACIONEMPLEO(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure (Long id, String registradoPor);
+
+    CargoDenominacionEmpleoEntity findByIdCargoAndIdDenominacionEmpleo(Long idCargo, Long idDenominacionEmpleo);
 }

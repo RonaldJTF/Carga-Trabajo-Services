@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -24,4 +25,11 @@ public interface NivelDAO extends JpaRepository<NivelEntity, Long>, JpaSpecifica
 
     @Query(value = "SELECT FORTALECIMIENTO.PR_FORTALECIMIENTO_D_NIVEL(?1, ?2)", nativeQuery = true)
     Integer deleteByProcedure(Long id, String registradoPor);
+
+    @Query(value = """
+        select distinct n from NivelEntity n 
+        inner join ActividadEntity a on a.idNivel = n.id 
+        order by n.id 
+    """)
+    List<NivelEntity> findAllInSomeActivity();
 }

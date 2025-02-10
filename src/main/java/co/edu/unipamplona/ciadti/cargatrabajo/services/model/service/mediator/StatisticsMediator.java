@@ -46,7 +46,7 @@ public class StatisticsMediator {
         List<TimeStatisticDTO> timeStatistics = new ArrayList<>();
         Map<String, TimeStatisticDTO> statisticsByLevel = new HashMap<>();
 
-        List<NivelEntity> levels = nivelService.findAll();
+        List<NivelEntity> levels = nivelService.findAllInSomeActivity();
 
         Double tiempoTotalGlobal = actividadService.getGlobalTotalTime() / 60.0;
 

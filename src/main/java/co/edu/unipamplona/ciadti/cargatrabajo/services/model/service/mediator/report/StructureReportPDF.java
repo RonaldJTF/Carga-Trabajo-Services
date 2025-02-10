@@ -58,9 +58,7 @@ public class StructureReportPDF {
         String filePathChart = "reports/structures/Charts.jrxml";
         String filePathBlobalChart = "reports/structures/GlobalCharts.jrxml";
 
-        List<NivelEntity> levels = nivelService.findAll();
-        PropertyComparator<NivelEntity> propertyComparator = new PropertyComparator<>("id", true);
-        Collections.sort(levels, propertyComparator);
+        List<NivelEntity> levels = nivelService.findAllInSomeActivity();
 
         TipologiaEntity tipologiaEntity = tipologiaService.findFirstTipology();
         List<EstructuraEntity> structures = structureIds != null && structureIds.size() > 0 

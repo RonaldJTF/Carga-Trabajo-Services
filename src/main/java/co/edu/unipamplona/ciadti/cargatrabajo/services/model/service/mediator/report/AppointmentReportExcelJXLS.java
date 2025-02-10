@@ -149,6 +149,7 @@ public class AppointmentReportExcelJXLS {
                 ReportAppointmentDTO
                     .builder()
                     .data(e.getEscalaSalarial())
+                    .detallesDenominacionesEmpleos(e.getDetailsOfJobTitles())
                     .totalCargos(e.getTotalCargos())
                     .asignacionBasicaMensual(e.getAsignacionBasicaMensual())
                     .valueByCompensation(getValueByCompensation(e))

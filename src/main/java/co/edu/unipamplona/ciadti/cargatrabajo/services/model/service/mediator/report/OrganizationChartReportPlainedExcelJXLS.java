@@ -18,7 +18,6 @@ import org.jxls.transform.poi.JxlsPoiTemplateFillerBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
@@ -89,7 +88,7 @@ public class OrganizationChartReportPlainedExcelJXLS {
      */
     private void initializeRegistry() {
         registry = new LinkedHashMap<>();
-        List<NivelEntity> levels = nivelService.findAll();
+        List<NivelEntity> levels = nivelService.findAllInSomeActivity();
         registry.put("levels", levels);
         registry.put("levelIndexes", createLevelIndexes(levels));
     }

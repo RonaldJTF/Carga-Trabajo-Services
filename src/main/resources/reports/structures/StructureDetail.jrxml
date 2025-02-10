@@ -73,7 +73,7 @@
 					<text><![CDATA[TIEMPO TOTAL POR NIVEL OCUPACIONAL]]></text>
 				</staticText>
 				<textField isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="0" y="18" width="65" height="14" forecolor="#24756F" backcolor="#4E918D" uuid="1a8c6d76-61c6-4632-8a43-77f94b04bcf7">
+					<reportElement mode="Transparent" x="0" y="18" width="78" height="14" forecolor="#24756F" backcolor="#4E918D" uuid="1a8c6d76-61c6-4632-8a43-77f94b04bcf7">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -91,9 +91,10 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 0 ? $P{levels}.get(0) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Transparent" x="65" y="18" width="65" height="14" forecolor="#24756F" backcolor="#4E918D" uuid="ad0c2dc2-67c1-4a70-b65e-dd06d3b2673f">
+					<reportElement mode="Transparent" x="78" y="18" width="78" height="14" forecolor="#24756F" backcolor="#4E918D" uuid="ad0c2dc2-67c1-4a70-b65e-dd06d3b2673f">
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
 						<pen lineWidth="0.25" lineColor="#91DBC7"/>
@@ -108,9 +109,10 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 1 ? $P{levels}.get(1) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Transparent" x="130" y="18" width="65" height="14" forecolor="#24756F" backcolor="#4E918D" uuid="2c96d94d-f8e5-44eb-82d8-ed3afc48b924">
+					<reportElement mode="Transparent" x="156" y="18" width="78" height="14" forecolor="#24756F" backcolor="#4E918D" uuid="2c96d94d-f8e5-44eb-82d8-ed3afc48b924">
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
 						<pen lineWidth="0.25" lineColor="#91DBC7"/>
@@ -125,9 +127,10 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 2 ? $P{levels}.get(2) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Transparent" x="195" y="18" width="65" height="14" forecolor="#24756F" backcolor="#4E918D" uuid="31ff4d34-12a7-42ca-9e8b-21c8530eaf84">
+					<reportElement mode="Transparent" x="234" y="18" width="78" height="14" forecolor="#24756F" backcolor="#4E918D" uuid="31ff4d34-12a7-42ca-9e8b-21c8530eaf84">
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
 						<pen lineWidth="0.25" lineColor="#91DBC7"/>
@@ -142,9 +145,10 @@
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 3 ? $P{levels}.get(3) : null]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Transparent" x="260" y="18" width="65" height="14" forecolor="#24756F" backcolor="#4E918D" uuid="c82a2e5f-7e3e-4ca1-9341-bcc7b2502bca">
+					<reportElement mode="Transparent" x="312" y="18" width="78" height="14" forecolor="#24756F" backcolor="#4E918D" uuid="c82a2e5f-7e3e-4ca1-9341-bcc7b2502bca">
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 					<box>
 						<pen lineWidth="0.25" lineColor="#91DBC7"/>
@@ -157,23 +161,6 @@
 						<font fontName="SansSerif" size="10" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 4 ? $P{levels}.get(4) : null]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement mode="Transparent" x="325" y="18" width="65" height="14" forecolor="#24756F" backcolor="#4E918D" uuid="63d517af-e87c-40ea-b686-b3c41337dd17">
-						<property name="com.jaspersoft.studio.unit.y" value=""/>
-						<property name="com.jaspersoft.studio.unit.height" value=""/>
-					</reportElement>
-					<box>
-						<pen lineWidth="0.25" lineColor="#91DBC7"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
-					</box>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="10" isBold="true"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$P{levels} != null && $P{levels}.size() > 5 ? $P{levels}.get(5) : null]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement mode="Opaque" x="-360" y="0" width="360" height="32" forecolor="#FFFFFF" backcolor="#2D6973" uuid="2f8de69d-843b-4ecf-8fb0-504a25d8638d">
@@ -212,7 +199,7 @@
 	<detail>
 		<band height="20">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="360" y="0" width="65" height="20" forecolor="#787878" uuid="4a3edaec-efdd-4e3e-b796-dbfeb23e5103">
+				<reportElement stretchType="ElementGroupHeight" x="360" y="0" width="78" height="20" forecolor="#787878" uuid="4a3edaec-efdd-4e3e-b796-dbfeb23e5103">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -231,9 +218,10 @@
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >0 ?  Math.round(((double)$F{tiemposPorNivel}.get(0))*10.0)/10.0 : null]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="425" y="0" width="65" height="20" forecolor="#787878" uuid="bcd71d0f-8f23-4bc3-8c66-758774789180">
+				<reportElement stretchType="ElementGroupHeight" x="438" y="0" width="78" height="20" forecolor="#787878" uuid="bcd71d0f-8f23-4bc3-8c66-758774789180">
 					<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.25" lineColor="#CCCCCC"/>
@@ -249,9 +237,10 @@
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >1 ?  Math.round(((double)$F{tiemposPorNivel}.get(1))*10.0)/10.0 : null]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="490" y="0" width="65" height="20" forecolor="#787878" uuid="e3f45c39-86dc-414d-9829-ed2224c9c7bc">
+				<reportElement stretchType="ElementGroupHeight" x="516" y="0" width="78" height="20" forecolor="#787878" uuid="e3f45c39-86dc-414d-9829-ed2224c9c7bc">
 					<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.25" lineColor="#CCCCCC"/>
@@ -267,9 +256,10 @@
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >2 ? Math.round(((double)$F{tiemposPorNivel}.get(2))*10.0)/10.0 : null]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="555" y="0" width="65" height="20" forecolor="#787878" uuid="271152a2-09ba-4ad5-8040-1684c9e08f05">
+				<reportElement stretchType="ElementGroupHeight" x="594" y="0" width="78" height="20" forecolor="#787878" uuid="271152a2-09ba-4ad5-8040-1684c9e08f05">
 					<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.25" lineColor="#CCCCCC"/>
@@ -285,9 +275,10 @@
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >3 ? Math.round(((double)$F{tiemposPorNivel}.get(3))*10.0)/10.0 : null]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="620" y="0" width="65" height="20" forecolor="#787878" uuid="c046cd75-50e4-4999-b42d-8242baf39cb2">
+				<reportElement stretchType="ElementGroupHeight" x="672" y="0" width="78" height="20" forecolor="#787878" uuid="c046cd75-50e4-4999-b42d-8242baf39cb2">
 					<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.25" lineColor="#CCCCCC"/>
@@ -301,21 +292,6 @@
 					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >4 ? Math.round(((double)$F{tiemposPorNivel}.get(4))*10.0)/10.0 : null]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="685" y="0" width="65" height="20" forecolor="#787878" uuid="501a12fc-cde2-4cfa-a183-9c237aaa5918"/>
-				<box>
-					<pen lineWidth="0.25" lineColor="#CCCCCC"/>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#CCCCCC"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#CCCCCC"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="SansSerif" size="9"/>
-					<paragraph leftIndent="2" rightIndent="0" spacingBefore="2" spacingAfter="2"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() >5 ? Math.round(((double)$F{tiemposPorNivel}.get(5))*10.0)/10.0 : null]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="360" height="20" uuid="9f3fe7e2-141f-4397-a38c-8fb7f2fcee3c">

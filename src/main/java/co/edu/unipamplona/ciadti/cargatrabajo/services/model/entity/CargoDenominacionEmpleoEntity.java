@@ -34,6 +34,9 @@ public class CargoDenominacionEmpleoEntity  implements Serializable, Cloneable {
     @Column(name = "deem_id", nullable = false, length = 30)
     private Long idDenominacionEmpleo;
 
+    @Column(name = "cade_totalcargo", length = 30)
+    private Long totalCargos;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "cade_fechacambio")
     @Temporal(TemporalType.TIMESTAMP)

@@ -19,6 +19,7 @@ public class ReportAppointmentDTO {
     private Map<Long, Double> valueByCompensation;
     private List<ComparativeAttribute> comparativesByScope;
     private List<ReportAppointmentDTO> children;
+    private String detallesDenominacionesEmpleos;
 
     @Data
     @Builder

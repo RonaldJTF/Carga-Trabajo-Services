@@ -93,7 +93,7 @@ public class StructureReportExcel {
 
     private void generateDataset(List<Long> structureIds) throws CiadtiException{
         List<TipologiaEntity> typologies = tipologiaService.findAllManagement(); 
-        List<NivelEntity> levels = nivelService.findAll();
+        List<NivelEntity> levels = nivelService.findAllInSomeActivity();
         TipologiaEntity tipologiaEntity = tipologiaService.findFirstTipology();
         List<EstructuraEntity> structures = structureIds != null && structureIds.size() > 0 
                                             ? estructuraService.findAllFilteredByIds(structureIds) 

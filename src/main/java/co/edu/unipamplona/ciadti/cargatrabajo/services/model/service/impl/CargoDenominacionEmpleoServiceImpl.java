@@ -39,6 +39,7 @@ public class CargoDenominacionEmpleoServiceImpl implements CargoDenominacionEmpl
             cargoDenominacionEmpleoDAO.update(
                 entity.getIdCargo(),
                 entity.getIdDenominacionEmpleo(),
+                entity.getTotalCargos(),
                 entity.getFechaCambio(), 
                 entity.getRegistradoPor(), 
                 entity.getId());
@@ -67,5 +68,11 @@ public class CargoDenominacionEmpleoServiceImpl implements CargoDenominacionEmpl
     public List<CargoDenominacionEmpleoEntity> findAllFilteredBy(CargoDenominacionEmpleoEntity filter) {
         SpecificationCiadti<CargoDenominacionEmpleoEntity> specification = new SpecificationCiadti<CargoDenominacionEmpleoEntity>(filter);
         return cargoDenominacionEmpleoDAO.findAll(specification);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CargoDenominacionEmpleoEntity findByIdCargoAndIdDenominacionEmpleo(Long idCargo, Long idDenominacionEmpleo) {
+        return cargoDenominacionEmpleoDAO.findByIdCargoAndIdDenominacionEmpleo(idCargo, idDenominacionEmpleo);
     }
 }

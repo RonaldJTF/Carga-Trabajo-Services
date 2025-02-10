@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -114,6 +115,15 @@ public class CargoEntity implements Serializable, Cloneable {
     @Transient
     private RegistradorDTO registradorDTO;
 
+    @JsonGetter("detallesDenominacionesEmpleos")
+    public String getDetailsOfJobTitles(){
+        return  denominacionesEmpleos != null 
+                ?  denominacionesEmpleos.stream()
+                    .map(obj -> obj.getNombre() + ": " + obj.getTotalCargos())
+                    .reduce("", (partial, current) -> partial.isEmpty() ? current : partial + ", " + current)
+                : null;
+    }
+
     @PrePersist
     void onCreate() {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
@@ -131,6 +141,4 @@ public class CargoEntity implements Serializable, Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
-
-
 }

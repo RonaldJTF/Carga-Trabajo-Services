@@ -3,6 +3,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.r
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +70,7 @@ public class AssignedOrganizationChartReportExcelJXLS {
     }
 
     private void generateDataset(Long organizationChartId) throws Exception {
-        List<NivelEntity> levels = nivelService.findAll();
+        List<NivelEntity> levels = nivelService.findAllInSomeActivity();
         List<GestionOperativaEntity> operationalsManagements = gestionOperativaService.findAssignedOperationalsManagementsByOrganizationChartId(organizationChartId);
 
         Map<Long, Integer> levelIndexes = IntStream.range(0, levels.size()).boxed().collect(Collectors.toMap(i -> levels.get(i).getId(), i -> i));

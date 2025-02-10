@@ -82,9 +82,7 @@ public class StructureTimeStatisticsReportPDF {
         byte[] logo = staticResourceMediator.getResourceBytes(this.LOGO_URL);
         byte[] headerImage = staticResourceMediator.getResourceBytes(this.HEADER_IMAGE_URL);
 
-        List<NivelEntity> levels = nivelService.findAll();
-        PropertyComparator<NivelEntity> propertyComparator = new PropertyComparator<>("id", true);
-        Collections.sort(levels, propertyComparator);
+        List<NivelEntity> levels = nivelService.findAllInSomeActivity();
 
         List<EstructuraEntity> structures = estructuraService.findAllFilteredBy(EstructuraEntity.builder().id(structureId).build());
         EstructuraEntity structureWorkingOn = structures.get(0);

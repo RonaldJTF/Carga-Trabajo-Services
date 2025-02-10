@@ -3,6 +3,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,13 +66,28 @@ public class AppointmentController {
     }
 
     @Operation(
+        summary = "Obtener o listar los cargos de un mismo grupo (Vigencia, Jerarquía y Normatividad/Alcance)",
+        description = "Obtiene o lista los cargos de un mismo grupo (Vigencia, Jerarquía y Normatividad/Alcance) por un alcance dado" +
+                "Args: appointmentIdOfGroup: identificador del cargo donde obtenemos el grupo. " +
+                "Returns: lista de objetos con información de cargos. ")
+    @GetMapping("/all-group/{appointmentIdOfGroup}")
+    public ResponseEntity<?> getAllGroup(@PathVariable Long appointmentIdOfGroup) throws CiadtiException {
+        CargoEntity appointment = cargoService.findById(appointmentIdOfGroup);
+        Map<String, Long[]> filters = new HashMap<>();
+        filters.put("hierarchies", new Long[]{appointment.getIdJerarquia()});
+        filters.put("validities", new Long[]{appointment.getIdVigencia()});
+        filters.put("scopes", new Long[]{appointment.getIdAlcance()});
+        return new ResponseEntity<>(cargoService.findAllBy(filters), HttpStatus.OK);
+    }
+
+    @Operation(
             summary = "Crear un tipo de cargo",
             description = "Crea un tipo de cargo" +
                     "Args: categoriaEntity: objeto con información del tipo de cargo a registrar. " +
                     "Returns: Objeto con la información asociada.")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CargoEntity cargoEntity) throws CiadtiException {
-        return new ResponseEntity<>(configurationMediator.saveAppointment(cargoEntity), HttpStatus.CREATED);
+        return new ResponseEntity<>(configurationMediator.saveAppointment(cargoEntity, cargoEntity.getDenominacionesEmpleos()), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -91,7 +107,7 @@ public class AppointmentController {
         cargoEntityBD.setIdEscalaSalarial(cargoEntity.getIdEscalaSalarial());
         cargoEntityBD.setIdNormatividad(cargoEntity.getIdNormatividad());
         cargoEntityBD.setIdAlcance(cargoEntity.getIdAlcance());
-        return new ResponseEntity<>(configurationMediator.saveAppointment(cargoEntityBD), HttpStatus.CREATED);
+        return new ResponseEntity<>(configurationMediator.saveAppointment(cargoEntityBD, cargoEntity.getDenominacionesEmpleos()), HttpStatus.CREATED);
     }
 
     @Operation(

@@ -44,7 +44,7 @@ public class StructureReportPlainedExcelJXLS {
         String reportDate = dateFormat.format(new Date());
 
 
-        List<NivelEntity> levels = nivelService.findAll();
+        List<NivelEntity> levels = nivelService.findAllInSomeActivity();
         registry.put("levels", levels);
 
         Map<Long, Integer> levelIndexes = IntStream.range(0, levels.size()).boxed().collect(Collectors.toMap(i -> levels.get(i).getId(), i -> i));
