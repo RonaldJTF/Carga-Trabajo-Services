@@ -81,6 +81,7 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.GET,"/api/operational-management/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
                 .requestMatchers(HttpMethod.POST, "/api/operational-management/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")
+                .requestMatchers(HttpMethod.POST, "/api/operational-management/migrate-activities").hasAnyRole("DESARROLLADOR")
                 .requestMatchers("/api/operational-management/**").hasAnyRole("ADMINISTRADOR")
                  
                 .requestMatchers(HttpMethod.GET,"/api/organization-chart/**").hasAnyRole("SUPERADMINISTRADOR", "ADMINISTRADOR", "OPERADOR")

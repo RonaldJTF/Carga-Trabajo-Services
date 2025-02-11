@@ -13,5 +13,7 @@ public interface GestionOperativaService extends CommonService<GestionOperativaE
     List<Object[]> findOperationalManagementByOrganizationChart(Long id);
     List<GestionOperativaEntity> findAssignedOperationalsManagementsByOrganizationChartId(Long organizationalChartId);
     List<GestionOperativaEntity> findAssignedOperationalsManagements(Long hierarchyId, List<Long> operationalManagementIds);
+
+     List<Object[]> findActivityByOperationalManagement();
     List<GestionOperativaEntity> findAllFilteredByIds(List<Long> operationalManagementIds);
 }

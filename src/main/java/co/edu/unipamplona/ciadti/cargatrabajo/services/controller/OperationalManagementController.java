@@ -225,4 +225,10 @@ public class OperationalManagementController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @PostMapping("/migrate-activities")
+    public ResponseEntity<?> migrateActivity() throws Exception{
+        configurationMediator.migrateActivity();
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
 }

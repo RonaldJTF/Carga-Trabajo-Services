@@ -3,6 +3,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ReportOperationalManagementDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.WorkPlanSummaryDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.WorkPlanSummaryDTO.DateAdvance;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.DependenciaDTO;
@@ -2095,5 +2096,49 @@ public class ConfigurationMediator {
         for (Long id : jobTitleIds) {
             deleteJobTitle(id);
         }
+    }
+
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public void migrateActivity(){
+        List<Object[]> actividades = gestionOperativaService.findActivityByOperationalManagement();
+        Map<Long, ActividadGestionEntity> resultDTO = mapRawDataToDTOs(actividades);
+        for (Map.Entry<Long, ActividadGestionEntity> entry : resultDTO.entrySet()) {
+            Long actividadGestionOperativaId = entry.getKey();
+            ActividadGestionEntity actividad = entry.getValue();
+            actividadGestionService.save(actividad);
+            actividadGestionService.deleteActividadGestioOperativaByProcedure(actividadGestionOperativaId,RegisterContext.getRegistradorDTO().getJsonAsString());
+        }
+    }
+
+    private Map<Long, ActividadGestionEntity> mapRawDataToDTOs(List<Object[]> resultList) {
+        Map<Long, ActividadGestionEntity> mapActividadGestionOperativa = new HashMap<>();
+        for (Object[] result : resultList) {
+            ActividadGestionEntity dto = createDTOFromResult(result);
+            mapActividadGestionOperativa.put(getLongValue(result[0]), dto);
+        }
+        return mapActividadGestionOperativa;
+    }
+
+    private ActividadGestionEntity createDTOFromResult(Object[] result) {
+        ActividadGestionEntity dto = new ActividadGestionEntity();
+        mapCommonFields(dto, result);
+        return dto;
+    }
+
+    private void mapCommonFields(ActividadGestionEntity dto, Object[] result) {
+        dto.setIdGestionOperativa(getLongValue(result[1]));
+        dto.setIdNivel(getLongValue(result[3]));
+        dto.setFrecuencia(getDoubleValue(result[5]));
+        dto.setTiempoMaximo(getDoubleValue(result[6]));
+        dto.setTiempoMinimo(getDoubleValue(result[7]));
+        dto.setTiempoPromedio(getDoubleValue(result[8]));
+    }
+
+    private Long getLongValue(Object value) {
+        return value != null ? ((Number) value).longValue() : null;
+    }
+
+    private Double getDoubleValue(Object value) {
+        return value != null ? ((Number) value).doubleValue() : null;
     }
 }

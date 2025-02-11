@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 
 public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntity, Long>, JpaSpecificationExecutor<GestionOperativaEntity>{
@@ -151,4 +152,10 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
 
     @Query(value = "select go from GestionOperativaEntity go where go.id in :operationalManagementIds")
     List<GestionOperativaEntity> findAllFilteredByIds(@Param("operationalManagementIds") List<Long> operationalManagementIds);
+
+    @Query(value = """
+            SELECT  AG.ACGO_ID, AG.GEOP_ID, A.* FROM FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA AG
+            INNER JOIN FORTALECIMIENTO.ACTIVIDAD A ON AG.ACTI_ID = A.ACTI_ID           
+    """, nativeQuery = true)
+    List<Object[]> findActivityByOperationalManagement();
 }
