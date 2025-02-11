@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "FOTOPERSONA", schema="FORTALECIMIENTO")
-public class FotoPersonaEntity implements Serializable{
+public class FotoPersonaEntity implements Serializable, Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "fope_id", nullable = false)
@@ -81,4 +81,8 @@ public class FotoPersonaEntity implements Serializable{
         this.registradoPor = registradorDTO.getJsonAsString();
     }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

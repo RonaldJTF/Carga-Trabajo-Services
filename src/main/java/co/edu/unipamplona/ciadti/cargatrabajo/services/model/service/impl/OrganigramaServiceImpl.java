@@ -1,10 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.OrganigramaDAO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.OrganigramaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.OrganigramaService;
 import lombok.RequiredArgsConstructor;

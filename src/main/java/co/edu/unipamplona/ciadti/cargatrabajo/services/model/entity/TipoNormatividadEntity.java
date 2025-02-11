@@ -73,5 +73,4 @@ public class TipoNormatividadEntity implements Serializable, Cloneable {
     public Object clone() throws CloneNotSupportedException{
         return super.clone();
     }
-    
 }

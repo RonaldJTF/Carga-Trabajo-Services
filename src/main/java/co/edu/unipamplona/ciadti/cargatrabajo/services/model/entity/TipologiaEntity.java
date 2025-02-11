@@ -19,7 +19,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -80,8 +79,6 @@ public class TipologiaEntity implements Serializable, Cloneable{
     )
     private List<AccionEntity> acciones;
 
-    //@OneToOne
-    //@JoinColumn(name = "tipo_idtipologiasiguiente", insertable = false, updatable = false)
     @Transient
     private TipologiaEntity tipologiaSiguiente;
 

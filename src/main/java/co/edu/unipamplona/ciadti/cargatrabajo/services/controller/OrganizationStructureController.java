@@ -7,8 +7,8 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ConvencionS
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.DependenciaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.JerarquiaService;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.AssignedOrganizationChartReportExcelJXLS;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.OrganizationChartReportPlainedExcelJXLS;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.AssignedOperationalManagementReportExcelJXLS;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.AssignedOperationalManagementReportPlainedExcelJXLS;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -44,8 +44,8 @@ public class OrganizationStructureController {
     private final DependenciaService dependenciaService;
     private final ConvencionService convencionService;
     private final ConfigurationMediator configurationMediator;
-    private final OrganizationChartReportPlainedExcelJXLS organizationChartReportPlainedExcelJXLS;
-    private final AssignedOrganizationChartReportExcelJXLS organizationChartReportExcelJXLS;
+    private final AssignedOperationalManagementReportPlainedExcelJXLS organizationChartReportPlainedExcelJXLS;
+    private final AssignedOperationalManagementReportExcelJXLS organizationChartReportExcelJXLS;
     private final GestionOperativaService gestionOperativaService;
 
     @Operation(

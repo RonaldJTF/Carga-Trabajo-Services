@@ -16,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.specification.SpecificationCiadti;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao.GestionOperativaDAO;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.MultiPropertyComparator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
@@ -86,6 +84,15 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
     public List<GestionOperativaEntity> findAllFilteredBy(GestionOperativaEntity filter) {
         SpecificationCiadti<GestionOperativaEntity> specification = new SpecificationCiadti<GestionOperativaEntity>(filter);
         List<GestionOperativaEntity> results = gestionOperativaDAO.findAll(specification);
+        results = this.filter(results);
+        this.orderOperationalsManagements(results);
+        return results;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GestionOperativaEntity> findAllFilteredByIds(List<Long> operationalManagementIds) {
+        List<GestionOperativaEntity> results = gestionOperativaDAO.findAllFilteredByIds(operationalManagementIds);
         results = this.filter(results);
         this.orderOperationalsManagements(results);
         return results;
@@ -168,11 +175,6 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
     public int updateOrdenByIdPadreAndOrdenBeetwenAndNotId(Long idPadre, Long inferiorOrder, Long superiorOrder, Long id, int increment) {
         return gestionOperativaDAO.updateOrdenByIdPadreAndOrdenBeetwenAndNotId(idPadre, inferiorOrder, superiorOrder, id, increment);
     }
-
-    @Transactional(readOnly = true)
-    public ActividadEntity findActividadByIdGestionOperativa(Long idGestionOperativa) {
-        return gestionOperativaDAO.findActividadByIdGestionOperativa(idGestionOperativa);
-    }
     
     /**
      * Método para obtener las gestiones operativas a partir de un ID de jerarquía.
@@ -196,10 +198,12 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
                 FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
                 INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
             )
-            SELECT DISTINCT(p.*), a.*, jgo.jego_id  FROM padres as p
+            SELECT DISTINCT(p.*), 
+                ag.acge_id, ag.nive_id, ag.acge_frecuencia, ag.acge_tiempomaximo, ag.acge_tiempominimo, ag.acge_tiempopromedio,
+                jgo.jego_id  
+            FROM padres as p
             LEFT JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = p.geop_id and jgo.jera_id = :hierarchyId
-            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON p.geop_id = ago.geop_id
-            LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
+            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTION ag ON p.geop_id = ag.geop_id
         """;
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
@@ -238,10 +242,12 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
                 FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
                 INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
             )
-            SELECT DISTINCT(p.*), a.*, jgo.jego_id  FROM padres as p
+            SELECT DISTINCT(p.*),
+                ag.acge_id, ag.nive_id, ag.acge_frecuencia, ag.acge_tiempomaximo, ag.acge_tiempominimo, ag.acge_tiempopromedio,
+                jgo.jego_id  
+            FROM padres as p
             LEFT JOIN FORTALECIMIENTO.JERARQUIAGESTIONOPERATIVA jgo ON jgo.geop_id = p.geop_id and jgo.jera_id = :hierarchyId
-            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON p.geop_id = ago.geop_id
-            LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
+            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTION ag ON p.geop_id = ag.geop_id
         """;    
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);
@@ -323,11 +329,13 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
                     FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
                     INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
                 )
-                SELECT DISTINCT p.*, t.tipo_nombre, a.*, d.* FROM padres as p
+                SELECT DISTINCT p.*, t.tipo_nombre, 
+                    ag.acge_id, ag.nive_id, ag.acge_frecuencia, ag.acge_tiempomaximo, ag.acge_tiempominimo, ag.acge_tiempopromedio, 
+                    d.* 
+                FROM padres as p
                 INNER JOIN FORTALECIMIENTO.TIPOLOGIA AS t ON t.tipo_id = p.tipo_id
                 LEFT JOIN FORTALECIMIENTO.DEPENDENCIA AS d ON d.depe_id = p.idDependencia
-                LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON p.geop_id = ago.geop_id
-                LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
+                LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTION ag ON p.geop_id = ag.geop_id
         """;
 
         Query query = entityManager.createNativeQuery(sql, Object[].class);

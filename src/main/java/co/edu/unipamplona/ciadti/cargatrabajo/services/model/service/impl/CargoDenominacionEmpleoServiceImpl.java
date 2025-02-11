@@ -75,4 +75,10 @@ public class CargoDenominacionEmpleoServiceImpl implements CargoDenominacionEmpl
     public CargoDenominacionEmpleoEntity findByIdCargoAndIdDenominacionEmpleo(Long idCargo, Long idDenominacionEmpleo) {
         return cargoDenominacionEmpleoDAO.findByIdCargoAndIdDenominacionEmpleo(idCargo, idDenominacionEmpleo);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CargoDenominacionEmpleoEntity> findAllByAppointmentId(Long appointmentId){
+        return cargoDenominacionEmpleoDAO.findAllByIdCargo(appointmentId);
+    }
 }

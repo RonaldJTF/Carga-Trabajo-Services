@@ -69,4 +69,9 @@ public class ActividadGestionServiceImpl implements ActividadGestionService {
         SpecificationCiadti<ActividadGestionEntity> specification = new SpecificationCiadti<ActividadGestionEntity>(filter);
         return actividadGestionDAO.findAll(specification);
     }
+
+    @Override
+    public ActividadGestionEntity findByIdGestionOperativa(Long idGestionOperativa) {
+        return actividadGestionDAO.findByIdGestionOperativa(idGestionOperativa);
+    }
 }

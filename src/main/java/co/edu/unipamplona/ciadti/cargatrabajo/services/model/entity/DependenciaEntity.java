@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "DEPENDENCIA", schema = "FORTALECIMIENTO")
-public class DependenciaEntity implements Serializable {
+public class DependenciaEntity implements Serializable, Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "depe_id", nullable = false)
@@ -85,5 +85,10 @@ public class DependenciaEntity implements Serializable {
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
         this.registradoPor = registradorDTO.getJsonAsString();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

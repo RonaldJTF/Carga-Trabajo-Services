@@ -66,7 +66,6 @@ public class ConfigurationMediator {
     private final CompensacionLabNivelVigenciaService compensacionLabNivelVigenciaService;
     private final CompensacionLabNivelVigValorService compensacionLabNivelVigValorService;
     private final GestionOperativaService gestionOperativaService;
-    private final ActividadGestionOperativaService actividadGestionOperativaService;
     private final GeneralExpressionMediator generalExpressionMediator;
     private final ConvencionService convencionService;
     private final JerarquiaService jerarquiaService;
@@ -75,6 +74,7 @@ public class ConfigurationMediator {
     private final JerarquiaGestionOperativaService jerarquiaGestionOperativaService;
     private final DenominacionEmpleoService denominacionEmpleoService;
     private final CargoDenominacionEmpleoService cargoDenominacionEmpleoService;
+    private final ActividadGestionService actividadGestionService;
 
     /**
      * Crea una estructura, y reorganiza las subestructuras en la estructura padre que lo contiene
@@ -291,15 +291,21 @@ public class ConfigurationMediator {
                 entity.setSubGestionesOperativas(temp);
             }
             ActividadEntity activity = structure.getActividad();
+            ActividadGestionEntity actividadGestionEntity = null;   
             if(activity != null){
-                ActividadGestionOperativaEntity actividadGestionOperativaEntity = ActividadGestionOperativaEntity.builder()
+                actividadGestionEntity = ActividadGestionEntity.builder()
                     .idGestionOperativa(savedOperationalManagement.getId())
-                    .idActividad(activity.getId())
+                    .frecuencia(activity.getFrecuencia())
+                    .tiempoMinimo(activity.getTiempoMinimo())
+                    .tiempoMaximo(activity.getTiempoMaximo())
+                    .tiempoPromedio(activity.getTiempoPromedio())
+                    .idNivel(activity.getIdNivel())
+                    .nivel(activity.getNivel())
                     .build();
-                actividadGestionOperativaService.save(actividadGestionOperativaEntity);
+                actividadGestionService.save(actividadGestionEntity);
             }
             entity.setId(savedOperationalManagement.getId());
-            entity.setActividad(activity);
+            entity.setActividad(actividadGestionEntity);
             operationalsManagements.add(entity);
         }
         return operationalsManagements;
@@ -1392,16 +1398,19 @@ public class ConfigurationMediator {
     }
 
     /**
-     * Eliminar una asignación de cargos
+     * Eliminar una asignación de cargos en general, y las asignaciones de cargos por denominaciónes de empleos si han sido relacionadas.
      * @param appointmentId, identificador único del cargo que se desea eliminar
      * @throws CiadtiException
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public void deleteAppointment(Long appointmentId) throws CiadtiException {
-        CargoEntity cargoDB = cargoService.findById(appointmentId);
-        if (cargoDB != null) {
-            cargoService.deleteByProcedure(cargoDB.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        List<CargoDenominacionEmpleoEntity> itemsToDelete = cargoDenominacionEmpleoService.findAllByAppointmentId(appointmentId);
+        if(itemsToDelete != null){
+            for(CargoDenominacionEmpleoEntity e : itemsToDelete){
+                cargoDenominacionEmpleoService.deleteByProcedure(e.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+            }
         }
+        cargoService.deleteByProcedure(appointmentId, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
 
     /**
@@ -1847,9 +1856,9 @@ public class ConfigurationMediator {
                 deleteOperationalManagement(e.getId());
             }
         }
-        ActividadGestionOperativaEntity relashionshipToDelete = actividadGestionOperativaService.findByIdGestionOperativa(id);
-        if (relashionshipToDelete != null) {
-            actividadGestionOperativaService.deleteByProcedure(relashionshipToDelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+        ActividadGestionEntity activityToDelete = actividadGestionService.findByIdGestionOperativa(id);
+        if (activityToDelete != null) {
+            actividadGestionService.deleteByProcedure(activityToDelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         }
         gestionOperativaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
     }
@@ -1884,9 +1893,9 @@ public class ConfigurationMediator {
             }
         }
         if (!deletedOperationalsManagements.contains(id)) {
-            ActividadGestionOperativaEntity relashionshipToDelete = actividadGestionOperativaService.findByIdGestionOperativa(id);
-            if (relashionshipToDelete != null) {
-                actividadGestionOperativaService.deleteByProcedure(relashionshipToDelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
+            ActividadGestionEntity activityToDelete = actividadGestionService.findByIdGestionOperativa(id);
+            if (activityToDelete != null) {
+                actividadGestionService.deleteByProcedure(activityToDelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
             }
             gestionOperativaService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
             deletedOperationalsManagements.add(id);

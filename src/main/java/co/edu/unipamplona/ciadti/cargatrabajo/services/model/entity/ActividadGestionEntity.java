@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "ACTIVIDADGESTION", schema = "FORTALECIMIENTO")
-public class ActividadGestionEntity {
+public class ActividadGestionEntity implements Serializable, Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "acge_id", nullable = false)

@@ -8,14 +8,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadGestionEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.EstructuraEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ActividadGestionService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.GestionOperativaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.OrganizationChartReportExcelJXLS;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.OperationalManagementReportExcelJXLS;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.OperationalManagementReportPDF;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.converter.ParameterConverter;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,8 +44,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class OperationalManagementController {
     private final GestionOperativaService gestionOperativaService;
     private final TipologiaService tipologiaService;
+    private final ActividadGestionService actividadGestionService;
     private final ConfigurationMediator configurationMediator;
-    private final OrganizationChartReportExcelJXLS organizationChartReportExcelJXLS;
+    private final OperationalManagementReportExcelJXLS organizationChartReportExcelJXLS;
+    private final OperationalManagementReportPDF operationalManagementReportPDF;
 
     @Operation(
         summary = "Obtener o listar las gestiones operativas",
@@ -125,9 +131,70 @@ public class OperationalManagementController {
         return new ResponseEntity<>(configurationMediator.migrateStructures(estructuras, idParent), HttpStatus.CREATED);
     }
 
+     @Operation(
+            summary = "Obtener o listar las actividades",
+            description = "Obtiene o lista las actividades de acuerdo a ciertas variables o parámetros. " +
+                    "Args: id: identificador de la actividad. " +
+                    "request: Usado para obtener los parámetros pasados y que serán usados para filtrar (Clase ActividadGestionEntity). " +
+                    "Returns: Objeto o lista de objetos con información de la actividad. " +
+                    "Nota: Puede hacer uso de todos, de ninguno, o de manera combinada de las variables o parámetros especificados. ")
+    @GetMapping(value = {"/activity", "/activity/{id}"})
+    public ResponseEntity<?> getActivity(@PathVariable(required = false) Long id, HttpServletRequest request) throws CiadtiException {
+        ParameterConverter parameterConverter = new ParameterConverter(ActividadGestionEntity.class);
+        ActividadGestionEntity filter = (ActividadGestionEntity) parameterConverter.converter(request.getParameterMap());
+        filter.setId(id == null ? filter.getId() : id);
+        return Methods.getResponseAccordingToId(id, actividadGestionService.findAllFilteredBy(filter));
+    }
+
+    @Operation(
+            summary = "Crear una actividad o detalle de la gestión operativa de tipología actividad",
+            description = "Crea una actividad o detalle de la gestión operativa de tipología actividad. " +
+                    "Args: actividadGestionEntity: objeto con información de la actividad. " +
+                    "Returns: Objeto con la información asociada.")
+    @PostMapping("/activity")
+    public ResponseEntity<?> createActivity(@Valid @RequestBody ActividadGestionEntity actividadGestionEntity) {
+        return new ResponseEntity<>(actividadGestionService.save(actividadGestionEntity), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Actualizar una actividad o detalle de la gestión operativa de tipología actividad",
+            description = "Actualiza una actividad o detalle de la gestión operativa de tipología actividad. " +
+                    "Args: ActividadGestionEntity: objeto con información de la actividad. " +
+                    "Returns: Objeto con la información asociada.")
+    @PutMapping("/activity/{id}")
+    public ResponseEntity<?> updateActivity(@Valid @RequestBody ActividadGestionEntity actividadGestionEntity, @PathVariable Long id) throws CiadtiException {
+        ActividadGestionEntity actividadGestionEntityBD = actividadGestionService.findById(id);
+        actividadGestionEntityBD.setFrecuencia(actividadGestionEntity.getFrecuencia());
+        actividadGestionEntityBD.setTiempoMinimo(actividadGestionEntity.getTiempoMinimo());
+        actividadGestionEntityBD.setTiempoMaximo(actividadGestionEntity.getTiempoMaximo());
+        actividadGestionEntityBD.setTiempoPromedio(actividadGestionEntity.getTiempoPromedio());
+        actividadGestionEntityBD.setIdGestionOperativa(actividadGestionEntity.getIdGestionOperativa());
+        actividadGestionEntityBD.setIdNivel(actividadGestionEntity.getIdNivel());
+        return new ResponseEntity<>(actividadGestionService.save(actividadGestionEntityBD), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Eliminar una actividad por su id",
+            description = "Elimina una actividad por su id." +
+                    "Args: id: identificador de la actividad a eliminar.")
+    @DeleteMapping("/activity/{id}")
+    public ResponseEntity<?> deleteActivity(@PathVariable Long id) throws CiadtiException {
+        actividadGestionService.deleteByProcedure(id, RegisterContext.getRegistradorDTO().getJsonAsString());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @SuppressWarnings("null")
     @GetMapping("report")
-    public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type) throws Exception {
+    public ResponseEntity<?> downloadReportExcel(@RequestParam(name = "type", required = false) String type,
+                                                 @RequestParam(name = "operationalManagementIds", required = false) String operationalManagementIdsString) throws Exception {
+        operationalManagementIdsString = operationalManagementIdsString.replaceAll("\\[|\\]|\\s", "");
+        List<Long> operationalManagementIds = new ArrayList<>();
+        if (!operationalManagementIdsString.isEmpty()) {
+            String[] parts = operationalManagementIdsString.split(",");
+            for (String part : parts) {
+                operationalManagementIds.add(Long.parseLong(part));
+            }
+        }
         byte[] fileBytes = null;
         String extension = null;
         String mediaType = null;
@@ -135,7 +202,11 @@ public class OperationalManagementController {
         if ("excel".equalsIgnoreCase(type)) {
             extension = "xlsx";
             mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            fileBytes = organizationChartReportExcelJXLS.generate();
+            fileBytes = organizationChartReportExcelJXLS.generate(operationalManagementIds);
+        }else if ("pdf".equalsIgnoreCase(type)) {
+            extension = "pdf";
+            mediaType = "application/pdf";
+            fileBytes = operationalManagementReportPDF.generate(operationalManagementIds);
         }
 
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");

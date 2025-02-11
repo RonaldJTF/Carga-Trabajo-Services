@@ -22,7 +22,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "TIPODOCUMENTO", schema = "FORTALECIMIENTO")
-public class TipoDocumentoEntity implements Serializable {
+public class TipoDocumentoEntity implements Serializable, Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,4 +61,8 @@ public class TipoDocumentoEntity implements Serializable {
         this.registradoPor = registradorDTO.getJsonAsString();
     }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

@@ -26,8 +26,8 @@ import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @Service
-public class OrganizationChartReportPlainedExcelJXLS {
-    private static final String REPORT_TEMPLATE_PATH = "reports/organizationChart/organizationChart.xlsx";
+public class AssignedOperationalManagementReportPlainedExcelJXLS {
+    private static final String REPORT_TEMPLATE_PATH = "reports/operationalsManagements/AssignedOperationalsManagementsPlained.xlsx";
     private static final String LOGO_PATH = "reports/images/logo.png";
     private static final String DATE_FORMAT = "dd/MM/yyyy HH:mm";
 

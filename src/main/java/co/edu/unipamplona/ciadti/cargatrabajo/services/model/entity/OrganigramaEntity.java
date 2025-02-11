@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "ORGANIGRAMA", schema = "FORTALECIMIENTO")
-public class OrganigramaEntity implements Serializable{
+public class OrganigramaEntity implements Serializable, Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "orga_id", nullable = false)
@@ -89,6 +89,11 @@ public class OrganigramaEntity implements Serializable{
         this.registradoPor = registradorDTO.getJsonAsString();
     }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+    
     @JsonSetter("idNormatividad")
     public void setIdNormatividad(Long idNormatividad) {
         if (idNormatividad != null && idNormatividad > 0) {

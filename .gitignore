@@ -32,6 +32,10 @@ build/
 ### VS Code ###
 .vscode/
 
+### Credentials
+**/src/main/resources/prod/**/*.properties
+**/src/main/resources/dev/**/*.properties
+
 ### LOGS ###
 *.log
 *.gz

@@ -13,7 +13,7 @@ import org.jxls.transform.poi.JxlsPoiTemplateFillerBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadGestionEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class OrganizationChartReportExcelJXLS {
+public class OperationalManagementReportExcelJXLS {
     private final GestionOperativaService gestionOperativaService;
     private final NivelService nivelService;
     private final StaticResourceMediator staticResourceMediator;
@@ -37,11 +37,11 @@ public class OrganizationChartReportExcelJXLS {
     private Map<String, Object> registry;
     private Double HOURS_PER_MONTH;
 
-    public byte[] generate() throws Exception {
+    public byte[] generate(List<Long> operationalManagementIds) throws Exception {
         registry = new HashMap<>();
         HOURS_PER_MONTH = Corporate.MONTHLY_WORKING_TIME.getValue();
-        generateDataset();
-        String filePath = "reports/organizationChart/OperationalsManagements.xlsx";
+        generateDataset(operationalManagementIds);
+        String filePath = "reports/operationalsManagements/OperationalsManagements.xlsx";
         Map<String, Object> contextMap = new HashMap<String, Object>();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -68,10 +68,12 @@ public class OrganizationChartReportExcelJXLS {
         return bytes;
     }
 
-    private void generateDataset() throws Exception {
+    private void generateDataset(List<Long> operationalManagementIds) throws Exception {
         List<NivelEntity> levels = nivelService.findAll();
-        List<GestionOperativaEntity> operationalsManagements = gestionOperativaService.findAllFilteredBy(GestionOperativaEntity.builder().build());
 
+        List<GestionOperativaEntity> operationalsManagements = operationalManagementIds != null && operationalManagementIds.size() > 0
+                ? gestionOperativaService.findAllFilteredByIds(operationalManagementIds)
+                : gestionOperativaService.findAllFilteredBy(GestionOperativaEntity.builder().build());
         Map<Long, Integer> levelIndexes = IntStream.range(0, levels.size()).boxed().collect(Collectors.toMap(i -> levels.get(i).getId(), i -> i));
 
         registry.put("operationalsManagements", operationalsManagements);
@@ -96,9 +98,10 @@ public class OrganizationChartReportExcelJXLS {
             for (GestionOperativaEntity e : operationalsManagements) {
                 e.setTipologia(TipologiaEntity.builder().nombre(e.getTipologia().getNombre()).build());
                 
+                @SuppressWarnings("unchecked")
                 Map<Long, Integer> levelIndexes = (Map<Long, Integer>) registry.get("levelIndexes");
                 if (e.getActividad() != null) {
-                    e.setActividad((ActividadEntity)e.getActividad().clone());
+                    e.setActividad((ActividadGestionEntity)e.getActividad().clone());
 
                     List<Double> timePerLevel = new ArrayList<>(Collections.nCopies(levelIndexes.size(), (Double) null));
                     e.getActividad().setTimePerLevel(timePerLevel);
@@ -106,7 +109,7 @@ public class OrganizationChartReportExcelJXLS {
                     e.getActividad().setTiempoEstandar(standarTime);
                     e.getActividad().getTimePerLevel().set(levelIndexes.get(e.getActividad().getIdNivel()), e.getActividad().getFrecuencia() * standarTime);
                 } else {
-                    e.setActividad(ActividadEntity.builder().timePerLevel(new ArrayList<>(Collections.nCopies(levelIndexes.size(), (Double) null))).build());
+                    e.setActividad(ActividadGestionEntity.builder().timePerLevel(new ArrayList<>(Collections.nCopies(levelIndexes.size(), (Double) null))).build());
                 }
                 assignTimePerLevel(e.getSubGestionesOperativas());
             }

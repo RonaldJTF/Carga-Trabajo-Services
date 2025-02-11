@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "FTP", schema = "FORTALECIMIENTO")
-public class FtpEntity implements Serializable{
+public class FtpEntity implements Serializable, Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ftp_id", nullable = false)
@@ -73,5 +73,10 @@ public class FtpEntity implements Serializable{
         this.registradorDTO = RegisterContext.getRegistradorDTO();
         this.fechaCambio = new Date();
         this.registradoPor = registradorDTO.getJsonAsString();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

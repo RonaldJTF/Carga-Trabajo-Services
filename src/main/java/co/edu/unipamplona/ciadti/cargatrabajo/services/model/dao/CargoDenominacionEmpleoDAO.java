@@ -1,6 +1,7 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -29,4 +30,6 @@ public interface CargoDenominacionEmpleoDAO extends JpaRepository<CargoDenominac
     Integer deleteByProcedure (Long id, String registradoPor);
 
     CargoDenominacionEmpleoEntity findByIdCargoAndIdDenominacionEmpleo(Long idCargo, Long idDenominacionEmpleo);
+
+    List<CargoDenominacionEmpleoEntity> findAllByIdCargo(Long idCargo);
 }

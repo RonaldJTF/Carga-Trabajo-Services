@@ -3,7 +3,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.r
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,7 @@ import org.jxls.transform.poi.JxlsPoiTemplateFillerBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadGestionEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.TipologiaEntity;
@@ -30,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class AssignedOrganizationChartReportExcelJXLS {
+public class AssignedOperationalManagementReportExcelJXLS {
     private final GestionOperativaService gestionOperativaService;
     private final NivelService nivelService;
     private final StaticResourceMediator staticResourceMediator;
@@ -42,7 +41,7 @@ public class AssignedOrganizationChartReportExcelJXLS {
         registry = new HashMap<>();
         HOURS_PER_MONTH = Corporate.MONTHLY_WORKING_TIME.getValue();
         generateDataset(organizationChartId);
-        String filePath = "reports/organizationChart/AssignedOperationalsManagements.xlsx";
+        String filePath = "reports/operationalsManagements/AssignedOperationalsManagements.xlsx";
         Map<String, Object> contextMap = new HashMap<String, Object>();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -97,9 +96,10 @@ public class AssignedOrganizationChartReportExcelJXLS {
             for (GestionOperativaEntity e : operationalsManagements) {
                 e.setTipologia(TipologiaEntity.builder().nombre(e.getTipologia().getNombre()).build());
                 
+                @SuppressWarnings("unchecked")
                 Map<Long, Integer> levelIndexes = (Map<Long, Integer>) registry.get("levelIndexes");
                 if (e.getActividad() != null) {
-                    e.setActividad((ActividadEntity)e.getActividad().clone());
+                    e.setActividad((ActividadGestionEntity )e.getActividad().clone());
 
                     List<Double> timePerLevel = new ArrayList<>(Collections.nCopies(levelIndexes.size(), (Double) null));
                     e.getActividad().setTimePerLevel(timePerLevel);
@@ -107,7 +107,7 @@ public class AssignedOrganizationChartReportExcelJXLS {
                     e.getActividad().setTiempoEstandar(standarTime);
                     e.getActividad().getTimePerLevel().set(levelIndexes.get(e.getActividad().getIdNivel()), e.getActividad().getFrecuencia() * standarTime);
                 } else {
-                    e.setActividad(ActividadEntity.builder().timePerLevel(new ArrayList<>(Collections.nCopies(levelIndexes.size(), (Double) null))).build());
+                    e.setActividad(ActividadGestionEntity.builder().timePerLevel(new ArrayList<>(Collections.nCopies(levelIndexes.size(), (Double) null))).build());
                 }
                 assignTimePerLevel(e.getSubGestionesOperativas());
             }

@@ -73,4 +73,9 @@ public class CategoriaEntity implements Serializable, Cloneable{
         this.registradoPor = registradorDTO.getJsonAsString();
     }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
 }

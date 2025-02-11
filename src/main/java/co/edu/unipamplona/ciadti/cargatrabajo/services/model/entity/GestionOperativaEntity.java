@@ -1,10 +1,12 @@
 package co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.jackson.JacksonCIADTI;
@@ -12,12 +14,10 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.RegistradorDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
@@ -25,7 +25,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -76,17 +75,9 @@ public class GestionOperativaEntity implements Serializable, Cloneable {
     @JoinColumn(name="geop_idpadre", insertable=false, updatable=false)
     private List<GestionOperativaEntity> subGestionesOperativas;
 
-    @OneToOne
-    @JoinTable(
-        schema = "FORTALECIMIENTO",
-        name = "ACTIVIDADGESTIONOPERATIVA",
-        joinColumns = {@JoinColumn(name = "geop_id", insertable = false, updatable = false)},
-        inverseJoinColumns = {@JoinColumn(name = "acti_id", insertable = false, updatable = false)},
-        uniqueConstraints = {@UniqueConstraint(
-            columnNames = {"geop_id", "acti_id"}
-        )}
-    )
-    private ActividadEntity actividad;
+    @JsonManagedReference
+    @OneToOne(mappedBy="gestionOperativa")
+    private ActividadGestionEntity actividad;
 
     @JsonIgnore
     @Transient
@@ -112,7 +103,14 @@ public class GestionOperativaEntity implements Serializable, Cloneable {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public GestionOperativaEntity clone() throws CloneNotSupportedException {
+        GestionOperativaEntity cloned = (GestionOperativaEntity) super.clone();
+        if (this.subGestionesOperativas != null) {
+            cloned.subGestionesOperativas = new ArrayList<>();
+            for (GestionOperativaEntity sub : this.subGestionesOperativas) {
+                cloned.subGestionesOperativas.add(sub.clone());
+            }
+        }
+        return cloned;
     }
 }

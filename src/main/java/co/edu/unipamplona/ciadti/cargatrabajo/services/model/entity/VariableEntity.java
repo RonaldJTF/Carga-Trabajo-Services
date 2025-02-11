@@ -93,4 +93,9 @@ public class VariableEntity implements Serializable, Cloneable{
         this.fechaCambio = new Date();
         this.registradoPor = registradorDTO.getJsonAsString();
     }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

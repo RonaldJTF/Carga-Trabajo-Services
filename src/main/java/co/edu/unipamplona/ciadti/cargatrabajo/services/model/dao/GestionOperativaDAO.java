@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 
 public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntity, Long>, JpaSpecificationExecutor<GestionOperativaEntity>{
@@ -71,13 +70,6 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
     Integer deleteByProcedure (Long id, String registradoPor);
 
     @Query(value = """
-        select a from ActividadEntity a 
-        inner join ActividadGestionOperativaEntity ago on (a.id = ago.idActividad)
-        where ago.idGestionOperativa = :idGestionOperativa
-    """)
-    ActividadEntity findActividadByIdGestionOperativa(@Param("idGestionOperativa") Long idGestionOperativa);
-
-    @Query(value = """
         WITH RECURSIVE padres AS (
             SELECT go.*
             FROM FORTALECIMIENTO.GESTIONOPERATIVA go
@@ -95,9 +87,9 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
             FROM FORTALECIMIENTO.GESTIONOPERATIVA padre
             INNER JOIN padres hijo ON hijo.geop_idpadre = padre.geop_id
         )
-        SELECT DISTINCT(p.*), a.* FROM padres as p
-        LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA ago ON p.geop_id = ago.geop_id
-        LEFT JOIN FORTALECIMIENTO.ACTIVIDAD a ON a.acti_id = ago.acti_id
+        SELECT DISTINCT(p.*), ag.acge_id, ag.nive_id, ag.acge_frecuencia, ag.acge_tiempomaximo, ag.acge_tiempominimo, ag.acge_tiempopromedio
+        FROM padres as p
+        LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTION ag ON p.geop_id = ag.geop_id
     """, nativeQuery = true)
     List<GestionOperativaEntity> findNoAssignedOperationalsManagements(@Param("organizationalChartId") Long organizationalChartId);
 
@@ -141,20 +133,22 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
                        
                         SELECT
                             GJ.*,
-                            ACTI.ACTI_ID,
-                            ACTI.NIVE_ID,
-                            ACTI.ACTI_FRECUENCIA,
-                            ACTI.ACTI_TIEMPOMAXIMO,
-                            ACTI.ACTI_TIEMPOMINIMO,
-                            ACTI.ACTI_TIEMPOPROMEDIO,
+                            ACGE.ACGE_ID,
+                            ACGE.NIVE_ID,
+                            ACGE.ACGE_FRECUENCIA,
+                            ACGE.ACGE_TIEMPOMAXIMO,
+                            ACGE.ACGE_TIEMPOMINIMO,
+                            ACGE.ACGE_TIEMPOPROMEDIO,
                             N.NIVE_DESCRIPCION,
                             TACTUAL.TIPO_NOMBRE AS tipologia
                         FROM
                             GESTIONJERARQUICA GJ
-                            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA AGOP ON GJ.GEOP_ID = AGOP.GEOP_ID
-                            LEFT JOIN FORTALECIMIENTO.ACTIVIDAD ACTI ON AGOP.ACTI_ID = ACTI.ACTI_ID
-                            LEFT JOIN FORTALECIMIENTO.NIVEL N ON ACTI.NIVE_ID = N.NIVE_ID
+                            LEFT JOIN FORTALECIMIENTO.ACTIVIDADGESTION ACGE ON GJ.GEOP_ID = ACGE.GEOP_ID
+                            LEFT JOIN FORTALECIMIENTO.NIVEL N ON ACGE.NIVE_ID = N.NIVE_ID
                             LEFT JOIN FORTALECIMIENTO.TIPOLOGIA TACTUAL ON GJ.idTipologia = TACTUAL.TIPO_ID
             """, nativeQuery = true)
     List<Object[]> findOperationalManagementByOrganizationChart(@Param("organizationChartId") Long organizationChartId);
+
+    @Query(value = "select go from GestionOperativaEntity go where go.id in :operationalManagementIds")
+    List<GestionOperativaEntity> findAllFilteredByIds(@Param("operationalManagementIds") List<Long> operationalManagementIds);
 }

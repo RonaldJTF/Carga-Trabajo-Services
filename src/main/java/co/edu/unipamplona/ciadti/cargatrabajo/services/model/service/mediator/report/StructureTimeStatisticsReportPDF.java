@@ -2,7 +2,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.r
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,6 @@ import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.TipologiaSe
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.StaticResourceMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Trace;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.util.comparator.PropertyComparator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.constant.Corporate;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.report.jasperReport.ReportJR;
 import lombok.AllArgsConstructor;
