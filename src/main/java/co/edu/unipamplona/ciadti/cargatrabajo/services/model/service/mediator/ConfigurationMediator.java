@@ -3,7 +3,6 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.cipher.CipherService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.config.security.register.RegisterContext;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.ReportOperationalManagementDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.WorkPlanSummaryDTO;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.WorkPlanSummaryDTO.DateAdvance;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.dto.projections.DependenciaDTO;

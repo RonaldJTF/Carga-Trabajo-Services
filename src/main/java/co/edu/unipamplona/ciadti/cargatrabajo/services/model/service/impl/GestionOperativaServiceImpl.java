@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.DependenciaEntity;
-import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.ActividadService;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Service;
