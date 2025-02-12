@@ -63,3 +63,5 @@ build/
 !**/src/main/resources/**/*.png
 !**/src/main/resources/**/*.xlsx
 .qodo
+
+.qodo

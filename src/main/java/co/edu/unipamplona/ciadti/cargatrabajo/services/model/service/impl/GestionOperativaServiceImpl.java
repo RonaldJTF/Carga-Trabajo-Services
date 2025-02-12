@@ -353,6 +353,8 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
         return buildHierarchy(operationalsManagements);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<Object[]> findActivityByOperationalManagement(){
         return gestionOperativaDAO.findActivityByOperationalManagement();
     }
