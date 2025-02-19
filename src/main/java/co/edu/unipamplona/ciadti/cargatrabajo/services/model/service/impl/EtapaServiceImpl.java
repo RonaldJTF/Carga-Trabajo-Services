@@ -126,7 +126,7 @@ public class EtapaServiceImpl implements EtapaService{
      */
     private Integer getNumberOfMatches(EtapaEntity etapaEntity, List<EtapaEntity> list, Integer cont) {
         for (EtapaEntity obj : list) {
-            if (obj.getId() == etapaEntity.getId()) {
+            if (obj.getId().equals(etapaEntity.getId())) {
                 cont += 1;
             } else {
                 cont = getNumberOfMatches(etapaEntity, obj.getSubEtapas(), cont);

@@ -13,6 +13,7 @@ import org.jxls.transform.poi.JxlsPoiTemplateFillerBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.ActividadGestionEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.GestionOperativaEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.NivelEntity;
@@ -71,7 +72,6 @@ public class AssignedOperationalManagementReportExcelJXLS {
     private void generateDataset(Long organizationChartId) throws Exception {
         List<NivelEntity> levels = nivelService.findAllInSomeActivity();
         List<GestionOperativaEntity> operationalsManagements = gestionOperativaService.findAssignedOperationalsManagementsByOrganizationChartId(organizationChartId);
-
         Map<Long, Integer> levelIndexes = IntStream.range(0, levels.size()).boxed().collect(Collectors.toMap(i -> levels.get(i).getId(), i -> i));
 
         registry.put("operationalsManagements", operationalsManagements);

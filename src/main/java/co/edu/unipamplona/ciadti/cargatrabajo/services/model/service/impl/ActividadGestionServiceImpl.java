@@ -72,15 +72,6 @@ public class ActividadGestionServiceImpl implements ActividadGestionService {
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void deleteActividadGestioOperativaByProcedure(Long id, String register) {
-        Integer rows = actividadGestionDAO.deleteActividadGestioOperativaByProcedure(id, register);
-        if (1 != rows) {
-            throw new RuntimeException("Se han afectado " + rows + " filas.");
-        }
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public ActividadGestionEntity findByIdGestionOperativa(Long idGestionOperativa) {
         return actividadGestionDAO.findByIdGestionOperativa(idGestionOperativa);

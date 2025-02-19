@@ -135,7 +135,7 @@ public class CompensacionLabNivelVigenciaServiceImpl implements CompensacionLabN
         Long levelCompensationId = -1L;
 
         for (Object[] row : results) {
-            if (((CompensacionLabNivelVigenciaEntity) row[0]).getId() != levelCompensationId){
+            if (!((CompensacionLabNivelVigenciaEntity) row[0]).getId().equals(levelCompensationId)){
                 levelCompensation = (CompensacionLabNivelVigenciaEntity) row[0];
                 levelCompensation.setVigencia((VigenciaEntity) row[1]);
                 levelCompensation.setNivel((NivelEntity) row[2]);

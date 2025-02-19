@@ -108,6 +108,24 @@
 	<variable name="TotalHorasPorProcesoCol6Variable" class="java.lang.Double" resetType="Group" resetGroup="ProcessGroup" calculation="Sum">
 		<variableExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() > 5 ? $F{tiemposPorNivel}.get(5) : null]]></variableExpression>
 	</variable>
+	<variable name="TotalHorasPorProcedimientoCol1Variable" class="java.lang.Double" resetType="Group" resetGroup="ProcedureGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() > 0 ? $F{tiemposPorNivel}.get(0) : null]]></variableExpression>
+	</variable>
+	<variable name="TotalHorasPorProcedimientoCol2Variable" class="java.lang.Double" resetType="Group" resetGroup="ProcedureGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() > 1 ? $F{tiemposPorNivel}.get(1) : null]]></variableExpression>
+	</variable>
+	<variable name="TotalHorasPorProcedimientoCol3Variable" class="java.lang.Double" resetType="Group" resetGroup="ProcedureGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() > 2 ? $F{tiemposPorNivel}.get(2) : null]]></variableExpression>
+	</variable>
+	<variable name="TotalHorasPorProcedimientoCol4Variable" class="java.lang.Double" resetType="Group" resetGroup="ProcedureGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() > 3 ? $F{tiemposPorNivel}.get(3) : null]]></variableExpression>
+	</variable>
+	<variable name="TotalHorasPorProcedimientoCol5Variable" class="java.lang.Double" resetType="Group" resetGroup="ProcedureGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() > 4 ? $F{tiemposPorNivel}.get(4) : null]]></variableExpression>
+	</variable>
+	<variable name="TotalHorasPorProcedimientoCol6Variable" class="java.lang.Double" resetType="Group" resetGroup="ProcedureGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{tiemposPorNivel} != null && $F{tiemposPorNivel}.size() > 5 ? $F{tiemposPorNivel}.get(5) : null]]></variableExpression>
+	</variable>
 	<group name="StructureGroup">
 		<groupExpression><![CDATA[$F{dependencia}]]></groupExpression>
 		<groupHeader>
@@ -118,6 +136,7 @@
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					</reportElement>
 					<box>
 						<pen lineWidth="0.25" lineColor="#CCCCCC"/>
@@ -136,7 +155,7 @@
 		<groupFooter>
 			<band height="40">
 				<frame>
-					<reportElement stretchType="ElementGroupHeight" mode="Opaque" x="-10" y="0" width="820" height="40" forecolor="#616BB0" backcolor="#F0FAFF" uuid="93e4ade2-88b3-4255-aa1b-77ddc665d039"/>
+					<reportElement stretchType="ElementGroupHeight" mode="Opaque" x="-10" y="0" width="820" height="40" forecolor="#616BB0" backcolor="#E8F1FA" uuid="93e4ade2-88b3-4255-aa1b-77ddc665d039"/>
 					<staticText>
 						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="0" y="0" width="604" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="91a85011-6eac-400b-aea0-c781a5a2d80e">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
@@ -363,14 +382,14 @@
 	<group name="ProcessGroup">
 		<groupExpression><![CDATA[$F{proceso}]]></groupExpression>
 		<groupHeader>
-			<band height="21">
-				<textField>
-					<reportElement mode="Opaque" x="-10" y="0" width="820" height="21" forecolor="#787878" backcolor="#F2F2F2" uuid="94ad3981-b3d3-4633-9b17-fc38cbdf9c13"/>
+			<band height="32">
+				<textField textAdjust="StretchHeight">
+					<reportElement mode="Opaque" x="-10" y="0" width="820" height="32" forecolor="#39949E" backcolor="#E1EFF2" uuid="94ad3981-b3d3-4633-9b17-fc38cbdf9c13"/>
 					<box>
 						<pen lineWidth="0.25" lineColor="#CCCCCC"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#CCCCCC"/>
 						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#CCCCCC"/>
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -383,9 +402,9 @@
 		<groupFooter>
 			<band height="40">
 				<frame>
-					<reportElement stretchType="ElementGroupHeight" mode="Opaque" x="-10" y="0" width="820" height="40" forecolor="#FFFFFF" backcolor="#FAFAFA" uuid="221d65ce-8a2a-4d8d-a4cb-9d6343d2bca4"/>
+					<reportElement stretchType="ElementGroupHeight" mode="Opaque" x="-10" y="0" width="820" height="40" forecolor="#E1EFF2" backcolor="#EDF7FA" uuid="221d65ce-8a2a-4d8d-a4cb-9d6343d2bca4"/>
 					<staticText>
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="0" y="0" width="604" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="789178a1-8a74-4cc1-9cf4-85bfa75d7e6e">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="0" y="0" width="604" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="789178a1-8a74-4cc1-9cf4-85bfa75d7e6e">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -403,7 +422,7 @@
 						<text><![CDATA[Horas requeridas]]></text>
 					</staticText>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcessGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="776" y="0" width="44" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="c347e95f-5534-416a-8ab3-cc58ec6c5229">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="776" y="0" width="44" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="c347e95f-5534-416a-8ab3-cc58ec6c5229">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -422,7 +441,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol5Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcessGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="733" y="0" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="29d632fc-a6dc-4ff8-bdf2-7f10312d00e9">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="733" y="0" width="43" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="29d632fc-a6dc-4ff8-bdf2-7f10312d00e9">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -441,7 +460,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol4Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcessGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="690" y="0" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="f5dccd2b-1f93-4a69-ae0a-2244777fe3ff">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="690" y="0" width="43" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="f5dccd2b-1f93-4a69-ae0a-2244777fe3ff">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -459,7 +478,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol3Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcessGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="647" y="0" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="b3cba194-3214-45bb-b0d1-669320aa05a0">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="647" y="0" width="43" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="b3cba194-3214-45bb-b0d1-669320aa05a0">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -477,7 +496,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol2Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcessGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="604" y="0" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="7ca8e42b-d9e8-4e8e-b309-5d9c076324dd">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="604" y="0" width="43" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="7ca8e42b-d9e8-4e8e-b309-5d9c076324dd">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -495,7 +514,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol1Variable})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<staticText>
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="20" width="604" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="eff2e4b3-ed83-4e19-803c-b6806549df62">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="20" width="604" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="eff2e4b3-ed83-4e19-803c-b6806549df62">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -513,7 +532,7 @@
 						<text><![CDATA[Personal requerido]]></text>
 					</staticText>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcessGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="604" y="20" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="37007a40-9c86-4704-b5d1-77fb7cb8d4f9">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="604" y="20" width="43" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="37007a40-9c86-4704-b5d1-77fb7cb8d4f9">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -531,7 +550,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol1Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcessGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="647" y="20" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="64eb024d-28d6-450b-ae62-d5c9284973e1">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="647" y="20" width="43" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="64eb024d-28d6-450b-ae62-d5c9284973e1">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -549,7 +568,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol2Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcessGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="690" y="20" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="76dfa2a8-23fe-4691-913a-6066dcd725ef">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="690" y="20" width="43" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="76dfa2a8-23fe-4691-913a-6066dcd725ef">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -567,7 +586,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol3Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcessGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="733" y="20" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="91a7d9e4-bae5-4ca4-abb0-3eb40e68d482">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="733" y="20" width="43" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="91a7d9e4-bae5-4ca4-abb0-3eb40e68d482">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 						</reportElement>
@@ -585,7 +604,7 @@
 						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcesoCol4Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
 					</textField>
 					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcessGroup" isBlankWhenNull="true">
-						<reportElement stretchType="ContainerHeight" mode="Transparent" x="776" y="20" width="44" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="b3edd30c-a721-45b7-9a97-214b4c06c49c">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="776" y="20" width="44" height="20" forecolor="#39949E" backcolor="#FFFFFF" uuid="b3edd30c-a721-45b7-9a97-214b4c06c49c">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -607,12 +626,265 @@
 			</band>
 		</groupFooter>
 	</group>
+	<group name="ProcedureGroup">
+		<groupExpression><![CDATA[$F{procedimiento}]]></groupExpression>
+		<groupHeader>
+			<band height="21">
+				<textField textAdjust="StretchHeight">
+					<reportElement mode="Opaque" x="-10" y="0" width="820" height="21" forecolor="#787878" backcolor="#F2F2F2" uuid="2d8bd02b-2c7c-4d8c-b813-3408a8d06ced"/>
+					<box>
+						<pen lineWidth="0.25" lineColor="#CCCCCC"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#CCCCCC"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#CCCCCC"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="13" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{procedimiento}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="40">
+				<frame>
+					<reportElement stretchType="ElementGroupHeight" mode="Opaque" x="-10" y="0" width="820" height="40" forecolor="#FFFFFF" backcolor="#FAFAFA" uuid="c39445ad-0e36-42d0-a16c-6054b136a72c"/>
+					<staticText>
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="0" y="0" width="604" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="4bd6d194-abea-4eff-ac1a-9a0f189ea4f9">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="11" isBold="true"/>
+							<paragraph leftIndent="5" rightIndent="5"/>
+						</textElement>
+						<text><![CDATA[Horas requeridas]]></text>
+					</staticText>
+					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcedureGroup" isBlankWhenNull="true">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="776" y="0" width="44" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="54eb51fd-db41-476b-93fd-be75756690d8">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="9" isBold="true"/>
+							<paragraph leftIndent="2" rightIndent="0"/>
+						</textElement>
+						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcedimientoCol5Variable})*10.0)/10.0]]></textFieldExpression>
+					</textField>
+					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcedureGroup" isBlankWhenNull="true">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="733" y="0" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="7c74cfef-d17d-4231-a331-1b33130892b8">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="9" isBold="true"/>
+							<paragraph leftIndent="2" rightIndent="0"/>
+						</textElement>
+						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcedimientoCol4Variable})*10.0)/10.0]]></textFieldExpression>
+					</textField>
+					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcedureGroup" isBlankWhenNull="true">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="690" y="0" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="b6a09398-c047-4c95-b940-dea35e015dfb">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="9" isBold="true"/>
+							<paragraph leftIndent="2" rightIndent="0"/>
+						</textElement>
+						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcedimientoCol3Variable})*10.0)/10.0]]></textFieldExpression>
+					</textField>
+					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcedureGroup" isBlankWhenNull="true">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="647" y="0" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="d4dccd28-f3ad-4b9f-b180-be82c60e27e2">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="9" isBold="true"/>
+							<paragraph leftIndent="2" rightIndent="0"/>
+						</textElement>
+						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcedimientoCol2Variable})*10.0)/10.0]]></textFieldExpression>
+					</textField>
+					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcedureGroup" isBlankWhenNull="true">
+						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="604" y="0" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="911a47fe-cc67-4f8e-8b89-72dab32a8460">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="9" isBold="true"/>
+							<paragraph leftIndent="2" rightIndent="0"/>
+						</textElement>
+						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcedimientoCol1Variable})*10.0)/10.0]]></textFieldExpression>
+					</textField>
+					<staticText>
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="0" y="20" width="604" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="702d123f-adcc-42c5-99de-55d793dce011">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="11" isBold="true"/>
+							<paragraph leftIndent="5" rightIndent="5"/>
+						</textElement>
+						<text><![CDATA[Personal requerido]]></text>
+					</staticText>
+					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcedureGroup" isBlankWhenNull="true">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="604" y="20" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="5829c2f7-6634-4b81-b367-0304bf4dc42a">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="9" isBold="true"/>
+							<paragraph leftIndent="2" rightIndent="0"/>
+						</textElement>
+						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcedimientoCol1Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
+					</textField>
+					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcedureGroup" isBlankWhenNull="true">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="647" y="20" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="5118ada8-e089-4d38-8714-d3bdfc9d6731">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="9" isBold="true"/>
+							<paragraph leftIndent="2" rightIndent="0"/>
+						</textElement>
+						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcedimientoCol2Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
+					</textField>
+					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcedureGroup" isBlankWhenNull="true">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="690" y="20" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="81e4f41f-081c-4104-810a-29a0eb64d085">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="9" isBold="true"/>
+							<paragraph leftIndent="2" rightIndent="0"/>
+						</textElement>
+						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcedimientoCol3Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
+					</textField>
+					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcedureGroup" isBlankWhenNull="true">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="733" y="20" width="43" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="5c3cc1da-f399-480d-b3a9-6fc70ed8c3ae">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="9" isBold="true"/>
+							<paragraph leftIndent="2" rightIndent="0"/>
+						</textElement>
+						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcedimientoCol4Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
+					</textField>
+					<textField textAdjust="StretchHeight" evaluationTime="Group" evaluationGroup="ProcedureGroup" isBlankWhenNull="true">
+						<reportElement stretchType="ContainerHeight" mode="Transparent" x="776" y="20" width="44" height="20" forecolor="#787878" backcolor="#FFFFFF" uuid="ee899566-b339-4083-ad02-d0d6fecd1cc5">
+							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="0.25"/>
+							<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+							<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						</box>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="SansSerif" size="9" isBold="true"/>
+							<paragraph leftIndent="2" rightIndent="0"/>
+						</textElement>
+						<textFieldExpression><![CDATA[Math.round(($V{TotalHorasPorProcedimientoCol5Variable}/$P{hoursPerMonth})*10.0)/10.0]]></textFieldExpression>
+					</textField>
+				</frame>
+			</band>
+		</groupFooter>
+	</group>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
 		<band height="320">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<image hAlign="Right">
+				<reportElement x="531" y="-20" width="291" height="210" uuid="9919f965-6d32-47c7-bb41-21d0a6aa55e8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{headerImage}]]></imageExpression>
+			</image>
 			<rectangle radius="10">
 				<reportElement mode="Opaque" x="0" y="255" width="395" height="55" backcolor="#DCEAF7" uuid="9ea02c66-426d-4a32-b603-54c474eed166">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
@@ -634,25 +906,6 @@
 					<pen lineWidth="0.0" lineColor="#DCEAF7"/>
 				</graphicElement>
 			</rectangle>
-			<image hAlign="Right">
-				<reportElement x="531" y="-20" width="291" height="210" uuid="9919f965-6d32-47c7-bb41-21d0a6aa55e8">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<imageExpression><![CDATA[$P{headerImage}]]></imageExpression>
-			</image>
-			<staticText>
-				<reportElement mode="Transparent" x="0" y="150" width="800" height="45" forecolor="#030303" uuid="6978d06d-c71e-451c-9a5d-bcc8a893d100">
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Left" verticalAlignment="Top">
-					<font fontName="SansSerif" size="35" isBold="true"/>
-					<paragraph lineSpacing="Fixed" lineSpacingSize="25.0"/>
-				</textElement>
-				<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
-			</staticText>
 			<staticText>
 				<reportElement x="0" y="202" width="800" height="25" forecolor="#787878" uuid="019e804b-d410-42be-a5e8-e33774fb7ca3">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -724,6 +977,19 @@
 					<pen lineWidth="7.0" lineColor="#215F9A"/>
 				</graphicElement>
 			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="150" width="800" height="52" forecolor="#030303" uuid="6978d06d-c71e-451c-9a5d-bcc8a893d100">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="35" isBold="true"/>
+					<paragraph lineSpacing="Fixed" lineSpacingSize="25.0"/>
+				</textElement>
+				<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
+			</staticText>
 		</band>
 	</title>
 	<columnHeader>
@@ -748,25 +1014,38 @@
 					<text><![CDATA[Dependencia]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="100" y="2" width="40" height="15" uuid="68a81621-0faf-4a6d-ba27-051b0fa9e6b4"/>
+					<reportElement x="100" y="2" width="50" height="15" uuid="68a81621-0faf-4a6d-ba27-051b0fa9e6b4"/>
 					<textElement verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Proceso]]></text>
 				</staticText>
 				<ellipse>
-					<reportElement mode="Opaque" x="87" y="5" width="10" height="10" forecolor="#E6E6E6" backcolor="#E6E6E6" uuid="830fe4c3-7fd2-4a90-bc3b-3d4dd31e11ba">
+					<reportElement mode="Opaque" x="87" y="5" width="10" height="10" forecolor="#39949E" backcolor="#39949E" uuid="830fe4c3-7fd2-4a90-bc3b-3d4dd31e11ba">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 				</ellipse>
 				<staticText>
-					<reportElement x="150" y="2" width="140" height="15" uuid="e4d2815e-5cc8-453a-af64-2d116306bc2b"/>
+					<reportElement x="252" y="2" width="138" height="15" uuid="e4d2815e-5cc8-453a-af64-2d116306bc2b"/>
 					<textElement verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
 					<text><![CDATA[T.E.: Tiempo Estandar]]></text>
 				</staticText>
+				<staticText>
+					<reportElement x="167" y="2" width="78" height="15" uuid="ab8e73a3-652e-4baa-95bb-73e7c3f82386"/>
+					<textElement verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Procedimiento]]></text>
+				</staticText>
+				<ellipse>
+					<reportElement mode="Opaque" x="154" y="5" width="10" height="10" forecolor="#E6E6E6" backcolor="#E6E6E6" uuid="15ff10f5-28b9-4108-aa88-d7ec7574e8e4">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+				</ellipse>
 			</frame>
 			<frame>
 				<reportElement mode="Opaque" x="-10" y="20" width="820" height="24" backcolor="#2D6973" uuid="92ec0bb7-68a9-4fe8-9f77-30bd8769cc85">
@@ -776,24 +1055,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<staticText>
-					<reportElement x="0" y="0" width="158" height="24" forecolor="#FFFFFF" uuid="d9313482-631c-4629-b990-362ec7e06451">
-						<property name="com.jaspersoft.studio.unit.width" value="px"/>
-						<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					</reportElement>
-					<box>
-						<pen lineWidth="0.25" lineColor="#91DBC7"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
-						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
-						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#91DBC7"/>
-					</box>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="SansSerif" size="9" isBold="false"/>
-					</textElement>
-					<text><![CDATA[PROCEDIMIENTO]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="158" y="0" width="162" height="24" forecolor="#FFFFFF" uuid="2b387746-6589-49a2-9a88-71e408f56c40">
+					<reportElement x="0" y="0" width="320" height="24" forecolor="#FFFFFF" uuid="2b387746-6589-49a2-9a88-71e408f56c40">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
@@ -1017,28 +1279,7 @@
 	<detail>
 		<band height="21" splitType="Stretch">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="-10" y="0" width="160" height="21" uuid="beb10016-73ef-48a6-bfe0-2a3701e948c1">
-					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
-					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
-					<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
-				</reportElement>
-				<box>
-					<pen lineWidth="0.25" lineColor="#CCCCCC"/>
-					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#CCCCCC"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#CCCCCC"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Left" verticalAlignment="Top">
-					<font fontName="SansSerif" size="9"/>
-					<paragraph leftIndent="5" rightIndent="5" spacingBefore="2" spacingAfter="2"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{procedimiento}]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-				<reportElement stretchType="ElementGroupHeight" x="150" y="0" width="160" height="21" uuid="1b986966-1bba-452a-b09b-862aba61cce6">
+				<reportElement stretchType="ElementGroupHeight" x="-10" y="0" width="320" height="21" uuid="1b986966-1bba-452a-b09b-862aba61cce6">
 					<property name="com.jaspersoft.layout.grid.weight.fixed" value="true"/>
 					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>

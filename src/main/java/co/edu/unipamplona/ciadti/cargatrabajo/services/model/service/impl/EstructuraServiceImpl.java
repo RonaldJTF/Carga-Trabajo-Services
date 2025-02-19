@@ -121,7 +121,7 @@ public class EstructuraServiceImpl implements EstructuraService {
      */
     private Integer getNumberOfMatches(EstructuraEntity estructuraEntity, List<EstructuraEntity> list, Integer cont) {
         for (EstructuraEntity obj : list) {
-            if (obj.getId() == estructuraEntity.getId()) {
+            if (obj.getId().equals(estructuraEntity.getId())) {
                 cont += 1;
             } else {
                 cont = getNumberOfMatches(estructuraEntity, obj.getSubEstructuras(), cont);

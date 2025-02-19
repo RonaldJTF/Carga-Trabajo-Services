@@ -136,7 +136,7 @@
 		<groupFooter>
 			<band height="40">
 				<frame>
-					<reportElement stretchType="ElementGroupHeight" mode="Opaque" x="-10" y="0" width="820" height="40" forecolor="#616BB0" backcolor="#F0FAFF" uuid="93e4ade2-88b3-4255-aa1b-77ddc665d039"/>
+					<reportElement stretchType="ElementGroupHeight" mode="Opaque" x="-10" y="0" width="820" height="40" forecolor="#616BB0" backcolor="#E8F1FA" uuid="93e4ade2-88b3-4255-aa1b-77ddc665d039"/>
 					<staticText>
 						<reportElement stretchType="ElementGroupHeight" mode="Transparent" x="0" y="0" width="604" height="20" forecolor="#215F9A" backcolor="#FFFFFF" uuid="91a85011-6eac-400b-aea0-c781a5a2d80e">
 							<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
@@ -368,9 +368,9 @@
 					<reportElement mode="Opaque" x="-10" y="0" width="820" height="21" forecolor="#787878" backcolor="#F2F2F2" uuid="94ad3981-b3d3-4633-9b17-fc38cbdf9c13"/>
 					<box>
 						<pen lineWidth="0.25" lineColor="#CCCCCC"/>
-						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#CCCCCC"/>
 						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#FFFFFF"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#CCCCCC"/>
 						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -613,6 +613,12 @@
 	<title>
 		<band height="320">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<image hAlign="Right">
+				<reportElement x="531" y="-20" width="291" height="210" uuid="9919f965-6d32-47c7-bb41-21d0a6aa55e8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{headerImage}]]></imageExpression>
+			</image>
 			<rectangle radius="10">
 				<reportElement mode="Opaque" x="0" y="255" width="395" height="55" backcolor="#DCEAF7" uuid="9ea02c66-426d-4a32-b603-54c474eed166">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
@@ -634,25 +640,6 @@
 					<pen lineWidth="0.0" lineColor="#DCEAF7"/>
 				</graphicElement>
 			</rectangle>
-			<image hAlign="Right">
-				<reportElement x="531" y="-20" width="291" height="210" uuid="9919f965-6d32-47c7-bb41-21d0a6aa55e8">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<imageExpression><![CDATA[$P{headerImage}]]></imageExpression>
-			</image>
-			<staticText>
-				<reportElement mode="Transparent" x="0" y="150" width="800" height="45" forecolor="#030303" uuid="6978d06d-c71e-451c-9a5d-bcc8a893d100">
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Left" verticalAlignment="Top">
-					<font fontName="SansSerif" size="35" isBold="true"/>
-					<paragraph lineSpacing="Fixed" lineSpacingSize="25.0"/>
-				</textElement>
-				<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
-			</staticText>
 			<staticText>
 				<reportElement x="0" y="202" width="800" height="25" forecolor="#787878" uuid="019e804b-d410-42be-a5e8-e33774fb7ca3">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -724,6 +711,19 @@
 					<pen lineWidth="7.0" lineColor="#215F9A"/>
 				</graphicElement>
 			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="150" width="800" height="52" forecolor="#030303" uuid="6978d06d-c71e-451c-9a5d-bcc8a893d100">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="35" isBold="true"/>
+					<paragraph lineSpacing="Fixed" lineSpacingSize="25.0"/>
+				</textElement>
+				<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>
+			</staticText>
 		</band>
 	</title>
 	<columnHeader>
@@ -741,27 +741,27 @@
 					</reportElement>
 				</ellipse>
 				<staticText>
-					<reportElement x="16" y="2" width="44" height="15" uuid="79a457f3-78f0-4ba2-83d9-85eba8e5583e"/>
+					<reportElement x="16" y="2" width="52" height="15" uuid="79a457f3-78f0-4ba2-83d9-85eba8e5583e"/>
 					<textElement verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Proceso]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="81" y="2" width="66" height="15" uuid="68a81621-0faf-4a6d-ba27-051b0fa9e6b4"/>
+					<reportElement x="86" y="2" width="84" height="15" uuid="68a81621-0faf-4a6d-ba27-051b0fa9e6b4"/>
 					<textElement verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Procedimiento]]></text>
 				</staticText>
 				<ellipse>
-					<reportElement mode="Opaque" x="68" y="5" width="10" height="10" forecolor="#E6E6E6" backcolor="#E6E6E6" uuid="830fe4c3-7fd2-4a90-bc3b-3d4dd31e11ba">
+					<reportElement mode="Opaque" x="73" y="5" width="10" height="10" forecolor="#E6E6E6" backcolor="#E6E6E6" uuid="830fe4c3-7fd2-4a90-bc3b-3d4dd31e11ba">
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					</reportElement>
 				</ellipse>
 				<staticText>
-					<reportElement x="157" y="2" width="140" height="15" uuid="e4d2815e-5cc8-453a-af64-2d116306bc2b"/>
+					<reportElement x="176" y="2" width="140" height="15" uuid="e4d2815e-5cc8-453a-af64-2d116306bc2b"/>
 					<textElement verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>

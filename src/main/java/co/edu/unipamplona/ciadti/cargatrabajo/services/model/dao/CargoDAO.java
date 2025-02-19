@@ -35,9 +35,17 @@ public interface CargoDAO extends JpaRepository<CargoEntity, Long>, JpaSpecifica
     Integer deleteByProcedure(Long id, String registradoPor);
 
     @Query(value = """
-            SELECT de FROM DenominacionEmpleoEntity de 
+            SELECT DISTINCT de FROM DenominacionEmpleoEntity de 
             INNER JOIN CargoDenominacionEmpleoEntity cde ON (cde.idDenominacionEmpleo = de.id)
             WHERE cde.idCargo = :appointmentId
     """)
     List<DenominacionEmpleoEntity> findAllJobTitlesByAppointmentId(@Param("appointmentId") Long appointmentId);
+
+    @Query(value = """
+        select c.asignacionBasicaMensual  from CargoEntity c 
+        where c.idVigencia = :validityId 
+            and c.idNivel = :levelId 
+            and (c.idEscalaSalarial = :salaryScaleId or (:salaryScaleId IS NULL AND c.idEscalaSalarial  IS NULL))    
+    """)
+    List<Double> getBasicMonthlyAllowances(@Param("validityId") Long validityId, @Param("levelId")  Long levelId, @Param("salaryScaleId") Long salaryScaleId);
 }

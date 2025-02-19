@@ -150,10 +150,4 @@ public interface GestionOperativaDAO extends JpaRepository<GestionOperativaEntit
 
     @Query(value = "select go from GestionOperativaEntity go where go.id in :operationalManagementIds")
     List<GestionOperativaEntity> findAllFilteredByIds(@Param("operationalManagementIds") List<Long> operationalManagementIds);
-
-    @Query(value = """
-            SELECT  AG.ACGO_ID, AG.GEOP_ID, A.* FROM FORTALECIMIENTO.ACTIVIDADGESTIONOPERATIVA AG
-            INNER JOIN FORTALECIMIENTO.ACTIVIDAD A ON AG.ACTI_ID = A.ACTI_ID           
-    """, nativeQuery = true)
-    List<Object[]> findActivityByOperationalManagement();
 }

@@ -10,4 +10,5 @@ public interface CargoService extends CommonService<CargoEntity>{
     List<CargoEntity> findAllBy(Map<String, Long[]> filter);
     CargoEntity findByAppointmentId(Long id);
     List<DenominacionEmpleoEntity> findAllJobTitlesByAppointmentId(Long appointmentId);
+    Double getBasicMonthlyAllowance(Long validityId, Long levelId, Long salaryScaleId);
 }

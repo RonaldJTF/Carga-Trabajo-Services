@@ -109,19 +109,23 @@ public class TreeCommand extends AbstractCommand {
         this._subFont.setItalic(true);
         this._subFont.setFontName(rowOfTree.getRowStyle().getFont().getFontName());
         
-        getMaxDeeps((List<?>) context.getVar(this.tree), getField(((List<?>) context.getVar(this.tree)).get(0), this.adjustBy), 0, this._deeps);
-        int treeWidth =  this._deeps.values().stream().mapToInt(Integer::intValue).sum() ;
-        this._finalColumnSectionOfTree = treeWidth + cellRef.getCol();
-        Size tittleSize = processTittle(cellRef, context);
+        List<?> treeItems = (List<?>) context.getVar(this.tree);
+        if(treeItems != null && treeItems.size() > 0){
+            getMaxDeeps(treeItems, getField(treeItems.get(0), this.adjustBy), 0, this._deeps);
+            int treeWidth =  this._deeps.values().stream().mapToInt(Integer::intValue).sum() ;
+            this._finalColumnSectionOfTree = treeWidth + cellRef.getCol();
+            Size tittleSize = processTittle(cellRef, context);
 
-        Size treeSize;
-        try (RunVar runVar = new RunVar(TreeCommand.NODE_VAR, context)){
-            treeSize = processNodes((List<?>) context.getVar(this.tree), new CellRef(cellRef.getSheetName(), cellRef.getRow() + this.treeTittleArea.getSize().getHeight(), cellRef.getCol()), context, runVar, 1, 0, true);
-            treeSize.setWidth(treeWidth);
+            Size treeSize;
+            try (RunVar runVar = new RunVar(TreeCommand.NODE_VAR, context)){
+                treeSize = processNodes(treeItems, new CellRef(cellRef.getSheetName(), cellRef.getRow() + this.treeTittleArea.getSize().getHeight(), cellRef.getCol()), context, runVar, 1, 0, true);
+                treeSize.setWidth(treeWidth);
+            }
+            int width = Math.max(tittleSize.getWidth(), treeSize.getWidth() + dataArea.getSize().getWidth());
+            int height = tittleSize.getHeight() + treeSize.getHeight();
+            return new Size(width, height);
         }
-        int width = Math.max(tittleSize.getWidth(), treeSize.getWidth() + dataArea.getSize().getWidth());
-        int height = tittleSize.getHeight() + treeSize.getHeight();
-        return new Size(width, height);
+        return new Size(0, 0);
     }
 
     private Size processTittle(CellRef cellRef, Context context){

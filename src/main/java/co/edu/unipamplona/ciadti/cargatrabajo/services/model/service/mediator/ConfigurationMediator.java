@@ -1663,6 +1663,38 @@ public class ConfigurationMediator {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     public CargoEntity saveAppointment(CargoEntity appointment, List<DenominacionEmpleoEntity> newJobTitles) throws CiadtiException{
+        /*Buscamos todas las asignaciones de cargos que han sido creadas y quitamos aquella que va a ser modificada*/
+        CargoEntity filter = CargoEntity.builder()
+                                        .idVigencia(appointment.getIdVigencia())
+                                        .idJerarquia(appointment.getIdJerarquia())
+                                        .idAlcance(appointment.getIdAlcance())
+                                        .idNivel(appointment.getIdNivel())
+                                        .idEscalaSalarial(appointment.getIdEscalaSalarial())
+                                        .build();
+        List<CargoEntity> existingAppointments = cargoService.findAllFilteredBy(filter);
+        if(existingAppointments != null && existingAppointments.size() > 0){
+            existingAppointments = existingAppointments.stream().filter(e -> e.getId().longValue() != appointment.getId().longValue()).collect(Collectors.toList());
+        }
+        /*Si al quitar de la lista de asignaciones existentes la que posiblemente se está editando quedan registros, lanzamos una exception porque no
+         * pueden existir iguales asignaciones de cargos en una misma vigencia, dependencia en la estructura organizacional (mediante el idJerarrquia),
+         * alcance, nivel ocupacional y escala salarial.
+         */
+        if (existingAppointments != null && existingAppointments.size() > 0){
+            CargoEntity first = existingAppointments.get(0);
+            throw new CiadtiException(
+                String.format(
+                    """
+                        Se encontró una asignación de cargo correspondiente a la vigencia %s, 
+                        para la dependencia dentro de la estructura organizacional y el alcance especificado, 
+                        con el nivel ocupacional %s %s
+                    """,
+                    first.getVigencia().getAnio(),
+                    first.getNivel().getDescripcion(),
+                    (first.getEscalaSalarial() != null ? "y la escala salarial " + first.getEscalaSalarial().getNombre().toUpperCase() : "")
+                )
+            );
+        }
+            
         cargoService.save(appointment);
         List<DenominacionEmpleoEntity> oldJobTitles = cargoService.findAllJobTitlesByAppointmentId(appointment.getId());
         List<DenominacionEmpleoEntity> jobTitlesToDelete = oldJobTitles.stream()
@@ -1676,6 +1708,10 @@ public class ConfigurationMediator {
                 .idDenominacionEmpleo(e.getId())
                 .totalCargos(e.getTotalCargos())
                 .build();
+            CargoDenominacionEmpleoEntity cdeToSave = cargoDenominacionEmpleoService.findByIdCargoAndIdDenominacionEmpleo(appointment.getId(), e.getId());
+            if(cdeToSave != null){
+                cde.setId(cdeToSave.getId());
+            }
             cargoDenominacionEmpleoService.save(cde);
         }
 
@@ -1683,10 +1719,7 @@ public class ConfigurationMediator {
             CargoDenominacionEmpleoEntity cdeToDelete = cargoDenominacionEmpleoService.findByIdCargoAndIdDenominacionEmpleo(appointment.getId(), e.getId());
             cargoDenominacionEmpleoService.deleteByProcedure(cdeToDelete.getId(), RegisterContext.getRegistradorDTO().getJsonAsString());
         }
-        appointment = cargoService.findByAppointmentId(appointment.getId());
-        List<VariableEntity> allVariablesInDB = variableService.findAll();
-        completeAppointmentInformation(appointment, allVariablesInDB);
-        return appointment;
+        return cargoService.findByAppointmentId(appointment.getId());
     }
 
     /**
@@ -1699,7 +1732,7 @@ public class ConfigurationMediator {
      * @throws CiadtiException
      */
     @Transactional(readOnly = true)
-    private void completeAppointmentInformation(CargoEntity appointment, List<VariableEntity> variables) throws CiadtiException{
+    public void completeAppointmentInformation(CargoEntity appointment, List<VariableEntity> variables) throws CiadtiException{
         Map<String, Double> primaryVariables = new HashMap<>();
         primaryVariables.put("${ASIGNACION_BASICA_MENSUAL}", appointment.getAsignacionBasicaMensual());
         Double asignacionTotal = 0.0;
@@ -2097,47 +2130,42 @@ public class ConfigurationMediator {
         }
     }
 
+    /**
+     * Guarda una lista de asignaciones de cargos laborales
+     * @param appointments
+     * @return
+     * @throws CiadtiException
+     */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
-    public void migrateActivity(){
-        List<Object[]> actividades = gestionOperativaService.findActivityByOperationalManagement();
-        Map<Long, ActividadGestionEntity> resultDTO = mapRawDataToDTOs(actividades);
-        for (Map.Entry<Long, ActividadGestionEntity> entry : resultDTO.entrySet()) {
-            Long actividadGestionOperativaId = entry.getKey();
-            ActividadGestionEntity actividad = entry.getValue();
-            actividadGestionService.save(actividad);
-            actividadGestionService.deleteActividadGestioOperativaByProcedure(actividadGestionOperativaId,RegisterContext.getRegistradorDTO().getJsonAsString());
+    public List<CargoEntity> saveMultiAppointments(List<CargoEntity> appointments) throws CiadtiException {
+        List<VariableEntity> allVariablesInDB = variableService.findAll();
+        List<CargoEntity> savedAppointments = new ArrayList<>();
+        CargoEntity appointment = null;
+        if(appointments != null){
+            for(CargoEntity e : appointments){
+                appointment = this.saveAppointment(e, e.getDenominacionesEmpleos());
+                completeAppointmentInformation(appointment, allVariablesInDB);
+                savedAppointments.add(appointment);
+            }
         }
+        return savedAppointments;
     }
 
-    private Map<Long, ActividadGestionEntity> mapRawDataToDTOs(List<Object[]> resultList) {
-        Map<Long, ActividadGestionEntity> mapActividadGestionOperativa = new HashMap<>();
-        for (Object[] result : resultList) {
-            ActividadGestionEntity dto = createDTOFromResult(result);
-            mapActividadGestionOperativa.put(getLongValue(result[0]), dto);
-        }
-        return mapActividadGestionOperativa;
-    }
-
-    private ActividadGestionEntity createDTOFromResult(Object[] result) {
-        ActividadGestionEntity dto = new ActividadGestionEntity();
-        mapCommonFields(dto, result);
-        return dto;
-    }
-
-    private void mapCommonFields(ActividadGestionEntity dto, Object[] result) {
-        dto.setIdGestionOperativa(getLongValue(result[1]));
-        dto.setIdNivel(getLongValue(result[3]));
-        dto.setFrecuencia(getDoubleValue(result[5]));
-        dto.setTiempoMaximo(getDoubleValue(result[6]));
-        dto.setTiempoMinimo(getDoubleValue(result[7]));
-        dto.setTiempoPromedio(getDoubleValue(result[8]));
-    }
-
-    private Long getLongValue(Object value) {
-        return value != null ? ((Number) value).longValue() : null;
-    }
-
-    private Double getDoubleValue(Object value) {
-        return value != null ? ((Number) value).doubleValue() : null;
+    /**
+     * Actualiza lista de asignaciones de cargos, eliminando aquellas que han sido removidas, creando las nuevas y actualizando las existentes.
+     * @param appointments
+     * @param initialAppointmentIds
+     * @return
+     * @throws CiadtiException
+     */
+    @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+    public List<CargoEntity> updateMultiAppointments(List<CargoEntity> appointments, List<Long> initialAppointmentIds) throws CiadtiException {
+        List<Long> oldAppointmentIds = initialAppointmentIds;
+        List<Long> appointmentsToDelete = oldAppointmentIds.stream()
+                .filter(e -> !appointments.stream().map(CargoEntity :: getId).collect(Collectors.toList()).contains(e))
+                .collect(Collectors.toList());
+        deleteAppointments(appointmentsToDelete);
+        List<CargoEntity> savedAppointments = saveMultiAppointments(appointments);
+        return savedAppointments;
     }
 }

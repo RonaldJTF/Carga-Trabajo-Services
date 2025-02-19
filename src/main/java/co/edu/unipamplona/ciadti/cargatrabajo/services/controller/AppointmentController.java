@@ -2,6 +2,7 @@ package co.edu.unipamplona.ciadti.cargatrabajo.services.controller;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unipamplona.ciadti.cargatrabajo.services.exception.CiadtiException;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.CargoEntity;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.entity.VariableEntity;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.CargoService;
+import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.VariableService;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.ConfigurationMediator;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.model.service.mediator.report.AppointmentReportExcelJXLS;
 import co.edu.unipamplona.ciadti.cargatrabajo.services.util.Methods;
@@ -37,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/appointment")
 public class AppointmentController {
     private final CargoService cargoService;
+    private final VariableService variableService;
     private final ConfigurationMediator configurationMediator;
     private final AppointmentReportExcelJXLS appointmentReportExcelJXLS;
 
@@ -87,7 +91,10 @@ public class AppointmentController {
                     "Returns: Objeto con la información asociada.")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody CargoEntity cargoEntity) throws CiadtiException {
-        return new ResponseEntity<>(configurationMediator.saveAppointment(cargoEntity, cargoEntity.getDenominacionesEmpleos()), HttpStatus.CREATED);
+        CargoEntity appointment = configurationMediator.saveAppointment(cargoEntity, cargoEntity.getDenominacionesEmpleos());
+        List<VariableEntity> allVariablesInDB = variableService.findAll();
+        configurationMediator.completeAppointmentInformation(appointment, allVariablesInDB);
+        return new ResponseEntity<>(appointment, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -107,7 +114,11 @@ public class AppointmentController {
         cargoEntityBD.setIdEscalaSalarial(cargoEntity.getIdEscalaSalarial());
         cargoEntityBD.setIdNormatividad(cargoEntity.getIdNormatividad());
         cargoEntityBD.setIdAlcance(cargoEntity.getIdAlcance());
-        return new ResponseEntity<>(configurationMediator.saveAppointment(cargoEntityBD, cargoEntity.getDenominacionesEmpleos()), HttpStatus.CREATED);
+
+        CargoEntity appointment = configurationMediator.saveAppointment(cargoEntityBD, cargoEntity.getDenominacionesEmpleos());
+        List<VariableEntity> allVariablesInDB = variableService.findAll();
+        configurationMediator.completeAppointmentInformation(appointment, allVariablesInDB);
+        return new ResponseEntity<>(appointment, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -128,6 +139,49 @@ public class AppointmentController {
     public ResponseEntity<?> deleteAppointments (@RequestBody List<Long> appointmentIds) throws CiadtiException{
         configurationMediator.deleteAppointments(appointmentIds);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Crear multiples asignaciones de cargas laborales",
+            description = "Crea multiples asignaciones de cargas laborales. " +
+                    "Args: appointments: lista de objetos con información de los cargos a registrar. " +
+                    "Returns: Lista con la información asociada.")
+    @PostMapping("/multiappointments")
+    public ResponseEntity<?> createMultiappointments(@Valid @RequestBody List<CargoEntity> appointments) throws CiadtiException {
+        return new ResponseEntity<>(configurationMediator.saveMultiAppointments(appointments), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary="Actualizar multiples asignaciones de cargas laborales",
+        description = "Actualiza multiples asignaciones de cargas laborales. " + 
+            "Args: appointments: lista de objetos con información del cargo. " +
+            "Returns: Lista de objetos con la información asociada.")
+    @PutMapping("/multiappointments")
+    public ResponseEntity<?> updateMultiappointments (@Valid @RequestBody List<CargoEntity> appointments, 
+                                                      @RequestParam(name = "initialAppointmentIds", required = false) String initialAppointmentIdsString ) throws CiadtiException{
+        initialAppointmentIdsString = initialAppointmentIdsString.replaceAll("\\[|\\]|\\s", "");
+        List<Long> initialAppointmentIds = new ArrayList<>();
+        if (!initialAppointmentIdsString.isEmpty()) {
+            String[] parts = initialAppointmentIdsString.split(",");
+            for (String part : parts) {
+                initialAppointmentIds.add(Long.parseLong(part));
+            }            
+        }
+        return new ResponseEntity<>(configurationMediator.updateMultiAppointments(appointments, initialAppointmentIds), HttpStatus.CREATED);
+    }
+
+    @Operation(
+        summary = "Obtener la asignación básica mensual que se ha realizado para una escala salarial en un nivel ocupacional en una determinada vigencia",
+        description = """
+            Obtiene el valor de la asignación básica mensual que se ha realizado para una escala salarial en un nivel ocupacional 
+            en una determinada vigencia.
+            Args: id: identificador de la carga. 
+            Returns: Objeto con información de la carga laboral.
+        """)
+    @GetMapping("/basic-monthly-allowance")
+    public ResponseEntity<?> getBasicMonthlyAllowance(@RequestParam Long validityId, @RequestParam Long levelId,  @RequestParam(required = false) Long salaryScaleId) throws CiadtiException {
+        Double result = cargoService.getBasicMonthlyAllowance(validityId, levelId, salaryScaleId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @SuppressWarnings("null")

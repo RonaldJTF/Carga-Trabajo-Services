@@ -118,7 +118,7 @@ public class CargoServiceImpl implements CargoService{
                 p.id, p.nombre, p.frecuenciaAnual, 
                 cat.nombre, 
                 cnvv.id, cnvv.idCompensacionLabNivelVigencia, cnvv.idRegla, cnvv.idVariable,
-                de.id, de.nombre, cde.totalCargos
+                de.id, de.nombre, cde.id, cde.totalCargos
             from CargoEntity c 
                 inner join JerarquiaEntity j on (c.idJerarquia = j.id) 
                 inner join DependenciaEntity d on (j.idDependencia = d.id) 
@@ -178,13 +178,13 @@ public class CargoServiceImpl implements CargoService{
         List<CargoEntity> appointments = new ArrayList<>();
         Long appointmentId = -1L;
         Long clnvId = -1L;
-        Long jobTitleId = -1L;
+        List<Long> jobTitleIds = null;
         CargoEntity appointment = null;
         CompensacionLabNivelVigenciaEntity compensacionLabNivelVigencia = null;
         DenominacionEmpleoEntity jobTitle = null;
 
         for (Object[] row : results) {
-            if (((Long) row[0]).longValue() != appointmentId.longValue()){
+            if (!((Long) row[0]).equals(appointmentId)){
                 appointment = CargoEntity.builder()
                     .id((Long) row[0])
                     .asignacionBasicaMensual((Double) row[1])
@@ -239,11 +239,12 @@ public class CargoServiceImpl implements CargoService{
                     .build();
                 appointments.add(appointment);
                 appointmentId = (Long) row[0];
+                jobTitleIds = new ArrayList<>();
                 clnvId = -1L;
             }
 
             if(row[25] != null){
-                if((Long) row[25] != clnvId){
+                if(!((Long) row[25]).equals(clnvId)){
                     compensacionLabNivelVigencia = CompensacionLabNivelVigenciaEntity.builder()
                         .id((Long) row[25])
                         .idVigencia((Long) row[26])
@@ -273,16 +274,17 @@ public class CargoServiceImpl implements CargoService{
                     compensacionLabNivelVigencia.getValoresCompensacionLabNivelVigencia().add(cnvv);
                 }
             }
-            if(row[40] != null){
-                if((Long) row[40] != jobTitleId){
+
+            if(row[42] != null){
+                if(!jobTitleIds.stream().anyMatch(added -> added.equals((Long) row[42]))){
                     jobTitle = DenominacionEmpleoEntity
                         .builder()
                         .id((Long) row[40])
                         .nombre((String) row[41])
-                        .totalCargos((Long) row[42])
+                        .totalCargos((Long) row[43])
                         .build();
                     appointment.getDenominacionesEmpleos().add(jobTitle);
-                    jobTitleId = (Long) row[40] ;
+                    jobTitleIds.add((Long) row[42]);
                 }
             }
         }
@@ -308,7 +310,7 @@ public class CargoServiceImpl implements CargoService{
                 p.id, p.nombre, p.frecuenciaAnual, 
                 cat.nombre, 
                 cnvv.id, cnvv.idCompensacionLabNivelVigencia, cnvv.idRegla, cnvv.idVariable,
-                de.id, de.nombre, cde.totalCargos
+                de.id, de.nombre, cde.id, cde.totalCargos
             from CargoEntity c 
                 inner join JerarquiaEntity j on (c.idJerarquia = j.id) 
                 inner join DependenciaEntity d on (j.idDependencia = d.id) 
@@ -337,13 +339,13 @@ public class CargoServiceImpl implements CargoService{
         
         Long appointmentId = -1L;
         Long clnvId = -1L;
-        Long jobTitleId = -1L;
+        List<Long> jobTitleIds = null;
         CargoEntity appointment = null;
         CompensacionLabNivelVigenciaEntity compensacionLabNivelVigencia = null;
         DenominacionEmpleoEntity jobTitle = null;
 
         for (Object[] row : results) {
-            if (((Long) row[0]) != appointmentId){
+            if (!((Long) row[0]).equals(appointmentId)){
                 appointment = CargoEntity.builder()
                     .id((Long) row[0])
                     .asignacionBasicaMensual((Double) row[1])
@@ -398,11 +400,11 @@ public class CargoServiceImpl implements CargoService{
                     .build();
                 appointmentId = (Long) row[0];
                 clnvId = -1L;
-                jobTitleId = -1L;
+                jobTitleIds = new ArrayList<>();
             }
 
             if(row[25] != null){
-                if((Long) row[25] != clnvId){
+                if(!((Long) row[25]).equals(clnvId)){
                     compensacionLabNivelVigencia = CompensacionLabNivelVigenciaEntity.builder()
                         .id((Long) row[25])
                         .idVigencia((Long) row[26])
@@ -433,16 +435,16 @@ public class CargoServiceImpl implements CargoService{
                 }
             }
 
-            if(row[40] != null){
-                if((Long) row[40] != jobTitleId){
+            if(row[42] != null){
+                if(!jobTitleIds.stream().anyMatch(added -> added.equals((long) row[42]))){
                     jobTitle = DenominacionEmpleoEntity
                         .builder()
                         .id((Long) row[40])
                         .nombre((String) row[41])
-                        .totalCargos((Long) row[42])
+                        .totalCargos((Long) row[43])
                         .build();
                     appointment.getDenominacionesEmpleos().add(jobTitle);
-                    jobTitleId = (Long) row[40] ;
+                    jobTitleIds.add((Long) row[42]);
                 }
             }
         }
@@ -450,9 +452,19 @@ public class CargoServiceImpl implements CargoService{
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<DenominacionEmpleoEntity> findAllJobTitlesByAppointmentId(Long appointmentId) {
         return cargoDAO.findAllJobTitlesByAppointmentId(appointmentId);
     }
-    
+
+    @Override
+    @Transactional(readOnly = true)
+    public Double getBasicMonthlyAllowance(Long validityId, Long levelId, Long salaryScaleId) {
+        List<Double> result = cargoDAO.getBasicMonthlyAllowances(validityId, levelId, salaryScaleId);
+        Double value = null;
+        if (result != null && !result.isEmpty()){
+            value = result.get(0);
+        }
+        return value;
+    }
 }

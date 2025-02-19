@@ -111,7 +111,7 @@ public class JerarquiaServiceImpl implements JerarquiaService {
      */
     private Integer getNumberOfMatches(JerarquiaEntity JerarquiaEntity, List<JerarquiaEntity> list, Integer cont) {
         for (JerarquiaEntity obj : list) {
-            if (obj.getId() == JerarquiaEntity.getId()) {
+            if (obj.getId().equals(JerarquiaEntity.getId())) {
                 cont += 1;
             } else {
                 cont = getNumberOfMatches(JerarquiaEntity, obj.getSubJerarquias(), cont);

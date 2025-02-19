@@ -80,7 +80,6 @@ public class StructureReportPDF {
 
         List<ReportStructureDTO> structureData = new ArrayList<>();
         buildStructureData(plainedStructures, new String[]{"", "", "", ""}, 0, structureData);
-        filterStructureData(structureData);
 
         Double requiredTotalHours = getRequiredTotalHours(structureData);
         Double requiredTotalPeople = requiredTotalHours / HOURS_PER_MONTH;
@@ -281,21 +280,6 @@ public class StructureReportPDF {
                     .tiemposPorNivel(tiemposPorNivel)
                     .build();
                 results.add(reportDTO);
-            }
-        }
-    }
-
-    /**
-     * Para colocar en el reporte una sola vez el procedimiento y evitar colocar su contenido.
-     * @param list
-     */
-    private void filterStructureData(List<ReportStructureDTO> list){
-        String procedimiento = null;
-        for (ReportStructureDTO reportDTO  : list){
-            if (reportDTO.getProcedimiento().equals(procedimiento)){
-                reportDTO.setProcedimiento("");
-            }else{
-                procedimiento = reportDTO.getProcedimiento();
             }
         }
     }

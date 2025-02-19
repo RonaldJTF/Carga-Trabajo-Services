@@ -127,7 +127,7 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
      */
     private Integer getNumberOfMatches(GestionOperativaEntity gestionOperativaEntity, List<GestionOperativaEntity> list, Integer cont) {
         for (GestionOperativaEntity obj : list) {
-            if (obj.getId() == gestionOperativaEntity.getId()) {
+            if (obj.getId().equals(gestionOperativaEntity.getId())) {
                 cont += 1;
             } else {
                 cont = getNumberOfMatches(gestionOperativaEntity, obj.getSubGestionesOperativas(), cont);
@@ -351,9 +351,5 @@ public class GestionOperativaServiceImpl implements GestionOperativaService{
         query.setParameter("organizationChartId", organizationChartId);
         List<GestionOperativaEntity> operationalsManagements =  query.getResultList();
         return buildHierarchy(operationalsManagements);
-    }
-
-    public List<Object[]> findActivityByOperationalManagement(){
-        return gestionOperativaDAO.findActivityByOperationalManagement();
     }
 }
