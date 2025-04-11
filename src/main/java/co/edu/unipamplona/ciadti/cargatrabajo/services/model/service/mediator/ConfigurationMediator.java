@@ -1673,7 +1673,7 @@ public class ConfigurationMediator {
                                         .build();
         List<CargoEntity> existingAppointments = cargoService.findAllFilteredBy(filter);
         if(existingAppointments != null && existingAppointments.size() > 0){
-            existingAppointments = existingAppointments.stream().filter(e -> e.getId().longValue() != appointment.getId().longValue()).collect(Collectors.toList());
+            existingAppointments = existingAppointments.stream().filter(e -> !e.getId().equals(appointment.getId())).collect(Collectors.toList());
         }
         /*Si al quitar de la lista de asignaciones existentes la que posiblemente se está editando quedan registros, lanzamos una exception porque no
          * pueden existir iguales asignaciones de cargos en una misma vigencia, dependencia en la estructura organizacional (mediante el idJerarrquia),

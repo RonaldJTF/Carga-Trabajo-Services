@@ -261,9 +261,20 @@ public class CargoServiceImpl implements CargoService{
                             .build())
                         .valoresCompensacionLabNivelVigencia(new ArrayList<>())
                         .build();
-                    appointment.getCompensacionesLaboralesAplicadas().add(compensacionLabNivelVigencia);
                     clnvId = (Long) row[25];
+
+                    /*Si se ha parametrizado una misma compensanción laboral de manera general en el nivel ocupacional,
+                      pero luego se ha especificado la misma para una escala salarial, entonces nos quedamos con la especificación.*/
+                    Long clId = (Long) row[29];
+                    Long salaryScaleId = (Long) row[28];
+                    int index = this.findJobCompensationIndex(clId, appointment.getCompensacionesLaboralesAplicadas());
+                    if(index == -1){
+                        appointment.getCompensacionesLaboralesAplicadas().add(compensacionLabNivelVigencia);
+                    }else if(salaryScaleId != null){
+                        appointment.getCompensacionesLaboralesAplicadas().set(index, compensacionLabNivelVigencia);
+                    }
                 }
+
                 if(row[36] != null){
                     CompensacionLabNivelVigValorEntity cnvv = CompensacionLabNivelVigValorEntity.builder()
                         .id((Long) row[36])
@@ -289,6 +300,24 @@ public class CargoServiceImpl implements CargoService{
             }
         }
         return appointments;
+    }
+
+    /**
+     * Encuentra el índice del primer elemento de la lista que coincide con el identificador de la compensación laboral.
+     * 
+     * @param jobCompensationId Identificador de la compensación laboral.
+     * @param list Lista de elementos de la clase CompensacionLabNivelVigenciaEntity.
+     * @return Índice del elemento encontrado, o -1 si no se encuentra.
+     */
+    private int findJobCompensationIndex(Long jobCompensationId, List<CompensacionLabNivelVigenciaEntity> list) {
+        if (list == null || jobCompensationId == null) return -1;
+
+        for (int i = 0; i < list.size(); i++) {
+            if (jobCompensationId.equals(list.get(i).getIdCompensacionLaboral())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @SuppressWarnings("null")
@@ -421,8 +450,18 @@ public class CargoServiceImpl implements CargoService{
                             .build())
                         .valoresCompensacionLabNivelVigencia(new ArrayList<>())
                         .build();
-                    appointment.getCompensacionesLaboralesAplicadas().add(compensacionLabNivelVigencia);
                     clnvId = (Long) row[25];
+
+                    /*Si se ha parametrizado una misma compensanción laboral de manera general en el nivel ocupacional,
+                    pero luego se ha especificado la misma para una escala salarial, entonces nos quedamos con la especificación.*/
+                    Long clId = (Long) row[29];
+                    Long salaryScaleId = (Long) row[28];
+                    int index = this.findJobCompensationIndex(clId, appointment.getCompensacionesLaboralesAplicadas());
+                    if(index == -1){
+                        appointment.getCompensacionesLaboralesAplicadas().add(compensacionLabNivelVigencia);
+                    }else if(salaryScaleId != null){
+                        appointment.getCompensacionesLaboralesAplicadas().set(index, compensacionLabNivelVigencia);
+                    }
                 }
                 if(row[36] != null){
                     CompensacionLabNivelVigValorEntity cnvv = CompensacionLabNivelVigValorEntity.builder()
