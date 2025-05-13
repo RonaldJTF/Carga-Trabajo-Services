@@ -50,7 +50,8 @@ public class StructureTimeStatisticsReportPDF {
     private String CORPORATE_NAME = "Universidad Distrital Francisco José de Caldas";
 
     private String REPORT_MAIN_PATH = "reports/structures/StructureTimeStatistics.jrxml";
-    private String REPORT_STRUCTURE_DETAIL_PATH = "reports/structures/StructureDetail.jrxml";
+    //private String REPORT_STRUCTURE_DETAIL_PATH = "reports/structures/StructureDetail.jrxml";
+    private String REPORT_STRUCTURE_DETAIL_PATH = "reports/structures/StructureDetailWithoutChart.jrxml";
 
     @Data
     @Builder
