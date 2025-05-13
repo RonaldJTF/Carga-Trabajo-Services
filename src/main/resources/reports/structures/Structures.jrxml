@@ -985,7 +985,7 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Top">
-					<font fontName="SansSerif" size="35" isBold="true"/>
+					<font fontName="SansSerif" size="32" isBold="true"/>
 					<paragraph lineSpacing="Fixed" lineSpacingSize="25.0"/>
 				</textElement>
 				<text><![CDATA[Gestión y Desarrollo del Talento Humano]]></text>

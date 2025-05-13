@@ -263,7 +263,7 @@ public class StructureReportPDF {
                     maxTime = (double) Math.round((structure.getActividad().getTiempoMaximo() / 60.0)*100)/100;
                     standarTime = (double) Math.round((1.07*(minTime + 4*meanTime + maxTime)/6)*100) /100;
                     for (NivelEntity e : levels){
-                        tiemposPorNivel.add(e.getId() == structure.getActividad().getIdNivel() ? Math.round((frecuency * standarTime)*10)/10.0 : null);
+                        tiemposPorNivel.add(e.getId() == structure.getActividad().getIdNivel() ? Math.round((frecuency * standarTime)*100)/100.0 : null);
                     }
                 }
                 ReportStructureDTO reportDTO = ReportStructureDTO.builder()
